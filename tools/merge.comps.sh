@@ -4,7 +4,7 @@ dir=$PWD;
 cd $cur_dir;
 
 
-sh -c "sh generate_yuidoc_for_uxc.sh";
+sh -c "sh generate_api_docs.sh";
 
 sleep 3s
 
