@@ -177,7 +177,7 @@
         * @default null
         * @static
         * @example
-                以下例子假定 libpath = http://git.me.btbtd.org/ignore/360JC_dev/
+                以下例子假定 libpath = http://git.me.btbtd.org/ignore/JQueryComps_dev/
                 <script>
                     JC.FILE_MAP = {
                         'Calendar': 'http://jc.openjavascript.org/comps/Calendar/Calendar.js'
@@ -200,7 +200,7 @@
                 </script>
 
                 output should be:
-                    http://git.me.btbtd.org/ignore/360JC_dev/lib.js
+                    http://git.me.btbtd.org/ignore/JQueryComps_dev/lib.js
                     http://jc.openjavascript.org/comps/Panel/Panel.js
                     http://jc.openjavascript.org/comps/Tips/Tips.js
                     http://jc.openjavascript.org/comps/Valid/Valid.js
