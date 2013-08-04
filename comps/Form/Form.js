@@ -11,9 +11,9 @@
         return _path;
     }
     var _path = script_path_f();
-    document.write( '<script src="'+_path+'UXC.Form.js" ><\/script>' );
-    document.write( '<script src="'+_path+'UXC.Form.initCheckAll.js" ><\/script>' );
-    document.write( '<script src="'+_path+'UXC.Form.initAutoFill.js" ><\/script>' );
-    document.write( '<script src="'+_path+'UXC.Form.initAutoSelect.js" ><\/script>' ); 
-    document.write( '<script src="'+_path+'UXC.Form.initNumericStepper.js" ><\/script>' ); 
+    document.write( '<script src="'+_path+'JC.Form.js" ><\/script>' );
+    document.write( '<script src="'+_path+'JC.Form.initCheckAll.js" ><\/script>' );
+    document.write( '<script src="'+_path+'JC.Form.initAutoFill.js" ><\/script>' );
+    document.write( '<script src="'+_path+'JC.Form.initAutoSelect.js" ><\/script>' ); 
+    document.write( '<script src="'+_path+'JC.Form.initNumericStepper.js" ><\/script>' ); 
 }();

@@ -11,7 +11,7 @@
         return _path;
     }
     var _path = script_path_f();
-    document.write( '<script src="'+_path+'UXC.Panel.js" ><\/script>' );
-    document.write( '<script src="'+_path+'UXC.Popup.js" ><\/script>' );
-    document.write( '<script src="'+_path+'UXC.Dialog.js" ><\/script>');
+    document.write( '<script src="'+_path+'JC.Panel.js" ><\/script>' );
+    document.write( '<script src="'+_path+'JC.Popup.js" ><\/script>' );
+    document.write( '<script src="'+_path+'JC.Dialog.js" ><\/script>');
 }();

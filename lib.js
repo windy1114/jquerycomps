@@ -13,5 +13,5 @@
     var _path = script_path_f();
     document.write( '<script src="'+_path+'jquery.js" ><\/script>' );
     document.write( '<script src="'+_path+'common.js" ><\/script>' );
-    document.write( '<script src="'+_path+'UXC.js" ><\/script>' );
+    document.write( '<script src="'+_path+'JC.js" ><\/script>' );
 }();

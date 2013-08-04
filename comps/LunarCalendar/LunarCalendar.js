@@ -12,8 +12,8 @@
     }
 
     var _path = script_path_f();
-    document.write( '<script src="'+_path+'UXC.LunarCalendar.js" ><\/script>' );
-    document.write( '<script src="'+_path+'UXC.LunarCalendar.gregorianToLunar.js" ><\/script>' );
-    document.write( '<script src="'+_path+'UXC.LunarCalendar.getFestival.js" ><\/script>' );
-    document.write( '<script src="'+_path+'UXC.LunarCalendar.nationalHolidays.js" ><\/script>' );
+    document.write( '<script src="'+_path+'JC.LunarCalendar.js" ><\/script>' );
+    document.write( '<script src="'+_path+'JC.LunarCalendar.gregorianToLunar.js" ><\/script>' );
+    document.write( '<script src="'+_path+'JC.LunarCalendar.getFestival.js" ><\/script>' );
+    document.write( '<script src="'+_path+'JC.LunarCalendar.nationalHolidays.js" ><\/script>' );
 }();
