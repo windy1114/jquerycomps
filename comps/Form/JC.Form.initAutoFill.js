@@ -9,7 +9,7 @@
      * @static
      * @for JC.Form
      * @version dev 0.1
-     * @author  qiushaowei   <suches@btbtd.org> | 360 75 team Team
+     * @author  qiushaowei   <suches@btbtd.org> | 75 team
      * @date    2013-06-13
      * @param   {selector|url string}   _selector   显示指定要初始化的区域, 默认为 document
      * @param   {string}                _url        显示指定, 取初始化值的 URL, 默认为 location.href

@@ -11,7 +11,7 @@
      * @static
      * @for JC.Form
      * @version dev 0.1
-     * @author  qiushaowei   <suches@btbtd.org> | 360 75 team Team
+     * @author  qiushaowei   <suches@btbtd.org> | 75 team
      * @date    2013-06-11
      * @param   {selector}  _selector   要初始化的全选反选的父级节点
      * @example

@@ -10,7 +10,7 @@
      * @class Form
      * @static
      * @version dev 0.1
-     * @author  qiushaowei   <suches@btbtd.org> | 360 75 team Team
+     * @author  qiushaowei   <suches@btbtd.org> | 75 team
      * @date    2013-06-11
      */
     window.JCForm = JC.Form = {
