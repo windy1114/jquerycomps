@@ -52,6 +52,7 @@
                 JC.log( 'Calendar.pickWeek, onConfirm' );
                 var _cur = _logic.getLayout().find('td.cur');
                 if( !_cur.length ) _logic.getLayout().find('td.today');
+                if( _cur.length && _cur.hasClass('unable') ) return 0;
                 if( _cur.length ) _cur.find('a').trigger('click');
             }
         , updateYear:
@@ -226,13 +227,15 @@
     }
 
     $(document).delegate('#UXCCalendar_week table a', 'click', function( _evt ){
-        var p = $(this), dstart = new Date(), dend = new Date();
+        var _p = $(this), dstart = new Date(), dend = new Date();
         if( !JC.Calendar.lastIpt ) return;
-        if( p.parent('td').hasClass( 'unable' ) ) return;
-        dstart.setTime( p.attr('dstart') );
-        dend.setTime( p.attr('dend') );
+        if( _p.parent('td').hasClass( 'unable' ) ) return;
+        dstart.setTime( _p.attr('dstart') );
+        dend.setTime( _p.attr('dend') );
         JC.Calendar.lastIpt.val( printf( '{0} 至 {1}', formatISODate( dstart ), formatISODate( dend ) ) );
         JC.Calendar.hide();
+        JC.Calendar._triggerUpdate( [ 'season', dstart, dend] );
     });
+
 
 }(jQuery));
