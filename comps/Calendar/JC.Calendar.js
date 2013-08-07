@@ -60,7 +60,7 @@
                 $('body > div.UXCCalendar').hide();
                 Calendar.lastIpt = _selector;
                 _selector = $(_selector);
-                var _type = $.trim(_selector.attr('multidate') || '').toLowerCase();
+                var _type = $.trim(_selector.attr('multidate') || '').toLowerCase() || $.trim(_selector.attr('datatype') || '').toLowerCase();
                 switch( _type ){
                     case 'week': Calendar.pickWeek && Calendar.pickWeek( _selector ); break;
                     case 'month': Calendar.pickMonth && Calendar.pickMonth( _selector ); break;
@@ -112,7 +112,7 @@
         , lastIpt: null
         /**
          * 设置日历组件的显示位置
-         * @method  Calendar.setPosition
+         * @method  setPosition
          * @static
          * @param   {selector}  _ipt    需要显示日历组件的文本框
          */
@@ -142,7 +142,7 @@
             }
         /** 
          * 判断选择器是否为日历组件的对象
-         * @method  Calendar.isCalendarElement
+         * @method  isCalendarElement
          * @static
          * @param   {selector}  _selector
          * return   bool
@@ -156,8 +156,13 @@
                     if( _selector.hasClass('UXCCalendar_btn') ) _r = 1;
                     if( _selector.prop('nodeName') 
                             && _selector.attr('datatype')
-                            && _selector.prop('nodeName').toLowerCase()=='input' 
-                            && _selector.attr('datatype').toLowerCase()=='date') _r = 1;
+                            && ( _selector.prop('nodeName').toLowerCase()=='input' || _selector.prop('nodeName').toLowerCase()=='button' )
+                            && ( _selector.attr('datatype').toLowerCase()=='date' 
+                                    || _selector.attr('datatype').toLowerCase()=='week' 
+                                    || _selector.attr('datatype').toLowerCase()=='month' 
+                                    || _selector.attr('datatype').toLowerCase()=='season' 
+                                    || _selector.attr('datatype').toLowerCase()=='year' 
+                                )) _r = 1;
                     if( _selector.prop('nodeName') 
                             && _selector.attr('multidate')
                             && _selector.prop('nodeName').toLowerCase()=='input') _r = 1;
@@ -205,7 +210,7 @@
             }
         /**
          * 获取初始日期对象
-         * @method  Calendar.getDate
+         * @method  getDate
          * @static
          * @param   {selector}  _selector   显示日历组件的input
          * return   Object  { date: 0, minvalue: 0, maxvalue: 0, initMinvalue: 0, initMaxvalue: 0 }
@@ -748,7 +753,7 @@
 
             if( Calendar.isCalendarElement($evt.target||$evt.targetElement) ) return;
 
-            if( _src && _src.nodeName.toLowerCase() != 'input' ){
+            if( _src && ( _src.nodeName.toLowerCase() != 'input' && _src.nodeName.toLowerCase() != 'button' ) ){
                 Calendar.hide(); return;
             }
 
@@ -770,8 +775,13 @@
          * @event input focus
          * @private
          */
-        $(document).delegate( 'input[datatype=date], input[datatype=daterange], input[multidate]', 'focus', function($evt){
-            Calendar.pickDate( this );
+        $(document).delegate( [ 'input[datatype=season]', 'input[datatype=month]', 'input[datatype=week]'
+                , 'input[datatype=date]', 'input[datatype=daterange]', 'input[multidate]' ].join(), 'focus' , function($evt){
+                Calendar.pickDate( this );
+        });
+        $(document).delegate( [ 'button[datatype=season]', 'button[datatype=month]', 'button[datatype=week]'
+                , 'button[datatype=date]', 'button[datatype=daterange]', 'button[multidate]' ].join(), 'click' , function($evt){
+                Calendar.pickDate( this );
         });
         /**
          * 日历组件点击事件, 阻止冒泡, 防止被 document click事件隐藏
