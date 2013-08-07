@@ -105,7 +105,7 @@
         , defaultDateSpan: 20
         /**
          * 最后一个显示日历组件的文本框
-         * @property  Calendar.lastIpt
+         * @property  lastIpt
          * @type    selector
          * @static
          */
