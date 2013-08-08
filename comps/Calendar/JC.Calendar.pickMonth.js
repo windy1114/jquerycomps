@@ -40,11 +40,36 @@
         , onConfirm:
             function(){
                 JC.log( 'Calendar.pickMonth, onConfirm' );
+                if( JC.Calendar.isMultiSelect() ){
+                    JC.log( 'pickMonth multiselect' );
+                    _logic.updateMultiSelect();
+                    return;
+                }
                 var _cur = _logic.getLayout().find('td.cur');
                 if( !_cur.length ) _logic.getLayout().find('td.today');
                 if( _cur.length && _cur.hasClass('unable') ) return 0;
                 if( _cur.length ) _cur.find('a').trigger('click');
             }
+
+        , updateMultiSelect:
+            function(){
+                var _r = [], _text = [], _ls = _logic.getLayout().find('td.cur'), _dstart, _dend, _td, _p;
+                _ls.each( function(){
+                    _td = $(this), _p = _td.find('> a');
+                    if( _p.is( '.unable' ) ) return;
+                    _dstart = new Date();
+                    _dend = new Date();
+                    _dstart.setTime( _p.attr('dstart') );
+                    _dend.setTime( _p.attr('dend') );
+
+                    _r.push( {'begin': _dstart, 'end': _dend } );
+                    _text.push( printf( '{0} 至 {1}', formatISODate( _dstart ), formatISODate( _dend ) ) );
+                });
+                JC.Calendar.lastIpt.val( _text.join(', ') );
+                JC.Calendar._triggerUpdateMultiSelect( [ 'month', _r ] );
+                return _r;
+            }
+
         , updateYear:
             function( _val ){
                 if( !_logic.lastDateObj ) return;
@@ -177,11 +202,21 @@
     };
 
     $(document).delegate('#UXCCalendar_month table a', 'click', function( _evt ){
-        var _p = $(this), dstart = new Date(), dend = new Date();
+        var _p = $(this), dstart = new Date(), dend = new Date()
+            , _isMultiselect = JC.Calendar.isMultiSelect()
+            , _td = _p.parent('td')
+        ;
         if( !JC.Calendar.lastIpt ) return;
-        if( _p.parent('td').hasClass( 'unable' ) ) return;
+        if( _td.hasClass( 'unable' ) ) return;
         dstart.setTime( _p.attr('dstart') );
         dend.setTime( _p.attr('dend') );
+
+        if( _isMultiselect ){
+            UXC.log( '_isMultiselect', new Date().getTime() );
+            _td.toggleClass( 'cur' );
+            return; 
+        }
+
         JC.Calendar.lastIpt.val( printf( '{0} 至 {1}', formatISODate( dstart ), formatISODate( dend ) ) );
         JC.Calendar.hide();
         JC.Calendar._triggerUpdate( [ 'month', dstart, dend] );
