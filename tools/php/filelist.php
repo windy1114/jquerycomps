@@ -123,7 +123,7 @@ function in_blacklist_file($item) {
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>File List</title>
+    <title>JC Project - Open JQuery Components Library - File List</title>
     <style>
 		body{font:13px/1.4 arial,helvetica,sans-serif;}
 		th,em,strong,b,address,cite{font-style:normal;font-weight:400;}

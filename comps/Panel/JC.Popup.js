@@ -1,5 +1,57 @@
 (function($){
     /**
+     * msgbox 提示 popup
+     * <br /> 这个是不带蒙板 不带按钮的 popup 弹框
+     * <br /><b>注意, 这是个方法, 写 @class 属性是为了生成文档</b>
+     * <p><b>requires</b>: <a href='window.jQuery.html'>jQuery</a>, <a href='JC.Panel.html'>Panel</a></p>
+     * <p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>
+     * | <a href='http://jc.openjavascript.org/docs_api/classes/JC.msgbox.html' target='_blank'>API docs</a>
+     * | <a href='../../comps/Panel/_demo' target='_blank'>demo link</a></p>
+     * @namespace JC
+     * @class   msgbox
+     * @static
+     * @constructor
+     * @param   {string}    _msg        提示内容
+     * @param   {selector}  _popupSrc   触发弹框的事件源 selector, 不为空显示 缓动效果, 为空居中显示
+     * @param   {int}       _status     显示弹框的状态, 0: 成功, 1: 错误, 2: 警告
+     * @param   {function}  _cb         弹框自动关闭后的的回调, <b>如果 _cb 为 int 值, 将视为 _closeMs</b>
+     * @param   {int}       _closeMs    自动关闭的间隔, 单位毫秒, 默认 2000
+     * @return  <a href='JC.Panel.html'>JC.Panel</a>
+     */
+    JC.msgbox = 
+        function( _msg, _popupSrc, _status, _cb, _closeMs ){
+            if( typeof _popupSrc == 'number' ){
+                _status = _popupSrc;
+                _popupSrc = null;
+            }
+            if( typeof _cb == 'number' ){
+                _closeMs = _cb;
+                _cb = null;
+            }
+            var _ins = _logic.popup( JC.msgbox.tpl || _logic.tpls.msgbox, _msg, _popupSrc, _status );
+                _cb && _ins.on('close', _cb );
+            window.JC_MSGBOX_TIMEOUT && clearTimeout( window.JC_MSGBOX_TIMEOUT );
+            window.JC_MSGBOX_TIMEOUT = 
+                setTimeout( function(){ _ins.close(); }, _closeMs || JC.msgbox.closeMs );
+            return _ins;
+        };
+    /**
+     * 自定义 JC.msgbox 的显示模板
+     * @property    tpl
+     * @type    string
+     * @default undefined
+     * @static
+     */
+    JC.msgbox.tpl;
+    /**
+     * 定义 JC.msgbox 自动关闭的间隔, 单位毫秒
+     * @property    closeMs
+     * @type    int
+     * @default 2000
+     * @static
+     */
+    JC.msgbox.closeMs = 2000;
+    /**
      * alert 提示 popup
      * <br /> 这个是不带 蒙板的 popup 弹框
      * <br /><b>注意, 这是个方法, 写 @class 属性是为了生成文档</b>
@@ -19,8 +71,20 @@
      */
     JC.alert = 
         function( _msg, _popupSrc, _status, _cb ){
-            return _logic.popup( _logic.tpls.alert, _msg, _popupSrc, _status, _cb );
+            if( typeof _popupSrc == 'number' ){
+                _status = _popupSrc;
+                _popupSrc = null;
+            }
+            return _logic.popup( JC.alert.tpl || _logic.tpls.alert, _msg, _popupSrc, _status, _cb );
         };
+    /**
+     * 自定义 JC.alert 的显示模板
+     * @property    tpl
+     * @type    string
+     * @default undefined
+     * @static
+     */
+    JC.alert.tpl;
     /**
      * confirm 提示 popup
      * <br /> 这个是不带 蒙板的 popup 弹框
@@ -42,8 +106,20 @@
      */
     JC.confirm = 
         function( _msg, _popupSrc, _status, _cb ){
-            return _logic.popup( _logic.tpls.confirm, _msg, _popupSrc, _status, _cb );
+            if( typeof _popupSrc == 'number' ){
+                _status = _popupSrc;
+                _popupSrc = null;
+            }
+            return _logic.popup( JC.confirm.tpl || _logic.tpls.confirm, _msg, _popupSrc, _status, _cb );
         };
+    /**
+     * 自定义 JC.confirm 的显示模板
+     * @property    tpl
+     * @type    string
+     * @default undefined
+     * @static
+     */
+    JC.confirm.tpl;
     /**
      * 隐藏 或 从DOM清除所有 JC.alert/JC.confirm
      * <br /><b>注意, 这是个方法, 写 @class 属性是为了生成文档</b>
@@ -64,44 +140,6 @@
                 $('body > div.UPanelPopup_identifer').hide();
             }
         };
-    /**
-     * 从 HTML 属性 自动执行 JC.alert / JC.confirm
-     * @attr    {string}    paneltype           弹框类型, alert | confirm
-     * @attr    {string}    panelmsg            弹框提示
-     * @attr    {string}    panelstatus         弹框状态, 0|1|2
-     * @attr    {function}  panelcallback       confirm 回调
-     * @attr    {function}  panelcancelcallback cancel  回调
-     */
-    $(document).on( 'click', function( _evt ){
-        var _p = $(_evt.target||_evt.srcElement)
-            , _paneltype = _p.attr('paneltype'), _panelmsg = _p.attr('panelmsg');
-        if( !(_paneltype && _panelmsg ) ) return;
-        _paneltype = _paneltype.toLowerCase();
-
-        _p.prop('nodeName') && _p.prop('nodeName').toLowerCase() == 'a' && _evt.preventDefault();
-
-        var  _panelstatus = ( parseInt( _p.attr('panelstatus'), 10 ) || 0 )
-           , _callback = _p.attr('panelcallback')
-           , _cancelcallback = _p.attr('panelcancelcallback');
-        
-        _callback && ( _callback = window[ _callback ] );
-        _cancelcallback && ( _cancelcallback = window[ _cancelcallback ] );
-
-        if( !(_paneltype in JC) ) return;
-
-        var _panel = JC[ _paneltype ]( _panelmsg, _p, _panelstatus );
-        if( _callback ) _panel.on( 'confirm', _callback );
-        if( _cancelcallback ) _panel.on( 'cancel', _cancelcallback );
-    });
-    /**
-     * 响应窗口改变大小 
-     */
-    $(window).on('resize', function( _evt ){
-        $('body > div.UPanelPopup_identifer').each( function(){
-            var _p = $(this);
-            _p.data('PopupInstance') && _logic.onresize( _p.data('PopupInstance') );
-        });
-    });
     /**
      * 弹框逻辑处理方法集
      * @property    _logic
@@ -208,6 +246,8 @@
                         _ins.selector().remove();
                         _ins = null;
                     });
+                }else{
+                    _ins.selector().remove();
                 }
                 return false;
             });
@@ -219,6 +259,8 @@
                         _ins.selector().hide();
                     });
                     return false;
+                }else{
+                    _ins.selector().hide();
                 }
             });
 
@@ -448,12 +490,32 @@
          */
         , tpls: {
             /**
+             *  msgbox 弹框的默认模板
+             *  @property   _logic.tpls.msgbox
+             *  @type       string
+             *  @private
+             */
+            msgbox:
+                [
+                '<div class="UPanel UPanelPopup {status}" >'
+                ,'    <div class="UPContent">'
+                ,'        <div class="bd">'
+                ,'            <dl>'
+                ,'                <dd class="UPopupContent">'
+                ,'                <button class="UIcon" align="absMiddle" ></button><div class="UText"><button type="button" class="UPlaceholder"></button>{msg}</div>'
+                ,'                </dd>'
+                ,'            </dl>'
+                ,'        </div>'
+                ,'    </div><!--end UPContent-->'
+                ,'</div>'
+                ].join('')
+            /**
              *  alert 弹框的默认模板
              *  @property   _logic.tpls.alert
              *  @type       string
              *  @private
              */
-            alert:
+            , alert:
                 [
                 '<div class="UPanel UPanelPopup {status}" >'
                 ,'    <div class="UPContent">'
@@ -496,5 +558,49 @@
                 ].join('')
         }
     };
+    /**
+     * 从 HTML 属性 自动执行 JC.alert / JC.confirm
+     * @attr    {string}    paneltype           弹框类型, alert | confirm
+     * @attr    {string}    panelmsg            弹框提示
+     * @attr    {string}    panelstatus         弹框状态, 0|1|2
+     * @attr    {function}  panelcallback       confirm 回调
+     * @attr    {function}  panelcancelcallback cancel  回调
+     */
+    $(document).on( 'click', function( _evt ){
+        var _p = $(_evt.target||_evt.srcElement)
+            , _paneltype = _p.attr('paneltype')
+            , _panelmsg = _p.attr('panelmsg')
+            , _panel
+        ;
+        if( !(_paneltype && _panelmsg ) ) return;
+        _paneltype = _paneltype.toLowerCase();
 
+        _p.prop('nodeName') && _p.prop('nodeName').toLowerCase() == 'a' && _evt.preventDefault();
+
+        var  _panelstatus = ( parseInt( _p.attr('panelstatus'), 10 ) || 0 )
+           , _callback = _p.attr('panelcallback')
+           , _cancelcallback = _p.attr('panelcancelcallback');
+        
+        _callback && ( _callback = window[ _callback ] );
+        _cancelcallback && ( _cancelcallback = window[ _cancelcallback ] );
+
+        if( !(_paneltype in JC) ) return;
+        _panel = JC[ _paneltype ]( _panelmsg, _p, _panelstatus );
+
+        if( _paneltype == 'msgbox' ){
+            _callback && _panel.on( 'close', _callback );
+        }else{
+            _callback && _panel.on( 'confirm', _callback );
+        }
+        if( _cancelcallback ) _panel.on( 'cancel', _cancelcallback );
+    });
+    /**
+     * 响应窗口改变大小 
+     */
+    $(window).on('resize', function( _evt ){
+        $('body > div.UPanelPopup_identifer').each( function(){
+            var _p = $(this);
+            _p.data('PopupInstance') && _logic.onresize( _p.data('PopupInstance') );
+        });
+    });
 }(jQuery));
