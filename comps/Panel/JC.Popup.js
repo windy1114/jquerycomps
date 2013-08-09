@@ -30,11 +30,20 @@
             }
             var _ins = _logic.popup( JC.msgbox.tpl || _logic.tpls.msgbox, _msg, _popupSrc, _status );
                 _cb && _ins.on('close', _cb );
-            window.JC_MSGBOX_TIMEOUT && clearTimeout( window.JC_MSGBOX_TIMEOUT );
-            window.JC_MSGBOX_TIMEOUT = 
-                setTimeout( function(){ _ins.close(); }, _closeMs || JC.msgbox.closeMs );
+
+            JC.msgbox.timeout && clearTimeout( JC.msgbox.timeout );
+            JC.msgbox.timeout = setTimeout( function(){ _ins.close(); }, _closeMs || JC.msgbox.closeMs );
+
             return _ins;
         };
+    /**
+     * 定义 JC.msgbox 自动关闭的间隔, 单位毫秒
+     * @property    closeMs
+     * @type    int
+     * @default 2000
+     * @static
+     */
+    JC.msgbox.closeMs = 2000;
     /**
      * 自定义 JC.msgbox 的显示模板
      * @property    tpl
@@ -44,13 +53,13 @@
      */
     JC.msgbox.tpl;
     /**
-     * 定义 JC.msgbox 自动关闭的间隔, 单位毫秒
-     * @property    closeMs
-     * @type    int
-     * @default 2000
+     * 获取延时关闭 JC.msgbox 的 timeout 对象
+     * @property    timeout
+     * @type    timeout
+     * @default undefined
      * @static
      */
-    JC.msgbox.closeMs = 2000;
+    JC.msgbox.timeout;
     /**
      * alert 提示 popup
      * <br /> 这个是不带 蒙板的 popup 弹框

@@ -82,12 +82,19 @@
             _logic.fixWidth( _msg, _ins );
             _cb && _ins.on('close', _cb);
 
-            window.JC_DIALOG_MSGBOX_TIMEOUT && clearTimeout( window.JC_DIALOG_MSGBOX_TIMEOUT );
-            window.JC_DIALOG_MSGBOX_TIMEOUT = 
-                setTimeout( function(){ _ins.close(); }, _closeMs || JC.Dialog.msgbox.closeMs );
+            JC.Dialog.msgbox.timeout && clearTimeout( JC.Dialog.msgbox.timeout );
+            JC.Dialog.msgbox.timeout = setTimeout( function(){ _ins.close(); }, _closeMs || JC.Dialog.msgbox.closeMs );
 
             return _ins;
         };
+    /**
+     * 定义 JC.Dialog.msgbox 自动关闭的间隔, 单位毫秒
+     * @property    closeMs
+     * @type    int
+     * @default 2000
+     * @static
+     */
+    JC.Dialog.msgbox.closeMs = 2000;
     /**
      * 自定义 JC.Dialog.alert 的显示模板
      * @property    tpl
@@ -97,13 +104,13 @@
      */
     JC.Dialog.msgbox.tpl;
     /**
-     * 定义 JC.Dialog.msgbox 自动关闭的间隔, 单位毫秒
-     * @property    closeMs
-     * @type    int
-     * @default 2000
+     * 获取延时关闭 JC.Dialog.msgbox 的 timeout 对象
+     * @property    timeout
+     * @type    timeout
+     * @default undefined
      * @static
      */
-    JC.Dialog.msgbox.closeMs = 2000;
+    JC.Dialog.msgbox.timeout;
     /**
      * 会话框 alert 提示
      * <br /><b>注意, 这是个方法, 写 @class 属性是为了生成文档</b>
