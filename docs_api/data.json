@@ -935,7 +935,7 @@
             "namespace": "JC",
             "file": "../comps/Suggest/Suggest.js",
             "line": 6,
-            "description": "Suggest 模板类\n<br />要新建一个组件时, 直接 copy Suggest 组件改一下命名就可以开始编码了\n<p><b>requires</b>: <a href='window.jQuery.html'>jQuery</a></p>\n<p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>\n| <a href='http://jc.openjavascript.org/docs_api/classes/JC.Suggest.html' target='_blank'>API docs</a>\n| <a href='../../comps/Suggest/_demo' target='_blank'>demo link</a></p>",
+            "description": "Suggest 关键词补全提示类\n<p><b>requires</b>: <a href='window.jQuery.html'>jQuery</a></p>\n<p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>\n| <a href='http://jc.openjavascript.org/docs_api/classes/JC.Suggest.html' target='_blank'>API docs</a>\n| <a href='../../comps/Suggest/_demo' target='_blank'>demo link</a></p>",
             "is_constructor": 1,
             "params": [
                 {
@@ -5577,6 +5577,64 @@
             "description": "页面加载后, 自动初始化符合 Slider 规则的 Slider",
             "class": "JC.Slider.Model",
             "namespace": "JC.Slider"
+        },
+        {
+            "file": "../comps/Suggest/Suggest.js",
+            "line": 35,
+            "description": "获取或设置 Suggest 的实例",
+            "itemtype": "method",
+            "name": "getInstance",
+            "params": [
+                {
+                    "name": "_selector",
+                    "description": "",
+                    "type": "Selector"
+                },
+                {
+                    "name": "_setter",
+                    "description": "",
+                    "type": "SuggestInstace|null"
+                }
+            ],
+            "static": 1,
+            "return": {
+                "description": "",
+                "type": "Suggest instance"
+            },
+            "class": "JC.Suggest",
+            "namespace": "JC"
+        },
+        {
+            "file": "../comps/Suggest/Suggest.js",
+            "line": 52,
+            "description": "判断 selector 是否可以初始化 Suggest",
+            "itemtype": "method",
+            "name": "isSuggest",
+            "params": [
+                {
+                    "name": "_selector",
+                    "description": "",
+                    "type": "Selector"
+                }
+            ],
+            "static": 1,
+            "return": {
+                "description": "bool"
+            },
+            "class": "JC.Suggest",
+            "namespace": "JC"
+        },
+        {
+            "file": "../comps/Suggest/Suggest.js",
+            "line": 67,
+            "description": "设置 Suggest 是否需要自动初始化",
+            "itemtype": "property",
+            "name": "autoInit",
+            "type": "bool",
+            "default": "true",
+            "static": 1,
+            "class": "JC.Suggest",
+            "namespace": "JC"
         },
         {
             "file": "../comps/Tab/Tab.js",

@@ -160,8 +160,7 @@
 
     window.Suggest = JC.Suggest = Suggest;
     /**
-     * Suggest 模板类
-     * &lt;br /&gt;要新建一个组件时, 直接 copy Suggest 组件改一下命名就可以开始编码了
+     * Suggest 关键词补全提示类
      * &lt;p&gt;&lt;b&gt;requires&lt;/b&gt;: &lt;a href=&#x27;window.jQuery.html&#x27;&gt;jQuery&lt;/a&gt;&lt;/p&gt;
      * &lt;p&gt;&lt;a href=&#x27;https://github.com/openjavascript/jquerycomps&#x27; target=&#x27;_blank&#x27;&gt;JC Project Site&lt;/a&gt;
      * | &lt;a href=&#x27;http://jc.openjavascript.org/docs_api/classes/JC.Suggest.html&#x27; target=&#x27;_blank&#x27;&gt;API docs&lt;/a&gt;
@@ -182,13 +181,53 @@
         this._init();
     }
     
-    Control.prototype = {
+    Suggest.prototype = {
         _init:
             function(){
                 
                 return this;
             }    
     }
+    /**
+     * 获取或设置 Suggest 的实例
+     * @method getInstance
+     * @param   {selector}              _selector
+     * @param   {SuggestInstace|null}   _setter
+     * @static
+     * @return  {Suggest instance}
+     */
+    Suggest.getInstance =
+        function( _selector, _setter ){
+            if( typeof _selector == &#x27;string&#x27; &amp;&amp; !/&lt;/.test( _selector ) ) 
+                    _selector = $(_selector);
+            if( !(_selector &amp;&amp; _selector.length ) || ( typeof _selector == &#x27;string&#x27; ) ) return;
+            typeof _setter != &#x27;undefined&#x27; &amp;&amp; _selector.data( &#x27;SuggestInstace&#x27;, _setter );
+
+            return _selector.data(&#x27;SuggestInstace&#x27;);
+        };
+    /**
+     * 判断 selector 是否可以初始化 Suggest
+     * @method  isSuggest
+     * @param   {selector}      _selector
+     * @static
+     * @return  bool
+     */
+    Suggest.isSuggest =
+        function( _selector ){
+            var _r;
+            _selector 
+                &amp;&amp; ( _selector = $(_selector) ).length 
+                &amp;&amp; ( _r = _selector.is( &#x27;[suglayout]&#x27; ) );
+            return _r;
+        };
+    /**
+     * 设置 Suggest 是否需要自动初始化
+     * @property    autoInit
+     * @type        bool
+     * @default     true
+     * @static
+     */
+    Suggest.autoInit = true;
     
     function Model( _selector ){
         this._selector = _selector;
@@ -216,6 +255,12 @@
             }
         
     };
+
+    $(document).delegate( &#x27;input[type=text]&#x27;, &#x27;focus&#x27;, function( _evt ){
+        var _p = $(this), _ins = Suggest.getInstance( _p );
+        if( _ins || !Suggest.isSuggest( _p ) || !Suggest.autoInit ) return;
+        JC.log( &#x27;Suggest input fined:&#x27;, _p.attr(&#x27;name&#x27;), new Date().getTime() );
+    });
 
 }(jQuery));
 

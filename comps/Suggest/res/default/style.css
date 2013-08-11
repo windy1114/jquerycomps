@@ -23,6 +23,7 @@
 }
 
 .sug_layout {
+    margin: 0px 0 0 0;
     position: absolute;
     display: none;
 
@@ -33,31 +34,14 @@
 
 .sug_layout dd {
     margin: 0;
-    padding: 0 8px;
+    padding: 4px 8px;
     white-space: nowrap;
     overflow: hidden;
-    line-height: 26px;
     cursor: pointer;
+    font: 14px/1.5 arial,sans-serif;
 }
 
 .sug_layout dd.active {
     background: #eee;
 }
 
-#search-button {
-    display: inline-block;
-    width: 100px;
-    height: 38px;
-    _height: 40px;
-    margin-left: 5px;
-    outline: 0;
-    border: 1px solid #3eaf0e;
-    box-shadow: 0 1px 1px rgba(0,0,0,0.2);
-    -webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.2);
-    -moz-box-shadow: 0 1px 1px rgba(0,0,0,0.2);
-    background: url('http://p1.qhimg.com/d/_onebox/btn-98-114.png') no-repeat #3eaf0e;
-    color: white;
-    font: bold 16px arial,sans-serif;
-    vertical-align: top;
-    cursor: pointer;
-}

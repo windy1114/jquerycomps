@@ -1,0 +1,268 @@
+;(function($){
+    //TODO: 自动生成 layout, layout 自动定位 
+    !window.JC && (window.JC = { log:function(){} });
+    window.ZINDEX_COUNT = window.ZINDEX_COUNT || 50001;
+
+    window.Suggest = JC.Suggest = Suggest;
+    /**
+     * Suggest 关键词补全提示类
+     * <p><b>requires</b>: <a href='window.jQuery.html'>jQuery</a></p>
+     * <p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>
+     * | <a href='http://jc.openjavascript.org/docs_api/classes/JC.Suggest.html' target='_blank'>API docs</a>
+     * | <a href='../../comps/Suggest/_demo' target='_blank'>demo link</a></p>
+     * @namespace JC
+     * @class Suggest
+     * @constructor
+     * @param   {selector|string}   _selector   
+     * @version dev 0.1
+     * @author  qiushaowei   <suches@btbtd.org> | 75 Team
+     * @date    2013-08-11
+     * @example
+     */
+    function Suggest( _selector ){
+        this._model = new Model( _selector );
+        this._view = new View( this._model );
+
+        this._init();
+    }
+    
+    Suggest.prototype = {
+        _init:
+            function(){
+                var _p = this;
+
+                $(_p._view).on('BindEvent', function( _evt, _evtName, _cb ){
+                    _p.on( _evtName, _cb );
+                });
+
+                $(_p._view).on('TriggerEvent', function( _evt, _evtName, _data ){
+                    _p.trigger( _evtName, _data );
+                });
+
+                $(_p._model).on('BindEvent', function( _evt, _evtName, _cb ){
+                    _p.on( _evtName, _cb );
+                });
+
+                $(_p._model).on('TriggerEvent', function( _evt, _evtName, _data ){
+                    _p.trigger( _evtName, _data );
+                });
+
+                _p.on( 'update', this.update );
+
+                _p._model.selector().on('keyup', function( _evt ){
+                    var _sp = $(this);
+                    JC.log( _sp.val() );
+                    Suggest.queryInterval = new Date().getTime();
+                });
+
+                _p._view.init();
+                _p._model.init();
+                
+                return _p;
+            }    
+        /**
+         *
+         *  suggest_so({ "p" : true,
+              "q" : "shinee",
+              "s" : [ "shinee 综艺",
+                  "shinee美好的一天",
+                  "shinee hello baby",
+                  "shinee吧",
+                  "shinee泰民",
+                  "shinee fx",
+                  "shinee快乐大本营",
+                  "shinee钟铉车祸",
+                  "shinee年下男的约会",
+                  "shinee dream girl"
+                ]
+            });
+         */
+        , update: 
+            function( _data ){
+                JC.log( _data );
+            }
+        /**
+         * 显示 Suggest 
+         * @method  hide
+         * @return  SuggestInstance
+         */
+        , show: function(){ this._view.show(); return this; }
+        /**
+         * 隐藏 Suggest
+         * @method  hide
+         * @return  SuggestInstance
+         */
+        , hide: function(){ this._view.hide(); return this; }
+        /**
+         * 获取 显示 Suggest 的触发源选择器, 比如 a 标签
+         * @method  selector
+         * @return  selector
+         */ 
+        , selector: function(){ return this._model.selector(); }
+        /**
+         * 获取 Suggest 外观的 选择器
+         * @method  layout
+         * @return  selector
+         */
+        , layout: function(){ return this._model.layout(); }
+        /**
+         * 使用 jquery on 绑定事件
+         * @method  {string}    on
+         * @param   {string}    _evtName
+         * @param   {function}  _cb
+         * @return  SuggestInstance
+         */
+        , on: function( _evtName, _cb ){ $(this).on(_evtName, _cb ); return this;}
+        /**
+         * 使用 jquery trigger 绑定事件
+         * @method  {string}    trigger
+         * @param   {string}    _evtName
+         * @return  SuggestInstance
+         */
+        , trigger: function( _evtName ){ $(this).trigger( _evtName ); return this;}
+    }
+    /**
+     * 获取或设置 Suggest 的实例
+     * @method getInstance
+     * @param   {selector}              _selector
+     * @param   {SuggestInstace|null}   _setter
+     * @static
+     * @return  {Suggest instance}
+     */
+    Suggest.getInstance =
+        function( _selector, _setter ){
+            if( typeof _selector == 'string' && !/</.test( _selector ) ) 
+                    _selector = $(_selector);
+            if( !(_selector && _selector.length ) || ( typeof _selector == 'string' ) ) return;
+            typeof _setter != 'undefined' && _selector.data( 'SuggestInstace', _setter );
+
+            return _selector.data('SuggestInstace');
+        };
+    /**
+     * 判断 selector 是否可以初始化 Suggest
+     * @method  isSuggest
+     * @param   {selector}      _selector
+     * @static
+     * @return  bool
+     */
+    Suggest.isSuggest =
+        function( _selector ){
+            var _r;
+            _selector 
+                && ( _selector = $(_selector) ).length 
+                && ( _r = _selector.is( '[suglayout]' ) );
+            return _r;
+        };
+    /**
+     * 设置 Suggest 是否需要自动初始化
+     * @property    autoInit
+     * @type        bool
+     * @default     true
+     * @static
+     */
+    Suggest.autoInit = true;
+    Suggest.layoutTpl = '';
+    
+    function Model( _selector ){
+        this._selector = _selector;
+    }
+    
+    Model.prototype = {
+        init:
+            function(){
+                return this;
+            }
+
+        , selector: function(){ return this._selector; }
+        , layoutTpl: '<dl class="sug_layout js_sugLayout" style="display:none;"></dl>'
+        , layout: 
+            function(){
+
+                !this._layout && this.selector().is('suglayout') 
+                    && ( this._layout = $( this.selector().attr('suglayout') ) );
+
+                !this._layout && ( this._layout = $( Suggest.layoutTpl() || this.layoutTpl ) );
+
+                return this._layout;
+            }
+        , sugwidth:
+            function(){
+                this.selector().is('sugwidth') 
+                    && ( this._sugwidth = parseInt( this.selector().attr('sugwidth') ) );
+                !this._sugwidth && ( this._sugwidth = parseInt( this.selector().prop('offsetWidth') ) );
+                return this._sugwidth;
+            }
+        , sugoffsetleft:
+            function(){
+                this.selector().is('sugoffsetleft') 
+                    && ( this._sugoffsetleft = parseInt( this.selector().attr('sugoffsetleft') ) );
+                !this._sugoffsetleft && ( this._sugoffsetleft = 0 );
+                return this._sugoffsetleft;
+            }
+        , sugoffsettop:
+            function(){
+                this.selector().is('sugoffsettop') 
+                    && ( this._sugoffsettop = parseInt( this.selector().attr('sugoffsettop') ) );
+                !this._sugoffsettop && ( this._sugoffsettop = 0 );
+                return this._sugoffsettop;
+            }
+        , sugsidepadding:
+            function(){
+                this.selector().is('sugsidepadding') 
+                    && ( this._sugsidepadding = parseInt( this.selector().attr('sugsidepadding') ) );
+                !this._sugsidepadding && ( this._sugsidepadding = 0 );
+                return this._sugsidepadding;
+            }
+        , _dataCallback:
+            function( _data ){
+                $(this).trigger( 'TriggerEvent', ['update', _data] );
+            }
+        , sugcallback:
+            function(){
+                this.selector().is('sugcallback') 
+                    && ( this._sugcallback = this.selector().attr('sugcallback') );
+                !this._sugcallback && ( this._sugcallback = 'SuggestDataCallback' );
+                !window[ this._sugcallback ] 
+                    && ( window[ this._sugcallback ] = this._dataCallback );
+
+                return this._sugcallback;
+            }
+        , sugurl:
+            function( _word ){
+                this.selector().is('sugurl') 
+                    && ( this._sugurl = this.selector().attr('sugurl') );
+                !this._sugurl && ( this._sugurl = '?word={0}&callback={1}' );
+                this._sugurl = printf( this._sugurl, _word, this.sugcallback() );
+                return this._sugurl;
+            }
+        , sugneedscripttag:
+            function( _word ){
+                this._sugneedscripttag = true;
+                this.selector().is('sugneedscripttag') 
+                    && ( this._sugneedscripttag = parseBool( this.selector().attr('_sugneedscripttag') ) );
+                return this._sugneedscripttag;
+            }
+    };
+    
+    function View( _model ){
+        this._model = _model;
+    }
+    
+    View.prototype = {
+        init:
+            function() {
+                return this;
+            }
+
+        , show: function(){}
+        , hide: function(){}
+    };
+
+    $(document).delegate( 'input[type=text]', 'focus', function( _evt ){
+        var _p = $(this), _ins = Suggest.getInstance( _p );
+        if( _ins || !Suggest.isSuggest( _p ) || !Suggest.autoInit ) return;
+        JC.log( 'Suggest input fined:', _p.attr('name'), new Date().getTime() );
+        _ins = new Suggest( _p );
+    });
+
+}(jQuery));
