@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset=utf-8 />
+        <title>JC Project - JQuery Components Library - suches</title>
+        <style>
+            body{
+                margin: 20px 80px;
+            }
+        </style>
+        <link href='style.css' rel='stylesheet' />
+    </head>    
+    <body>
+
+        <form action="http://www.so.com/s" target="_blank">
+            <div class="sug_container">
+                <input type="hidden" name="ie" value="utf-8">
+                <input type="hidden" name="src" id="from" value="360sou_home">
+                <div class="sug_wrapper" >
+                    <input type="text" name="q" 
+                        class="sug_input" 
+                        autocomplete="off" 
+                        x-webkit-speech=""
+                        sugwidth="501" sugtopoffset="0" sugleftoffset="0" sugsidepadding="8"
+                        suglayout="dl.sug_layout"
+                        sugplaceholder="em.sug_placeHolder"
+                        />
+                </div>
+                <input type="submit" id="search-button" value="搜索一下" onmouseover="this.className='hover'" onmousedown="this.className='mousedown'" onmouseout="this.className=''" class="">
+                <dl class="sug_layout" style="display:block!important;">
+                    <dd>s<b>o.com</b></dd>
+                    <dd class="active">s<b>so.com</b></dd>
+                    <dd>s<b>sso.com</b></dd>
+                    <dd class="active">s<b>sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssso.com</b></dd>
+                </dl>
+            </div>
+        </form>
+
+    </body>
+</html>
+

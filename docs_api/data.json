@@ -208,6 +208,17 @@
                 "JC.Slider": 1
             }
         },
+        "../comps/Suggest/Suggest.js": {
+            "name": "../comps/Suggest/Suggest.js",
+            "modules": {},
+            "classes": {
+                "JC.Suggest": 1
+            },
+            "fors": {},
+            "namespaces": {
+                "JC": 1
+            }
+        },
         "../comps/Tab/Tab.js": {
             "name": "../comps/Tab/Tab.js",
             "modules": {},
@@ -911,6 +922,33 @@
                     "description": "",
                     "type": "Selector"
                 }
+            ]
+        },
+        "JC.Suggest": {
+            "name": "JC.Suggest",
+            "shortname": "JC.Suggest",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "namespace": "JC",
+            "file": "../comps/Suggest/Suggest.js",
+            "line": 6,
+            "description": "Suggest 模板类\n<br />要新建一个组件时, 直接 copy Suggest 组件改一下命名就可以开始编码了\n<p><b>requires</b>: <a href='window.jQuery.html'>jQuery</a></p>\n<p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>\n| <a href='http://jc.openjavascript.org/docs_api/classes/JC.Suggest.html' target='_blank'>API docs</a>\n| <a href='../../comps/Suggest/_demo' target='_blank'>demo link</a></p>",
+            "is_constructor": 1,
+            "params": [
+                {
+                    "name": "_selector",
+                    "description": "",
+                    "type": "Selector|string"
+                }
+            ],
+            "version": "dev 0.1",
+            "author": "qiushaowei   <suches@btbtd.org> | 75 Team",
+            "date": "2013-08-11",
+            "example": [
+                ""
             ]
         },
         "JC.Tab": {
@@ -10560,6 +10598,14 @@
         {
             "message": "unknown tag: date",
             "line": " ../comps/Slider/Slider.js:6"
+        },
+        {
+            "message": "unknown tag: version",
+            "line": " ../comps/Suggest/Suggest.js:6"
+        },
+        {
+            "message": "unknown tag: date",
+            "line": " ../comps/Suggest/Suggest.js:6"
         },
         {
             "message": "unknown tag: version",

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JC.hideAllPopup - jquery components</title>
+    <title>JC.Suggest - jquery components</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -90,32 +90,35 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
-                        <h1>JC.hideAllPopup Class</h1>
+                        <h1>JC.Suggest Class</h1>
 <div class="box meta">
         <div class="foundat">
-            Defined in: <a href="../files/.._comps_Panel_JC.Popup.js.html#l132"><code>..&#x2F;comps&#x2F;Panel&#x2F;JC.Popup.js:132</code></a>
+            Defined in: <a href="../files/.._comps_Suggest_Suggest.js.html#l6"><code>..&#x2F;comps&#x2F;Suggest&#x2F;Suggest.js:6</code></a>
         </div>
 </div>
 <div class="box intro">
-    <p>隐藏 或 从DOM清除所有 JC.alert/JC.confirm
-<br /><b>注意, 这是个方法, 写 @class 属性是为了生成文档</b></p>
+    <p>Suggest 模板类
+<br />要新建一个组件时, 直接 copy Suggest 组件改一下命名就可以开始编码了</p>
+<p><b>requires</b>: <a href='window.jQuery.html'>jQuery</a></p>
+<p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>
+| <a href='http://jc.openjavascript.org/docs_api/classes/JC.Suggest.html' target='_blank'>API docs</a>
+| <a href='../../comps/Suggest/_demo' target='_blank'>demo link</a></p>
 </div>
     <div class="constructor">
         <h2>Constructor</h2>
-        <div id="method_JC.hideAllPopup" class="method item">
-    <h3 class="name"><code>JC.hideAllPopup</code></h3>
+        <div id="method_JC.Suggest" class="method item">
+    <h3 class="name"><code>JC.Suggest</code></h3>
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>_isClose</code>
+                        <code>_selector</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
-        <span class="flag static">static</span>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._comps_Panel_JC.Popup.js.html#l132"><code>..&#x2F;comps&#x2F;Panel&#x2F;JC.Popup.js:132</code></a>
+        <a href="../files/.._comps_Suggest_Suggest.js.html#l6"><code>..&#x2F;comps&#x2F;Suggest&#x2F;Suggest.js:6</code></a>
         </p>
     </div>
     <div class="description">
@@ -124,10 +127,9 @@
             <h4>Parameters:</h4>
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">_isClose</code>
-                        <span class="type">Bool</span>
+                        <code class="param-name">_selector</code>
+                        <span class="type">Selector | <a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
                     <div class="param-description">
-                        <p>为真从DOM清除JC.alert/JC.confirm, 为假隐藏, 默认为false</p>
                     </div>
                 </li>
             </ul>
@@ -135,9 +137,6 @@
         <div class="example">
             <h4>Example:</h4>
             <div class="example-content">
-                <pre class="code prettyprint"><code> JC.hideAllPopup();         //隐藏所有JC.alert, JC.confirm
- JC.hideAllPopup( true );   //从 DOM 清除所有 JC.alert, JC.confirm
-</code></pre>
             </div>
         </div>
 </div>
