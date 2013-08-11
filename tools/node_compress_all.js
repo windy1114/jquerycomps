@@ -4,8 +4,42 @@ var fs = require('fs');
 var spliter = '/'; 
 
 var dir = '../';
+var paths =  [];
 
 recursive_compress( dir, dir, fs);
+
+console.log( paths.join('\n') );
+compress_all( paths );
+
+function compress_all( _paths ){
+    if( !_paths.length ) return;
+    var _len = _paths.length, _path = _paths.shift(), _shiftLen = _paths.length;
+    console.log( '_len:', _len, '_shiftLen:', _shiftLen, '_path:', _path );
+
+    if( /\.css$/i.test( _path ) ){
+        new compressor.minify({
+            type: 'yui-css',
+            fileIn: _path,
+            fileOut: _path,
+            callback: function(err){
+                console.log('css: ' + err  + ' : ' +  _path);
+                compress_all( _paths );
+            }
+        });
+
+    }else if( /\.js$/i.test( _path ) ){
+        new compressor.minify({
+            type: 'yui-js',
+            fileIn: _path,
+            fileOut: _path,
+            callback: function(err){
+                console.log('js: ' + err  + ' : ' +  _path);
+                compress_all( _paths );
+            }
+        });
+    }
+
+}
 
 function recursive_compress( $sourceRoot, $outputRoot, $fs ){
 
@@ -54,6 +88,8 @@ function recursive_compress( $sourceRoot, $outputRoot, $fs ){
         }else if( fstat.isFile() ){
 
             if( !/\.(?:css|js)$/i.test(cspath) ) continue;
+            paths.push( cspath );
+            /*
             console.log( 'xxxxxx', cspath, copath );
 
             if( /\.css$/i.test( cspath ) ){
@@ -77,6 +113,7 @@ function recursive_compress( $sourceRoot, $outputRoot, $fs ){
                     }
                 });
             }
+            */
         }
 
     }
