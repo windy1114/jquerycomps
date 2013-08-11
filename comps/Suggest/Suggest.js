@@ -10,6 +10,40 @@
      * <p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>
      * | <a href='http://jc.openjavascript.org/docs_api/classes/JC.Suggest.html' target='_blank'>API docs</a>
      * | <a href='../../comps/Suggest/_demo' target='_blank'>demo link</a></p>
+     * <h2>可用的 HTML attribute</h2>
+     * <dl>
+     *      <dt>sugwidth: int</dt>
+     *      <dd>显示列表的宽度</dd>
+     *
+     *      <dt>suglayout: selector</dt>
+     *      <dd>显示列表的容器</dd>
+     *
+     *      <dt>sugdatacallback: string</dt>
+     *      <dd>
+     *          请求 JSONP 数据的回调名
+     *          <br /><b>注意:</b> 是字符串, 不是函数, 并且确保 window 下没有同名函数
+     *      </dd>
+     *
+     *      <dt>sugurl: string</dt>
+     *      <dd>
+     *          数据请求 URL API
+     *          <br />例: http://sug.so.360.cn/suggest/word?callback={1}&encodein=utf-8&encodeout=utf-8&word={0} 
+     *          <br />{0}=关键词, {1}=回调名称
+     *      </dd>
+     *
+     *      <dt>sugneedscripttag: bool, default=true</dt>
+     *      <dd>
+     *          是否需要 自动添加 script 标签
+     *          <br />Sugggest 设计为支持三种数据格式: JSONP, AJAX, static data
+     *          <br />目前只支持 JSONP 数据
+     *      </dd>
+     *
+     *      <dt>sugselectedcallback: function</dt>
+     *      <dd>用户鼠标点击选择关键词后的回调</dd>
+     *
+     *      <dt>sugdatafilter: function</dt>
+     *      <dd>数据过滤回调</dd>
+     * </dl>
      * @namespace JC
      * @class Suggest
      * @constructor
@@ -41,6 +75,8 @@
                 _p._model.init();
 
                 this._initActionEvent();
+
+                _p.trigger( 'SuggestInited' );
                  
                 return _p;
             }    
@@ -66,6 +102,10 @@
                 var _p = this;
                 typeof _data == 'undefined' && ( _data = _evt );
 
+                if( _p._model.sugdatafilter() ){
+                    _data = _p._model.sugdatafilter().call( this, _data );
+                }
+
                 if( _data && _data.q ){
                     _p._model.cache( _data.q, _data );
                 }
@@ -74,7 +114,7 @@
             }
         /**
          * 显示 Suggest 
-         * @method  hide
+         * @method  show
          * @return  SuggestInstance
          */
         , show: function(){ this._view.show(); return this; }
@@ -136,21 +176,48 @@
             function(){
                 var _p = this;
 
-                _p.on( 'UPDATE', _p.update );
+                _p.on( 'SuggestUpdate', _p.update );
+                _p.on( 'SuggestInited', function( _evt ){
+                    if( _p._model.suginitedcallback() ){
+                        _p._model.suginitedcallback().call( _p );
+                    }
+                });
 
-                //TODO: 添加缓存控制
                 _p._model.selector().on('keyup', function( _evt ){
-                    var _sp = $(this), _val = _sp.val().trim();
-                    JC.log( 'keyup', _val, new Date().getTime() );
+                    var _sp = $(this), _val = _sp.val().trim(), _keycode = _evt.keyCode;
+
+                    JC.log( 'keyup', _val, new Date().getTime(), _keycode );
+
+                    if( _keycode ){
+                        switch( _keycode ){
+                            case 38://up
+                            case 40://down
+                                {
+                                    _evt.preventDefault();
+                                }
+                            case 37:
+                            case 39:
+                                {
+                                    return;
+                                }
+                            case 27:
+                                {
+                                    _p.hide();
+                                    return;
+                                }
+                        }
+                    }
 
                     if( !_val ){
                         _p.update();
                         return;
                     }
 
-                    if( _p._model.cache( _val ) ){
-                        _p.update( _p._model.cache( _val ) );
-                        return;
+                    if( !_p._model.layout().is(':visible') ){
+                        if( _p._model.cache( _val ) ){
+                            _p.update( _p._model.cache( _val ) );
+                            return;
+                        }
                     }
 
                     if( _p._model.preValue === _val ){
@@ -158,39 +225,51 @@
                     }
                     _p._model.preValue = _val;
 
+                    if( _p._model.cache( _val ) ){
+                        _p.update( _p._model.cache( _val ) );
+                        return;
+                    }
+
                     JC.log( _val );
 
-                    if( _p._model.queryInterval ){
+                    if( _p._model.queryinterval() ){
                         if( _p._model.timeout ){
                             clearTimeout( _p._model.timeout );
                         }
                         _p._model.timeout =
                             setTimeout( function(){
                                 _p._model.getData( _val );
-                            }, _p._model.queryInterval );
+                            }, _p._model.queryinterval() );
                     }else{
                         _p._model.getData( _val );
                     }
                 });
 
                 _p._model.selector().on('keydown', function( _evt ){
-                    var _keycode = _evt.keyCode;
+                   var _keycode = _evt.keyCode, _keyindex, _isBackward
+                        , _items = _p._model.items(), _item;
+                    _keycode == 38 && ( _isBackward = true );
+
                     switch( _keycode ){
                         case 38://up
-                            {
-                                _evt.preventDefault();
-                                break;
-                            }
                         case 40://down
                             {
-                                _evt.preventDefault();
+                                _keyindex = _p._model.nextIndex( _isBackward );
+
+                                if( _keyindex >= 0 && _keyindex < _items.length ){
+                                    _evt.preventDefault();
+                                    _item = $(_items[_keyindex]);
+                                    _p._model.selectedIdentifier( _item );
+                                    _p.selector().val( _p._model.getKeyword( _item ) );
+                                    return;
+                                }
                                 break;
                             }
                     }
                 });
 
                 $( _p._model.layout() ).delegate( '.js_sugItem', 'mouseenter', function(_evt){
-                    $(this).addClass('active');
+                    _p._model.selectedIdentifier( $(this), true );
                 });
 
                 $( _p._model.layout() ).delegate( '.js_sugItem', 'mouseleave', function(_evt){
@@ -203,15 +282,14 @@
                 });
 
                 $( _p._model.layout() ).delegate( '.js_sugItem', 'click', function(_evt){
-                    var _sp = $(this), _keyword = _sp.attr('keyword');
-                    try{ _keyword = decodeURIComponent( _keyword ); }catch(ex){}
+                    var _sp = $(this), _keyword = _p._model.getKeyword( _sp );
                     _p.selector().val( _keyword );
                     _p.hide();
                     
-                    _p._model.sugselected() && _p._model.sugselected().call( _p, _keyword );
+                    _p.trigger('SuggestSelected', [_sp]);
+                    _p._model.sugselectedcallback() && _p._model.sugselectedcallback().call( _p, _keyword );
                 });
             }
-
     }
     /**
      * 获取或设置 Suggest 的实例
@@ -253,7 +331,22 @@
      * @static
      */
     Suggest.autoInit = true;
+    /**
+     * 自定义列表显示模板
+     * @property    layoutTpl
+     * @type        string
+     * @default     empty
+     * @static
+     */
     Suggest.layoutTpl = '';
+    /**
+     * 数据过滤回调
+     * @property    dataFilter
+     * @type        function
+     * @default     undefined
+     * @static
+     */
+    Suggest.dataFilter;
     
     function Model( _selector ){
         this._selector = _selector;
@@ -277,13 +370,16 @@
                 !this._layout && ( this._layout = $( Suggest.layoutTpl() || this.layoutTpl ) );
                 !this._layout.hasClass('js_sugLayout') && this._layout.addClass( 'js_sugLayout' );
 
+                if( this.sugwidth() ){
+                    this._layout.css( { 'width': this.sugwidth() + 'px' } );
+                }
+
                 return this._layout;
             }
         , sugwidth:
             function(){
                 this.selector().is('[sugwidth]') 
                     && ( this._sugwidth = parseInt( this.selector().attr('sugwidth') ) );
-                !this._sugwidth && ( this._sugwidth = parseInt( this.selector().prop('offsetWidth') ) );
                 return this._sugwidth;
             }
         , sugoffsetleft:
@@ -309,25 +405,25 @@
             }
         , _dataCallback:
             function( _data ){
-                $(this).trigger( 'TriggerEvent', ['UPDATE', _data] );
+                $(this).trigger( 'TriggerEvent', ['SuggestUpdate', _data] );
             }
-        , sugcallback:
+        , sugdatacallback:
             function(){
                 var _p = this;
-                this.selector().is('[sugcallback]') 
-                    && ( this._sugcallback = this.selector().attr('sugcallback') );
-                !this._sugcallback && ( this._sugcallback = 'SuggestDataCallback' );
-                !window[ this._sugcallback ] 
-                    && ( window[ this._sugcallback ] = function( _data ){ _p._dataCallback( _data ); } );
+                this.selector().is('[sugdatacallback]') 
+                    && ( this._sugdatacallback = this.selector().attr('sugdatacallback') );
+                !this._sugdatacallback && ( this._sugdatacallback = 'SuggestDataCallback' );
+                !window[ this._sugdatacallback ] 
+                    && ( window[ this._sugdatacallback ] = function( _data ){ _p._dataCallback( _data ); } );
 
-                return this._sugcallback;
+                return this._sugdatacallback;
             }
         , sugurl:
             function( _word ){
                 this.selector().is('[sugurl]') 
                     && ( this._sugurl = this.selector().attr('sugurl') );
                 !this.selector().is('[sugurl]') && ( this._sugurl = '?word={0}&callback={1}' );
-                this._sugurl = printf( this._sugurl, _word, this.sugcallback() );
+                this._sugurl = printf( this._sugurl, _word, this.sugdatacallback() );
                 return this._sugurl;
             }
         , sugneedscripttag:
@@ -358,17 +454,77 @@
                 typeof _val != 'undefined' && ( this._cache[ _key ] = _val );
                 return this._cache[ _key ];
             }
-        , sugselected:
+        , sugselectedcallback:
             function(){
                 var _p = this;
-                this.selector().is('[sugselected]') 
-                    && ( this._sugselected = this.selector().attr('sugselected') );
-                return this._sugselected ? window[ this._sugselected] : null;
+                this.selector().is('[sugselectedcallback]') 
+                    && ( this._sugselectedcallback = this.selector().attr('sugselectedcallback') );
+                return this._sugselectedcallback ? window[ this._sugselectedcallback] : null;
             }
-        , queryInterval: 200
+        , suginitedcallback:
+            function(){
+                var _p = this;
+                this.selector().is('[suginitedcallback]') 
+                    && ( this._suginitedcallback = this.selector().attr('suginitedcallback') );
+                return this._suginitedcallback ? window[ this._suginitedcallback ] : null;
+            }
+        , sugdatafilter:
+            function(){
+                var _p = this;
+                this.selector().is('[sugdatafilter]') 
+                    && ( this._sugdatafilter = this.selector().attr('sugdatafilter') );
+                this._sugdatafilter = this._sugdatafilter || Suggest.dataFilter;
+                return this._sugdatafilter ? window[ this._dataCallback ] : null;
+            }
+        , queryinterval: 
+            function(){
+                this.selector().is('[queryinterval]') 
+                    && ( this._queryinterval = parseInt( this.selector().attr('queryinterval') ) );
+                this._queryinterval = this._queryinterval || 200;
+                return this._queryinterval;
+            }
         , timeout: null
         , preValue: null
-        , keyindex: 0
+        , keyindex: -1
+        , nextIndex:
+            function( _isBackward ){
+                var _items = this.items(), _len = _items.length;
+
+                if( _isBackward ){
+                    if( this.keyindex <= 0 ){
+                        this.keyindex = _len - 1;
+                    }else{
+                        this.keyindex--;
+                    }
+                }else{
+                    if( this.keyindex >= _len - 1 ){
+                        this.keyindex = 0;
+                    }else{
+                        this.keyindex++;
+                    }
+                }
+
+                return this.keyindex;
+            }
+        , items: function(){ return this.layout().find('.js_sugItem') }
+        , selectedIdentifier:
+            function( _selector, _updateKeyIndex ){
+                this._preSelected && this._preSelected.removeClass( 'active' );
+                _selector.addClass( 'active' );
+                _updateKeyIndex && ( this.keyindex = parseInt( _selector.attr('keyindex') ) );
+                this._preSelected = _selector;
+            }
+        , getKeyword:
+            function( _selector ){
+                var _keyword = _selector.attr('keyword');
+                try{ _keyword = decodeURIComponent( _keyword ); }catch(ex){}
+                return _keyword;
+            }
+        , currentData:
+            function( _setter ){
+                typeof _setter != 'undefined' && ( this._currentData = _setter );
+                return this._currentData;
+            }
     };
     
     function View( _model ){
@@ -383,11 +539,15 @@
 
         , show: 
             function(){ 
+                $(this).trigger( 'TriggerEvent', ['SuggestBeforeShow'] );
                 this._model.layout().show(); 
+                $(this).trigger( 'TriggerEvent', ['SuggestShow'] );
             }
         , hide: 
             function(){ 
-                this._model.layout().hide().find( '.js_sugItem' ).removeClass('active'); 
+                this._model.layout().hide();
+                this.reset();
+                $(this).trigger( 'TriggerEvent', ['SuggestHide'] );
             }
         , update:
             function( _data ){
@@ -405,16 +565,48 @@
                         _text = '<b>' + _text + '</b>';
                     }
                     else _query = '';
-                    _ls.push( printf('<dd keyword="{2}" class="js_sugItem">{0}{1}</dd>'
-                                , _query, _text, encodeURIComponent( _tmp ) ) );
+                    _ls.push( printf('<dd keyword="{2}" keyindex="{3}" class="js_sugItem">{0}{1}</dd>'
+                                , _query, _text, encodeURIComponent( _tmp ), i
+                            ));
                 }
 
                 _p._model.layout().html( _ls.join('') );
-                _p._model.keyindex = 0;
+                JC.log( 'suggest update' );
+                this.reset();
+                _p._model.currentData( _data );
+                $(this).trigger( 'TriggerEvent', ['SuggestUpdated'] );
 
                 _p.show();
             }
+        , reset:
+            function(){
+                JC.log( 'suggest reset' );
+                this._model.keyindex = -1;
+                this._model.layout().find( '.js_sugItem' ).removeClass('active'); 
+                $(this).trigger( 'TriggerEvent', ['SuggestReset'] );
+            }
     };
+
+    /**
+     * 初始化完后的事件
+     * @event   SuggestInited
+     */
+    /**
+     * 获得新数据的事件
+     * @event   SuggestUpdate
+     */
+    /**
+     * 数据更新完毕后的事件
+     * @event   SuggestUpdated
+     */
+    /**
+     * 显示前的事件
+     * @event   SuggestBeforeShow
+     */
+    /**
+     * 显示后的事件
+     * @event   SuggestShow
+     */
 
     $(document).delegate( 'input[type=text]', 'focus', function( _evt ){
         var _p = $(this), _ins = Suggest.getInstance( _p );

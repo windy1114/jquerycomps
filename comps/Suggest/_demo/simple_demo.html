@@ -51,9 +51,9 @@
                 }, 500);
             });
 
-            function sugselected( _keyword ){
+            function sugselectedcallback( _keyword ){
                 var _ins = this;
-                //$('form').submit();
+                $('form').submit();
             }
         </script>
     </head>    
@@ -61,7 +61,7 @@
         <dl class="defdl">
             <dt>Suggest 功能演示</dt>
             <dd>
-            <form action="http://www.so.com/s" target="_blank">
+            <form action="http://www.so.com/s" target="search_frame">
                 <div class="sug_container">
                     <input type="hidden" name="ie" value="utf-8">
                     <input type="hidden" name="src" id="from" value="360sou_home">
@@ -70,12 +70,12 @@
                             class="sug_input" 
                             autocomplete="off" 
                             x-webkit-speech=""
-                            sugwidth="495" sugoffsetleft="0" sugoffsettop="0" sugsidepadding="8"
+                            sugwidth="495" 
                             suglayout="dl.js_sugLayout"
-                            sugcallback="suggest_jq"
+                            sugdatacallback="suggest_jq"
                             sugurl="http://sug.so.360.cn/suggest/word?callback={1}&encodein=utf-8&encodeout=utf-8&word={0}"
                             sugneedscripttag="true"
-                            sugselected="sugselected"
+                            sugselectedcallback="sugselectedcallback"
                         />
                     </div>
                     <input type="submit" id="search-button" value="搜索一下" onmouseover="this.className='hover'" onmousedown="this.className='mousedown'" onmouseout="this.className=''" class="">
@@ -93,6 +93,8 @@
             </form>
             </dd>
         </dl>
+
+        <iframe src="about:blank" frameborder="1" height="400" width="100%" name="search_frame"></iframe>
     </body>
 </html>
 
