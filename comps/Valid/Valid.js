@@ -176,6 +176,7 @@
          * @method  focusmsg
          * @param   {selector}  _item
          * @param   {bool}      _isHide
+         * @static
          */
         , 'focusmsg':
             function( _item, _isHide ){
