@@ -173,7 +173,7 @@
             }
         /**
          * 显示 focusmsg 属性的提示信息( 如果有的话 )
-         * @method  focus
+         * @method  focusmsg
          * @param   {selector}  _item
          * @param   {bool}      _isHide
          */
