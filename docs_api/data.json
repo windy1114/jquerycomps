@@ -7719,7 +7719,7 @@
                     "type": "Selector"
                 },
                 {
-                    "name": "_isHide",
+                    "name": "_setHide",
                     "description": "",
                     "type": "Bool"
                 }
