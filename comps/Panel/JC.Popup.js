@@ -243,6 +243,7 @@
                 JC.log('user show_default');
                 if( _popupSrc && _popupSrc.length ){
                     _logic.showEffect( _ins, _popupSrc, function(){
+                        _ins.focusButton();
                     });
                     return false;
                 }
@@ -313,13 +314,14 @@
                 _selector.css( { 'left': _left  + 'px' } );
 
                 _dom.interval = 
-                    easyEffect( function( _curVal ){
+                    easyEffect( function( _curVal, _done ){
                         _selector.css( {
                             'top': _top + _curVal + 'px'
                             , 'height': _sh - _curVal + 'px'
                         });
 
                         if( _sh === _curVal ) _selector.hide();
+                        _done && _doneCb && _doneCb( _panel );
                     }, _sh );
 
             }
@@ -332,7 +334,7 @@
          * @param   {selector}      _popupSrc
          */
         , showEffect:
-            function( _panel, _popupSrc ){
+            function( _panel, _popupSrc, _doneCb ){
                 _popupSrc && ( _popupSrc = $(_popupSrc) );
                 if( !(_popupSrc && _popupSrc.length ) ) return;
 
@@ -357,20 +359,22 @@
 
                 if( _top > _poffset.top ){
                     _dom.interval = 
-                        easyEffect( function( _curVal ){
+                        easyEffect( function( _curVal, _done ){
                             _selector.css( {
                                 'top': _top - _sh - _logic.yoffset + 'px'
                                 , 'height': _curVal + 'px'
                             });
+                            _done && _doneCb && _doneCb( _panel );
                         }, _sh );
 
                 }else{
                     _dom.interval = 
-                        easyEffect( function( _curVal ){
+                        easyEffect( function( _curVal, _done ){
                             _selector.css( {
                                 'top': _top - _curVal - _logic.yoffset + 'px'
                                 , 'height': _curVal + 'px'
                             });
+                            _done && _doneCb && _doneCb( _panel );
                         }, _sh );
                 }
 
