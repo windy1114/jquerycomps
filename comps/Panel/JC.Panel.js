@@ -1,3 +1,4 @@
+//TODO: 添加 esc 退出键响应
 ;(function($){
     !window.JC && (window.JC = { log:function(){} });
     window.ZINDEX_COUNT = window.ZINDEX_COUNT || 50001;
