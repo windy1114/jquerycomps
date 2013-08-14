@@ -399,6 +399,7 @@
                 JC.log(&#x27;user show_default&#x27;);
                 if( _popupSrc &amp;&amp; _popupSrc.length ){
                     _logic.showEffect( _ins, _popupSrc, function(){
+                        _ins.focusButton();
                     });
                     return false;
                 }
@@ -449,6 +450,7 @@
             function( _panel, _popupSrc, _doneCb ){
                 _popupSrc &amp;&amp; ( _popupSrc = $(_popupSrc) );
                 if( !(_popupSrc &amp;&amp; _popupSrc.length ) ) return;
+                if( !( _panel &amp;&amp; _panel.selector ) ) return;
 
                 var _poffset = _popupSrc.offset(), _selector = _panel.selector();
                 var _dom = _selector[0];
@@ -469,13 +471,14 @@
                 _selector.css( { &#x27;left&#x27;: _left  + &#x27;px&#x27; } );
 
                 _dom.interval = 
-                    easyEffect( function( _curVal ){
+                    easyEffect( function( _curVal, _done ){
                         _selector.css( {
                             &#x27;top&#x27;: _top + _curVal + &#x27;px&#x27;
                             , &#x27;height&#x27;: _sh - _curVal + &#x27;px&#x27;
                         });
 
                         if( _sh === _curVal ) _selector.hide();
+                        _done &amp;&amp; _doneCb &amp;&amp; _doneCb( _panel );
                     }, _sh );
 
             }
@@ -488,9 +491,10 @@
          * @param   {selector}      _popupSrc
          */
         , showEffect:
-            function( _panel, _popupSrc ){
+            function( _panel, _popupSrc, _doneCb ){
                 _popupSrc &amp;&amp; ( _popupSrc = $(_popupSrc) );
                 if( !(_popupSrc &amp;&amp; _popupSrc.length ) ) return;
+                if( !( _panel &amp;&amp; _panel.selector ) ) return;
 
                 var _poffset = _popupSrc.offset(), _selector = _panel.selector();
                 var _dom = _selector[0];
@@ -513,20 +517,22 @@
 
                 if( _top &gt; _poffset.top ){
                     _dom.interval = 
-                        easyEffect( function( _curVal ){
+                        easyEffect( function( _curVal, _done ){
                             _selector.css( {
                                 &#x27;top&#x27;: _top - _sh - _logic.yoffset + &#x27;px&#x27;
                                 , &#x27;height&#x27;: _curVal + &#x27;px&#x27;
                             });
+                            _done &amp;&amp; _doneCb &amp;&amp; _doneCb( _panel );
                         }, _sh );
 
                 }else{
                     _dom.interval = 
-                        easyEffect( function( _curVal ){
+                        easyEffect( function( _curVal, _done ){
                             _selector.css( {
                                 &#x27;top&#x27;: _top - _curVal - _logic.yoffset + &#x27;px&#x27;
                                 , &#x27;height&#x27;: _curVal + &#x27;px&#x27;
                             });
+                            _done &amp;&amp; _doneCb &amp;&amp; _doneCb( _panel );
                         }, _sh );
                 }
 
@@ -751,6 +757,8 @@
 
         if( !(_paneltype in JC) ) return;
         _panel = JC[ _paneltype ]( _panelmsg, _p, _panelstatus );
+        _p.is(&#x27;[panelautoclose]&#x27;) &amp;&amp; _panel.addAutoClose( !parseBool( _p.attr(&#x27;panelautoclose&#x27;) ) );
+        parseBool( _p.attr(&#x27;panelautoclose&#x27;) ) &amp;&amp;  _evt.stopPropagation();
 
         if( _paneltype == &#x27;msgbox&#x27; ){
             _callback &amp;&amp; _panel.on( &#x27;close&#x27;, _callback );

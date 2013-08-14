@@ -1,6 +1,4 @@
 (function($){
-
-    window.ZINDEX_COUNT = window.ZINDEX_COUNT || 50001;
     var isIE6 = !!window.ActiveXObject && !window.XMLHttpRequest;
     /**
      * 带蒙板的会话弹框
@@ -79,6 +77,9 @@
                         .replace(/\{msg\}/g, _msg)
                         .replace(/\{status\}/g, _logic.getStatusClass(_status||'') );
             var _ins = JC.Dialog(_tpl);
+                _ins.on('close', function(){
+                    JC.Dialog.msgbox.timeout && clearTimeout( JC.Dialog.msgbox.timeout );
+                });
             _logic.fixWidth( _msg, _ins );
             _cb && _ins.on('close', _cb);
 
@@ -468,6 +469,9 @@
         if( !(_paneltype in JC.Dialog) ) return;
 
         _panel = JC.Dialog[ _paneltype ]( _panelmsg, _panelstatus );
+        _p.is('[panelautoclose]') && _panel.addAutoClose( !parseBool( _p.attr('panelautoclose') ) );
+        parseBool( _p.attr('panelautoclose') ) && _evt.stopPropagation();
+            
         if( _paneltype == 'msgbox' ){
             _callback && _panel.on( 'close', _callback );
         }else{
