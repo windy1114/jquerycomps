@@ -1,5 +1,18 @@
 !String.prototype.trim && ( String.prototype.trim = function(){ return $.trim( this ); } );
 /**
+ * 把函数的参数转为数组
+ * @method  sliceArgs
+ * @param   {arguments}     args
+ * @return Array
+ */
+function sliceArgs( _arg ){
+    var _r = [], _i, _len;
+    for( _i = 0, _len = _arg.length; _i < _len; _i++){
+        _r.push( _arg[_i] );
+    }
+    return _r;
+}
+/**
  * @namespace 
  * @class   window
  * @static
@@ -351,3 +364,4 @@ function parseBool( _input ){
     }
     return !!_input;
 }
+

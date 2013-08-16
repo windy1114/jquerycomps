@@ -412,7 +412,7 @@
             function( _selector ){
                _selector.each( function(){
                     var _p = $(this), _nodeName = (_p.prop('nodeName')||'').toLowerCase();
-                    JC.log( '\nCalendar.init: ', _nodeName );
+                    //JC.log( '\nCalendar.init: ', _nodeName );
 
                     if( _nodeName != 'input' ){ 
                         _logic.initTrigger( _selector.find( $('input[type=text]') ) ); 
@@ -422,7 +422,7 @@
                             || $.trim( _p.attr('multidate') || '')
                             || $.trim( _p.attr('datatype') || '').toLowerCase() == 'daterange') ) return;
 
-                    JC.log( 'find Calendar item:', _p.attr('name'), _p.attr('id'), _p.attr('datatype') );
+                    //JC.log( 'find Calendar item:', _p.attr('name'), _p.attr('id'), _p.attr('datatype') );
                     var _btn = _p.find( '+ input.UXCCalendar_btn' );
                     if( !_btn.length ){
                         _p.after( _btn = $('<input type="button" class="UXCCalendar_btn"  />') );

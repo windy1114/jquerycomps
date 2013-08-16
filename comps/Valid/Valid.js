@@ -161,22 +161,22 @@
                 });
 
                 $([ this._view, this._model ] ).on('TriggerEvent', function( _evt, _evtName ){
-                    var _data = [].slice.apply( arguments ); _data.shift(); _data.shift();
+                    var _data = sliceArgs( arguments ); _data.shift(); _data.shift();
                     _p.trigger( _evtName, _data );
                 });
 
                 _p.on( 'SetValid', function( _evt ){
-                    var _data = [].slice.apply( arguments ); _data.shift();
+                    var _data = sliceArgs( arguments ); _data.shift();
                     _p._view.valid.apply( _p._view, _data );
                 });
 
                 _p.on( 'SetError', function( _evt ){
-                    var _data = [].slice.apply( arguments ); _data.shift();
+                    var _data = sliceArgs( arguments ); _data.shift();
                     _p._view.error.apply( _p._view, _data );
                 });
 
                 _p.on( 'FocusMsg', function( _evt ){
-                    var _data = [].slice.apply( arguments ); _data.shift();
+                    var _data = sliceArgs( arguments ); _data.shift();
                     _p._view.focusmsg.apply( _p._view, _data );
                 });
 
@@ -190,6 +190,7 @@
          * @param   {string}    _evtName
          * @param   {function}  _cb
          * @return  ValidInstance
+         * @private
          */
         , on: function( _evtName, _cb ){ $(this).on(_evtName, _cb ); return this;}
         /**
@@ -197,83 +198,167 @@
          * @method  {string}    trigger
          * @param   {string}    _evtName
          * @return  ValidInstance
+         * @private
          */
         , trigger: function( _evtName, _data ){ $(this).trigger( _evtName, _data ); return this;}
         /**
          * 分析_item是否附合规则要求
          * @method  parse
-         * @private
-         * @static
          * @param   {selector}  _item 
+         * @private
          */
         , parse: 
-            function( _item ){
+            function(){
+                var _p = this, _r = true, _items = sliceArgs( arguments );
 
-                var _p = this, _r = true, _item = $(_item);
+                $.each( _items, function( _ix, _item ){
+                    _item = $( _item );
+                    _item.each( function(){
+                        var _sitem = $(this);
+                        if( !_p._model.isAvalible( _sitem ) ) return;
+                        if( !_p._model.isValid( _sitem ) ) return;
 
-                _item.each( function(){
+                        var _dt = _p._model.parseDatatype( _sitem )
+                            , _subdt = _p._model.parseSubdatatype( _sitem )
+                            , _nm = _sitem.prop('nodeName').toLowerCase();
 
-                    if( !Valid.isValidItem(this) ) return;
-                    var _sitem = $(this)
-                        , _dt = _p._model.parseDatatype( _sitem )
-                        , _subdt = _p._model.parseSubdatatype( _sitem )
-                        , _nm = _sitem.prop('nodeName').toLowerCase();
+                        JC.log( 'datatype:', _dt, _subdt );
+                        //TODO: 这里需要更详细的判断, control, form, Valid.autoTrim
+                        switch( _nm ){
+                            case 'input':
+                            case 'textarea':
+                                {
+                                    Valid.autoTrim && ( _sitem.val( $.trim( _sitem.val() ) ) );
+                                    _sitem.val( $.trim( _sitem.val()||'' ) );
+                                    break;
+                                }
+                        }
 
-                    if( !_p._model.isAvalible( _sitem ) ) return;
+                        if( !_p._model.reqmsg( _sitem ) ){
+                            _r = false;
+                            return;
+                        }
 
-                    JC.log( _dt, _subdt );
-                    //TODO: 这里需要更详细的判断, control, form, Valid.autoTrim
-                    switch( _nm ){
-                        case 'input':
-                        case 'textarea':
-                            {
-                                Valid.autoTrim && ( _sitem.val( $.trim( _sitem.val() ) ) );
-                                _sitem.val( $.trim( _sitem.val()||'' ) );
-                                break;
+                        if( !_p._model.lengthValid( _sitem ) ){
+                            _r = false;
+                            return;
+                        }
+
+                        if( _dt && _p._model[ _dt ] && _sitem.val() ){
+                            if( !_p._model[ _dt ]( _sitem ) ){
+                                _r = false;
+                                return;
                             }
-                    }
-
-                    if( !_p._model.reqmsg( _sitem ) ){
-                        _r = false;
-                        return;
-                    }
-
-                    if( !_p._model.lengthValid( _sitem ) ){
-                        _r = false;
-                        return;
-                    }
-
-                    if( _dt && _p._model[ _dt ] && _sitem.val() ){
-                        if( !_p._model[ _dt ]( _sitem ) ){
-                            _r = false;
-                            return;
                         }
-                    }
-                    
-                    if( _subdt && _p._model[ _subdt ] && ( _sitem.val() || _subdt == 'alternative' ) ){
-                        if( !_p._model[ _subdt ]( _sitem ) ){
-                            _r = false;
-                            return;
+                        
+                        if( _subdt && _p._model[ _subdt ] && ( _sitem.val() || _subdt == 'alternative' ) ){
+                            if( !_p._model[ _subdt ]( _sitem ) ){
+                                _r = false;
+                                return;
+                            }
                         }
-                    }
 
-                    //_p._view.valid( _sitem );
-                    _p.trigger( 'SetValid', _sitem ); 
+                        //_p._view.valid( _sitem );
+                        _p.trigger( 'SetValid', _sitem ); 
+                    });
                 });
-
                 return _r;
             }
 
+        , check:
+            function(){
+                var _p = this, _r = true, _items = sliceArgs( arguments ), i, j;
+                $.each( _items, function( _ix, _item ){
+                    _item = $(_item);
+                    if( _p._model.isForm( _item ) ){
+                        var _errorabort = _p._model.isErrorAbort( _item ), tmp;
+                        for( i = 0, j = _item[0].length; i < j; i++ ){
+                            if( _p._model.isIgnoreProcess( $(_item[0][i]) ) ) continue;
+                            !_p.parse( $(_item[0][i]) ) && ( _r = false );
+                            if( _errorabort && !_r ) break;
+                        }
+                    } else _r = _p.parse( _item );
+                });
+                return _r;
+            }
+        , clearError:
+            function(){
+                var _items = sliceArgs( arguments ), _p = this;
+                $.each( _items, function( _ix, _item ){
+                    $( _item ).each( function(){
+                        var _item = $(this);
+                        switch( _item.prop('nodeName').toLowerCase() ){
+                            case 'form': 
+                                {
+                                    for( var i = 0, j = _item[0].length; i < j; i++ ){
+                                        var tmp = $(_item[0][i]);
+                                        Valid.setValid( tmp, 1 );
+                                    }
+                                    break;
+                                }
+                            default: Valid.setValid( _item, 1 ); break;
+                        }
+                    });
+
+                });
+                return this;
+            }
+        , isValid:
+            function( _selector ){
+                return this._model.isValid( _selector );
+            }
+        , formHasValue:
+            function( _fm, _ignoreSelector ){
+               var _r = false, _item, _nt;
+                _fm && ( _fm = $( _fm ) );
+
+                if( _fm && _fm.length ){
+                    for( var i = 0, j = _fm[0].length; i < j; i++ ){
+                        _item = $(_fm[0][i]);
+                        if( _item.is('[disabled]') ) return;
+                        _nt = _item.prop('nodeName').toLowerCase();
+
+                        if( _ignoreSelector ){
+                            if( _item.is( _ignoreSelector ) ) continue;
+                        }
+                                        
+                        switch( _item.prop('type').toLowerCase() ){
+
+                            case 'select-multiple':
+                            case 'select-one':
+                            case 'select':
+                            case 'file': 
+                            case 'textarea':
+                            case 'password':
+                            case 'hidden':
+                            case 'text': 
+                                {
+                                    if( $.trim( _item.val() ).length ) return true;
+                                    break;
+                                }
+
+                           case 'checkbox':
+                            case 'radio':
+                                {
+                                    if( _item.prop('checked') ) return true;
+                                    break;
+                                }
+                        }
+                    }
+                }
+                return _r;
+            }
     }
 
     /**
      * 验证一个表单项, 如 文本框, 下拉框, 复选框, 单选框, 文本域, 隐藏域
      * @method check
      * @static
-     * @param      {selector}    _item -   需要验证规则正确与否的表单/表单项
+     * @param      {selector}    _item 需要验证规则正确与否的表单/表单项( <b>可同时传递多个_item</b> )
      * @example 
-     *          JC.Valid.check( $('input.needValid') );
-     *          JC.Valid.check( document.getElementById('inputNeedValid') );
+     *          JC.Valid.check( $( selector ) );
+     *          JC.Valid.check( $( selector ), $( anotherSelector );
+     *          JC.Valid.check( document.getElementById( item ) );
      *
      *          if( !JC.Valid.check( $('form') ) ){
      *              _evt.preventDefault();
@@ -281,23 +366,8 @@
      *          }
      * @return    {boolean}
      */
-    Valid.check =  
-        function( _item ){ 
-            _item && ( _item = $( _item ) );
-            var _r = true, _item = $(_item), _type = _item.length ? _item.prop('nodeName').toLowerCase() : '';
-            if( _item.length ){
-                if( _type == 'form' ){
-                    var _errorabort = Valid.errorAbort, tmp;
-                    _item.is('[errorabort]') && ( _errorabort = parseBool( _item.attr('errorabort') ) );
-                    for( var i = 0, j = _item[0].length; i < j; i++ ){
-                        if( $(_item[0][i]).is('[ignoreprocess]') ) continue;
-                        !Valid.getInstance().parse( $(_item[0][i]) ) && ( _r = false );
-                        if( _errorabort && !_r ) break;
-                    }
-                } else _r = Valid.getInstance().parse( _item );
-            }
-            return _r;
-        }
+    Valid.checkAll = Valid.check = 
+        function(){ return Valid.getInstance().check.apply( Valid.getInstance(), sliceArgs( arguments ) ); }
     /**
      * 这个方法是 <a href='JC.Valid.html#method_check'>Valid.check</a> 的别名
      * @method checkAll
@@ -305,28 +375,44 @@
      * @param      {selector}    _item -   需要验证规则正确与否的表单/表单项
      * @see Valid.check
      */
-    Valid.checkAll = Valid.check;
     /**
-     * 检查 _item 是否为 Valid 的检查对象
-     * @method  isValidItem
-     * @private
+     * 获取 Valid 的实例 ( <b>Valid 是单例模式</b> )
+     * @method getInstance
+     * @param   {selector}      _selector
      * @static
-     * @param   {selector}  _item
+     * @return  {Valid instance}
      */
-    Valid.isValidItem =  
-        function( _item ){
-            _item = $(_item);
-            var _r, _tmp;
-
-            _item.each( function(){
-                _tmp = $(this);
-                if( _tmp.is( '[datatype]' ) || _tmp.is( '[subdatatype]' ) 
-                    || _tmp.is( '[minlength]' ) || _tmp.is( '[maxlength]' )  
-                    || _tmp.is( '[reqmsg]' ) ) 
-                    _r = true;
-            });
-
-            return _r;
+    Valid.getInstance = function(){ !Valid._instance && new Valid(); return Valid._instance; };
+    /**
+     * 判断 selector 是否 Valid 的处理对象
+     * @method  isValid
+     * @param   {selector}      _selector
+     * @return  bool
+     * @static
+     */
+    Valid.isValid = function( _selector ){ return Valid.getInstance().isValid( _selector ); };
+    /**
+     * 把一个表单项的状态设为正确状态
+     * @method  setValid
+     * @param   {selector}  _item
+     * @param   {int}       _tm     延时 _tm 毫秒显示处理结果, 默认=150
+     * @static
+     */
+    Valid.setValid = 
+        function(_item, _tm){ 
+            return Valid.getInstance().trigger( 'SetValid', sliceArgs( arguments) ); 
+        }
+    /**
+     * 把一个表单项的状态设为错误状态
+     * @method  setError
+     * @param   {selector}  _item
+     * @param   {string}    _msgAttr    - 显示指定需要读取的错误信息属性名, 默认为 reqmsg, errmsg, 通过该属性可以指定别的属性名
+     * @param   {bool}      _fullMsg    - 显示指定错误信息为属性的值, 而不是自动添加的 请上传/选择/填写
+     * @static
+     */
+    Valid.setError = 
+        function(_item, _msgAttr, _fullMsg){ 
+            return Valid.getInstance().trigger( 'SetError', sliceArgs( arguments) );
         }
 
     /**
@@ -338,7 +424,7 @@
      */
     Valid.focusmsg =
         function( _item, _setHide ){
-            Valid.getInstance().trigger( 'FocusMsg', [].slice.apply( arguments ) );
+            return Valid.getInstance().trigger( 'FocusMsg', sliceArgs( arguments ) );
         }
      /**
      * 清除Valid生成的错误样式
@@ -350,24 +436,7 @@
      *          JC.Valid.clearError( 'input.some' );
      */
     Valid.clearError = 
-        function( _selector ){
-            $( _selector ).each( function(){
-                var _item = $(this);
-                JC.log( 'clearError: ' + _item.prop('nodeName') );
-                switch( _item.prop('nodeName').toLowerCase() ){
-                    case 'form': 
-                        {
-                            for( var i = 0, j = _item[0].length; i < j; i++ ){
-                                var tmp = $(_item[0][i]);
-                                if( tmp.is('[disabled]') ) return;
-                                Valid.setValid( tmp, 1 );
-                            }
-                            break;
-                        }
-                    default: Valid.setValid( _item, 1 ); break;
-                }
-            });
-        }
+        function(){ return Valid.getInstance().clearError.apply( Valid.getInstance(), sliceArgs( arguments ) ); }
     /**
      * 验证发生错误时, 是否终止继续验证
      * <br /> 为真终止继续验证, 为假将验证表单的所有项, 默认为 false
@@ -417,100 +486,9 @@
             });
      */
     Valid.formHasValue =
-        function( _fm, _ignoreSelector ){
-            var _r = false, _item, _nt;
-            _fm && ( _fm = $( _fm ) );
-
-            if( _fm && _fm.length ){
-                for( var i = 0, j = _fm[0].length; i < j; i++ ){
-                    _item = $(_fm[0][i]);
-                    if( _item.is('[disabled]') ) return;
-                    _nt = _item.prop('nodeName').toLowerCase();
-
-                    if( _ignoreSelector ){
-                        if( _item.is( _ignoreSelector ) ) continue;
-                    }
-                                    
-                    switch( _item.prop('type').toLowerCase() ){
-
-                        case 'select-multiple':
-                        case 'select-one':
-                        case 'select':
-                        case 'file': 
-                        case 'textarea':
-                        case 'password':
-                        case 'hidden':
-                        case 'text': 
-                            {
-                                if( $.trim( _item.val() ).length ) return true;
-                                break;
-                            }
-
-                       case 'checkbox':
-                        case 'radio':
-                            {
-                                if( _item.prop('checked') ) return true;
-                                break;
-                            }
-                    }
-                }
-            }
-            return _r;
-        }
-    /**
-     * 把一个表单项的状态设为正确状态
-     * @method  setValid
-     * @param   {selector}  _item
-     * @param   {int}       _tm     延时 _tm 毫秒显示处理结果, 默认=150
-     * @static
-     */
-    Valid.setValid = 
-        function(_item, _tm){ 
-            Valid.getInstance().trigger( 'SetValid', [].slice.apply( arguments) ); 
-        }
-    /**
-     * 把一个表单项的状态设为错误状态
-     * @method  setError
-     * @param   {selector}  _item
-     * @param   {string}    _msgAttr    - 显示指定需要读取的错误信息属性名, 默认为 reqmsg, errmsg, 通过该属性可以指定别的属性名
-     * @param   {bool}      _fullMsg    - 显示指定错误信息为属性的值, 而不是自动添加的 请上传/选择/填写
-     * @static
-     */
-    Valid.setError = 
-        function(_item, _msgAttr, _fullMsg){ 
-            Valid.getInstance().trigger( 'SetError', [].slice.apply( arguments) );
-        }
-
-    /**
-     * 获取 Valid 的实例
-     * @method getInstance
-     * @param   {selector}      _selector
-     * @static
-     * @return  {Valid instance}
-     */
-    Valid.getInstance =
-        function(){
-            !Valid._instance && new Valid();
-            return Valid._instance;
-        };
-    /**
-     * 判断 selector 是否 Valid 的处理对象
-     * @method  isValid
-     * @param   {selector}      _selector
-     * @static
-     * @return  bool
-     */
-    Valid.isValid =
-        function( _selector ){
-            var _r;
-            _selector 
-                && ( _selector = $(_selector) ).length 
-                && ( _r = _selector.is( '[datatype]' ) || _selector.is('form') );
-            return _r;
-        };
+        function(){ return Valid.getInstance().formHasValue.apply( Valid.getInstance(), sliceArgs( arguments ) ); }
     
     function Model(){
-        
         this._init();
     }
     
@@ -539,11 +517,45 @@
          */
         , parseSubdatatype: 
             function( _item ){
-                return ( _item.attr('subdatatype') || 'text').toLowerCase().replace(/\-.*/, '');
+                return ( _item.attr('subdatatype') || '').toLowerCase().replace(/\-.*/, '');
             }
         , isAvalible: 
             function( _item ){
                 return _item.is(':visible') && !_item.is('[disabled]');
+            }
+        , isForm:
+            function( _item ){
+                var _r;
+                _item.prop('nodeName') 
+                    && _item.prop('nodeName').toLowerCase() == 'form'
+                    && ( _r = true )
+                    ;
+                return _r;
+            }
+        , isErrorAbort:
+            function( _item ){
+                var _r = Valid.errorAbort;
+                _item.is('[errorabort]') && ( _r = parseBool( _item.attr('errorabort') ) );
+                return _r;
+            }
+        , isIgnoreProcess:
+            function( _item ){
+                return _item.is('[ignoreprocess]');
+            }
+        , isValid:
+            function( _item ){
+                _item = $(_item);
+                var _r, _tmp;
+                _item.each( function(){
+                    _tmp = $(this);
+                    if( _tmp.is( '[datatype]' ) || _tmp.is( '[subdatatype]' ) 
+                        || _tmp.is( '[minlength]' ) || _tmp.is( '[maxlength]' )  
+                        || _tmp.is( '[reqmsg]' ) 
+                        || _tmp.is( 'form' ) 
+                    ) 
+                        _r = true;
+                });
+                return _r;
             }
         /**
          * 检查内容的长度
@@ -725,8 +737,6 @@
             function( _item ){
                 var _p = this, _r = _p.n( _item ), _min, _max;
 
-                JC.log( 'zzzz', _r );
-
                 if( _r ){
                     var _fromNEl, _toNEl;
                     if( _item.is( '[fromNEl]' ) ) _fromNEl = _p.getElement( _item.attr('fromNEl') );
@@ -744,7 +754,6 @@
                                 _toNEl = $(_items[1]);
                             }
                     }
-                    JC.log( 'aaaa', _r );
                     if( _fromNEl && _fromNEl.length || _toNEl && _toNEl.length ){
 
                         _fromNEl && _fromNEl.length && !( _toNEl && _toNEl.length ) && ( _toNEl = _item );
@@ -1580,8 +1589,8 @@
         , valid:
             function( _item, _tm ){
                 _item && ( _item = $(_item) );
-                if( !Valid.isValidItem( _item ) ) return false;
                 var _p = this;
+                if( !_p._model.isValid( _item ) ) return false;
                 setTimeout(function(){
                     _item.removeClass('error');
                     _item.find('~ em:not("em.focusmsg, em.error")').show();
@@ -1600,13 +1609,10 @@
          */
         , error: 
             function( _item, _msgAttr, _fullMsg ){
-                JC.log( _item, 1 );
                 _item && ( _item = $(_item) );
-                if( !Valid.isValidItem( _item ) ) return false;
-                if( _item.is( '[validnoerror]' ) ) return;
-                JC.log( _item, 2 );
-
                 var _p = this, arg = arguments;
+                if( !_p._model.isValid( _item ) ) return false;
+                if( _item.is( '[validnoerror]' ) ) return;
 
                 setTimeout(function(){
                     var _msg = _p._model.getMsg.apply( _p._model, [].slice.call( arg ) ), _errEm;

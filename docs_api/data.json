@@ -7753,7 +7753,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 189,
+            "line": 187,
             "description": "使用 jquery on 绑定事件",
             "itemtype": "method",
             "name": "on",
@@ -7773,12 +7773,14 @@
             "return": {
                 "description": "ValidInstance"
             },
+            "access": "private",
+            "tagname": "",
             "class": "JC.Valid",
             "namespace": "JC"
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 197,
+            "line": 196,
             "description": "使用 jquery trigger 绑定事件",
             "itemtype": "method",
             "name": "trigger",
@@ -7793,6 +7795,8 @@
             "return": {
                 "description": "ValidInstance"
             },
+            "access": "private",
+            "tagname": "",
             "class": "JC.Valid",
             "namespace": "JC"
         },
@@ -7802,9 +7806,6 @@
             "description": "分析_item是否附合规则要求",
             "itemtype": "method",
             "name": "parse",
-            "access": "private",
-            "tagname": "",
-            "static": 1,
             "params": [
                 {
                     "name": "_item",
@@ -7812,12 +7813,14 @@
                     "type": "Selector"
                 }
             ],
+            "access": "private",
+            "tagname": "",
             "class": "JC.Valid",
             "namespace": "JC"
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 270,
+            "line": 292,
             "description": "验证一个表单项, 如 文本框, 下拉框, 复选框, 单选框, 文本域, 隐藏域",
             "itemtype": "method",
             "name": "check",
@@ -7825,12 +7828,12 @@
             "params": [
                 {
                     "name": "_item",
-                    "description": "-   需要验证规则正确与否的表单/表单项",
+                    "description": "需要验证规则正确与否的表单/表单项( <b>可同时传递多个_item</b> )",
                     "type": "Selector"
                 }
             ],
             "example": [
-                " \n         JC.Valid.check( $('input.needValid') );\n         JC.Valid.check( document.getElementById('inputNeedValid') );\n\n         if( !JC.Valid.check( $('form') ) ){\n             _evt.preventDefault();\n             return false;\n         }"
+                " \n         JC.Valid.check( $( selector ) );\n         JC.Valid.check( $( selector ), $( anotherSelector );\n         JC.Valid.check( document.getElementById( item ) );\n\n         if( !JC.Valid.check( $('form') ) ){\n             _evt.preventDefault();\n             return false;\n         }"
             ],
             "return": {
                 "description": "",
@@ -7841,7 +7844,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 302,
+            "line": 310,
             "description": "这个方法是 <a href='JC.Valid.html#method_check'>Valid.check</a> 的别名",
             "itemtype": "method",
             "name": "checkAll",
@@ -7861,7 +7864,48 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 310,
+            "line": 317,
+            "description": "获取 Valid 的实例 ( <b>Valid 是单例模式</b> )",
+            "itemtype": "method",
+            "name": "getInstance",
+            "params": [
+                {
+                    "name": "_selector",
+                    "description": "",
+                    "type": "Selector"
+                }
+            ],
+            "static": 1,
+            "return": {
+                "description": "",
+                "type": "Valid instance"
+            },
+            "class": "JC.Valid",
+            "namespace": "JC"
+        },
+        {
+            "file": "../comps/Valid/Valid.js",
+            "line": 325,
+            "description": "判断 selector 是否 Valid 的处理对象",
+            "itemtype": "method",
+            "name": "isValid",
+            "params": [
+                {
+                    "name": "_selector",
+                    "description": "",
+                    "type": "Selector"
+                }
+            ],
+            "return": {
+                "description": "bool"
+            },
+            "static": 1,
+            "class": "JC.Valid",
+            "namespace": "JC"
+        },
+        {
+            "file": "../comps/Valid/Valid.js",
+            "line": 333,
             "description": "检查 _item 是否为 Valid 的检查对象",
             "itemtype": "method",
             "name": "isValidItem",
@@ -7880,7 +7924,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 333,
+            "line": 356,
             "description": "显示 focusmsg 属性的提示信息( 如果有的话 )",
             "itemtype": "method",
             "name": "focusmsg",
@@ -7902,7 +7946,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 344,
+            "line": 367,
             "description": "清除Valid生成的错误样式",
             "itemtype": "method",
             "name": "clearError",
@@ -7922,7 +7966,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 372,
+            "line": 395,
             "description": "验证发生错误时, 是否终止继续验证\n<br /> 为真终止继续验证, 为假将验证表单的所有项, 默认为 false",
             "itemtype": "property",
             "name": "errorAbort",
@@ -7937,7 +7981,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 385,
+            "line": 408,
             "description": "是否自动清除两边的空格",
             "itemtype": "property",
             "name": "autoTrim",
@@ -7952,7 +7996,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 397,
+            "line": 420,
             "description": "检查一个表单是否有内容",
             "itemtype": "method",
             "name": "formHasValue",
@@ -7980,7 +8024,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 461,
+            "line": 484,
             "description": "把一个表单项的状态设为正确状态",
             "itemtype": "method",
             "name": "setValid",
@@ -8002,7 +8046,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 472,
+            "line": 495,
             "description": "把一个表单项的状态设为错误状态",
             "itemtype": "method",
             "name": "setError",
@@ -8029,48 +8073,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 485,
-            "description": "获取 Valid 的实例",
-            "itemtype": "method",
-            "name": "getInstance",
-            "params": [
-                {
-                    "name": "_selector",
-                    "description": "",
-                    "type": "Selector"
-                }
-            ],
-            "static": 1,
-            "return": {
-                "description": "",
-                "type": "Valid instance"
-            },
-            "class": "JC.Valid",
-            "namespace": "JC"
-        },
-        {
-            "file": "../comps/Valid/Valid.js",
-            "line": 497,
-            "description": "判断 selector 是否 Valid 的处理对象",
-            "itemtype": "method",
-            "name": "isValid",
-            "params": [
-                {
-                    "name": "_selector",
-                    "description": "",
-                    "type": "Selector"
-                }
-            ],
-            "static": 1,
-            "return": {
-                "description": "bool"
-            },
-            "class": "JC.Valid",
-            "namespace": "JC"
-        },
-        {
-            "file": "../comps/Valid/Valid.js",
-            "line": 523,
+            "line": 518,
             "description": "获取 _item 的检查类型",
             "itemtype": "method",
             "name": "parseDatatype",
@@ -8089,7 +8092,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 534,
+            "line": 529,
             "description": "获取 _item 的检查子类型, 所有可用的检查子类型位于 _logic.subdatatype 对象",
             "itemtype": "method",
             "name": "parseSubdatatype",
@@ -8108,7 +8111,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 549,
+            "line": 571,
             "description": "检查内容的长度",
             "itemtype": "method",
             "name": "lengthValid",
@@ -8131,14 +8134,14 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 581,
+            "line": 603,
             "description": "根据特殊的 datatype 实现不同的计算方法",
             "class": "JC.Valid",
             "namespace": "JC"
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 608,
+            "line": 630,
             "description": "检查内容是否为空,\n<br>如果声明了该属性, 那么 value 须不为空",
             "itemtype": "method",
             "name": "reqmsg",
@@ -8160,7 +8163,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 635,
+            "line": 657,
             "description": "检查是否为正确的数字<br />\n<br>默认范围 0 - Math.pow(10, 10)",
             "itemtype": "method",
             "name": "n",
@@ -8183,7 +8186,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 700,
+            "line": 722,
             "description": "检查两个输入框的数值\n<br /> 数字格式为 0-pow(10,10)\n<br /> 带小数点使用 nrange-int.float, 例: nrange-1.2  nrange-2.2\n<br /> <b>注意:</b> 如果不显示指定 fromNEl, toNEl, \n             将会从父级查找 datatype=nrange属性的input, 如果数量等于2, 则会进行验证, 不等2将忽略",
             "itemtype": "method",
             "name": "nrange",
@@ -8206,7 +8209,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 780,
+            "line": 803,
             "description": "检查是否为合法的日期,\n<br />日期格式为 YYYYMMDD, YYYY/MM/DD, YYYY-MM-DD, YYYY.MM.DD",
             "itemtype": "method",
             "name": "d",
@@ -8229,7 +8232,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 818,
+            "line": 841,
             "description": "检查两个输入框的日期\n<br />日期格式为 YYYYMMDD, YYYY/MM/DD, YYYY-MM-DD, YYYY.MM.DD\n<br /> <b>注意:</b> 如果不显示指定 fromDateEl, toDateEl, \n             将会从父级查找 datatype=datarange属性的input, 如果数量等于2, 则会进行验证, 不等2将忽略",
             "itemtype": "method",
             "name": "daterange",
@@ -8252,7 +8255,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 887,
+            "line": 909,
             "description": "检查时间格式, 格式为 hh:mm:ss",
             "itemtype": "method",
             "name": "time",
@@ -8274,7 +8277,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 904,
+            "line": 926,
             "description": "检查时间格式, 格式为 hh:mm",
             "itemtype": "method",
             "name": "minute",
@@ -8296,7 +8299,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 921,
+            "line": 943,
             "description": "检查银行卡号码\n<br />格式为 d{19} | d{16} | 1111 1111 1111 1111 111 | 1111 1111 1111 1111111",
             "itemtype": "method",
             "name": "bankcard",
@@ -8318,7 +8321,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 941,
+            "line": 963,
             "description": "检查中文姓名\n<br>格式: 汉字和大小写字母\n<br>规则: 长度 2-32个字节, 非 ASCII 算2个字节",
             "itemtype": "method",
             "name": "cnname",
@@ -8340,7 +8343,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 962,
+            "line": 984,
             "description": "检查注册用户名\n<br>格式: a-zA-Z0-9_-\n<br>规则: 首字母必须为 [a-zA-Z0-9], 长度 2 - 30",
             "itemtype": "method",
             "name": "username",
@@ -8362,7 +8365,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 982,
+            "line": 1004,
             "description": "检查身份证号码<br />\n目前只使用最简单的位数判断~ 有待完善",
             "itemtype": "method",
             "name": "idnumber",
@@ -8384,7 +8387,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1001,
+            "line": 1023,
             "description": "检查手机号码<br />",
             "itemtype": "method",
             "name": "mobilecode",
@@ -8411,7 +8414,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1021,
+            "line": 1043,
             "description": "检查手机号码\n<br />这个方法是 mobilecode 的别名",
             "itemtype": "method",
             "name": "mobile",
@@ -8435,7 +8438,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1034,
+            "line": 1056,
             "description": "检查手机号码加强方法\n<br>格式: [+国家代码] [零]11位数字",
             "itemtype": "method",
             "name": "mobilezonecode",
@@ -8462,7 +8465,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1055,
+            "line": 1077,
             "description": "检查电话号码\n<br>格式: 7/8位数字",
             "itemtype": "method",
             "name": "phonecode",
@@ -8484,7 +8487,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1074,
+            "line": 1096,
             "description": "检查电话号码\n<br>格式: [区号]7/8位电话号码",
             "itemtype": "method",
             "name": "phone",
@@ -8511,7 +8514,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1095,
+            "line": 1117,
             "description": "检查电话号码\n<br>格式: [+国家代码][ ][电话区号][ ]7/8位电话号码[#分机号]",
             "itemtype": "method",
             "name": "phoneall",
@@ -8538,7 +8541,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1117,
+            "line": 1139,
             "description": "检查电话区号",
             "itemtype": "method",
             "name": "phonezone",
@@ -8560,7 +8563,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1135,
+            "line": 1157,
             "description": "检查电话分机号码",
             "itemtype": "method",
             "name": "phoneext",
@@ -8582,7 +8585,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1153,
+            "line": 1175,
             "description": "检查手机号码/电话号码\n<br />这个方法是原有方法的混合验证 mobilecode + phone",
             "itemtype": "method",
             "name": "mobilephone",
@@ -8604,7 +8607,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1177,
+            "line": 1199,
             "description": "检查手机号码/电话号码, 泛匹配\n<br />这个方法是原有方法的混合验证 mobilezonecode + phoneall",
             "itemtype": "method",
             "name": "mobilephoneall",
@@ -8626,7 +8629,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1200,
+            "line": 1222,
             "description": "自定义正则校验",
             "itemtype": "method",
             "name": "reg",
@@ -8649,7 +8652,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1226,
+            "line": 1248,
             "description": "检查验证码<br />\n格式: 为 0-9a-zA-Z, 长度 默认为4",
             "itemtype": "method",
             "name": "vcode",
@@ -8672,7 +8675,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1252,
+            "line": 1274,
             "description": "检查文本长度",
             "itemtype": "method",
             "name": "text",
@@ -8688,7 +8691,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1261,
+            "line": 1283,
             "description": "检查文本的字节长度",
             "itemtype": "method",
             "name": "bytetext",
@@ -8704,7 +8707,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1270,
+            "line": 1292,
             "description": "检查富文本的字节\n<br />TODO: 完成富文本长度检查",
             "itemtype": "method",
             "name": "richtext",
@@ -8720,7 +8723,26 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1280,
+            "line": 1302,
+            "description": "计算字符串的字节长度, 非 ASCII 0-255的字符视为两个字节",
+            "itemtype": "method",
+            "name": "bytelen",
+            "access": "private",
+            "tagname": "",
+            "static": 1,
+            "params": [
+                {
+                    "name": "_s",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "class": "JC.Valid",
+            "namespace": "JC"
+        },
+        {
+            "file": "../comps/Valid/Valid.js",
+            "line": 1313,
             "description": "检查URL",
             "itemtype": "method",
             "name": "url",
@@ -8742,7 +8764,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1298,
+            "line": 1331,
             "description": "检查域名",
             "itemtype": "method",
             "name": "domain",
@@ -8761,7 +8783,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1316,
+            "line": 1349,
             "description": "检查域名",
             "itemtype": "method",
             "name": "stricdomain",
@@ -8780,7 +8802,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1333,
+            "line": 1366,
             "description": "检查电子邮件",
             "itemtype": "method",
             "name": "email",
@@ -8802,7 +8824,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1350,
+            "line": 1383,
             "description": "检查邮政编码",
             "itemtype": "method",
             "name": "zipcode",
@@ -8824,10 +8846,10 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1367,
+            "line": 1400,
             "description": "此类型检查 2|N个对象必须至少有一个是有输入内容的, \n<br> 常用于 手机/电话 二填一",
             "itemtype": "method",
-            "name": "_logic.subdatatype.alternative",
+            "name": "alternative",
             "access": "private",
             "tagname": "",
             "static": 1,
@@ -8846,10 +8868,10 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1426,
+            "line": 1459,
             "description": "此类型检查 2|N 个对象填写的值必须一致\n常用于注意时密码验证/重置密码",
             "itemtype": "method",
-            "name": "_logic.subdatatype.reconfirm",
+            "name": "reconfirm",
             "access": "private",
             "tagname": "",
             "static": 1,
@@ -8868,7 +8890,74 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1490,
+            "line": 1521,
+            "description": "获取 _selector 对象\n<br />这个方法的存在是为了向后兼容qwrap, qwrap DOM参数都为ID",
+            "itemtype": "method",
+            "name": "getElement",
+            "access": "private",
+            "tagname": "",
+            "static": 1,
+            "params": [
+                {
+                    "name": "_selector",
+                    "description": "",
+                    "type": "Selector"
+                }
+            ],
+            "class": "JC.Valid",
+            "namespace": "JC"
+        },
+        {
+            "file": "../comps/Valid/Valid.js",
+            "line": 1539,
+            "description": "获取对应的错误信息, 默认的错误信息有 reqmsg, errmsg, <br />\n注意: 错误信息第一个字符如果为空格的话, 将完全使用用户定义的错误信息, 将不会动态添加 请上传/选择/填写",
+            "itemtype": "method",
+            "name": "getMsg",
+            "access": "private",
+            "tagname": "",
+            "static": 1,
+            "params": [
+                {
+                    "name": "_item",
+                    "description": "",
+                    "type": "Selector"
+                },
+                {
+                    "name": "_msgAttr",
+                    "description": "- 显示指定需要读取的错误信息属性名, 默认为 reqmsg, errmsg, 通过该属性可以指定别的属性名",
+                    "type": "String"
+                },
+                {
+                    "name": "_fullMsg",
+                    "description": "- 显示指定错误信息为属性的值, 而不是自动添加的 请上传/选择/填写",
+                    "type": "Bool"
+                }
+            ],
+            "class": "JC.Valid",
+            "namespace": "JC"
+        },
+        {
+            "file": "../comps/Valid/Valid.js",
+            "line": 1573,
+            "description": "获取日期字符串的 timestamp, 字符串格式为 YYYY[^\\d]*?MM[^\\d]*?DD",
+            "itemtype": "method",
+            "name": "_logic.getTimestamp",
+            "access": "private",
+            "tagname": "",
+            "static": 1,
+            "params": [
+                {
+                    "name": "_date_str",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "class": "JC.Valid",
+            "namespace": "JC"
+        },
+        {
+            "file": "../comps/Valid/Valid.js",
+            "line": 1595,
             "description": "显示正确的视觉效果",
             "itemtype": "method",
             "name": "valid",
@@ -8892,7 +8981,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1508,
+            "line": 1615,
             "description": "显示错误的视觉效果",
             "itemtype": "method",
             "name": "error",
@@ -8921,119 +9010,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1546,
-            "description": "私有逻辑处理对象, 验证所需的所有规则和方法都存放于此对象",
-            "itemtype": "property",
-            "name": "_logic",
-            "type": "{Object}",
-            "static": 1,
-            "access": "private",
-            "tagname": "",
-            "class": "JC.Valid",
-            "namespace": "JC"
-        },
-        {
-            "file": "../comps/Valid/Valid.js",
-            "line": 1589,
-            "description": "获取 _selector 对象\n<br />这个方法的存在是为了向后兼容qwrap, qwrap DOM参数都为ID",
-            "itemtype": "method",
-            "name": "_logic.getElement",
-            "access": "private",
-            "tagname": "",
-            "static": 1,
-            "params": [
-                {
-                    "name": "_selector",
-                    "description": "",
-                    "type": "Selector"
-                }
-            ],
-            "class": "JC.Valid",
-            "namespace": "JC"
-        },
-        {
-            "file": "../comps/Valid/Valid.js",
-            "line": 1606,
-            "description": "获取对应的错误信息, 默认的错误信息有 reqmsg, errmsg, <br />\n注意: 错误信息第一个字符如果为空格的话, 将完全使用用户定义的错误信息, 将不会动态添加 请上传/选择/填写",
-            "itemtype": "method",
-            "name": "_logic.getMsg",
-            "access": "private",
-            "tagname": "",
-            "static": 1,
-            "params": [
-                {
-                    "name": "_item",
-                    "description": "",
-                    "type": "Selector"
-                },
-                {
-                    "name": "_msgAttr",
-                    "description": "- 显示指定需要读取的错误信息属性名, 默认为 reqmsg, errmsg, 通过该属性可以指定别的属性名",
-                    "type": "String"
-                },
-                {
-                    "name": "_fullMsg",
-                    "description": "- 显示指定错误信息为属性的值, 而不是自动添加的 请上传/选择/填写",
-                    "type": "Bool"
-                }
-            ],
-            "class": "JC.Valid",
-            "namespace": "JC"
-        },
-        {
-            "file": "../comps/Valid/Valid.js",
-            "line": 1640,
-            "description": "计算字符串的字节长度, 非 ASCII 0-255的字符视为两个字节",
-            "itemtype": "method",
-            "name": "_logic.bytelen",
-            "access": "private",
-            "tagname": "",
-            "static": 1,
-            "params": [
-                {
-                    "name": "_s",
-                    "description": "",
-                    "type": "String"
-                }
-            ],
-            "class": "JC.Valid",
-            "namespace": "JC"
-        },
-        {
-            "file": "../comps/Valid/Valid.js",
-            "line": 1651,
-            "description": "获取日期字符串的 timestamp, 字符串格式为 YYYY[^\\d]*?MM[^\\d]*?DD",
-            "itemtype": "method",
-            "name": "_logic.getTimestamp",
-            "access": "private",
-            "tagname": "",
-            "static": 1,
-            "params": [
-                {
-                    "name": "_date_str",
-                    "description": "",
-                    "type": "String"
-                }
-            ],
-            "class": "JC.Valid",
-            "namespace": "JC"
-        },
-        {
-            "file": "../comps/Valid/Valid.js",
-            "line": 1663,
-            "description": "此对象存储可供检查的子类型",
-            "itemtype": "property",
-            "name": "_logic.subdatatype",
-            "type": "Object",
-            "access": "private",
-            "tagname": "",
-            "static": 1,
-            "class": "JC.Valid",
-            "namespace": "JC"
-        },
-        {
-            "file": "../comps/Valid/Valid.js",
-            "line": 1673,
+            "line": 1678,
             "description": "响应表单子对象的 blur事件, 触发事件时, 检查并显示错误或正确的视觉效果",
             "access": "private",
             "tagname": "",
@@ -9042,16 +9019,7 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1681,
-            "description": "响应表单子对象的 blur事件, 触发事件时, 如果有 focusmsg 属性, 则显示对应的提示信息",
-            "access": "private",
-            "tagname": "",
-            "class": "JC.Valid",
-            "namespace": "JC"
-        },
-        {
-            "file": "../comps/Valid/Valid.js",
-            "line": 1688,
+            "line": 1686,
             "description": "响应表单子对象的 change 事件, 触发事件时, 检查并显示错误或正确的视觉效果",
             "access": "private",
             "tagname": "",
@@ -9060,8 +9028,17 @@
         },
         {
             "file": "../comps/Valid/Valid.js",
-            "line": 1695,
+            "line": 1693,
             "description": "响应表单子对象的 focus 事件, 触发事件时, 如果有 focusmsg 属性, 则显示对应的提示信息",
+            "access": "private",
+            "tagname": "",
+            "class": "JC.Valid",
+            "namespace": "JC"
+        },
+        {
+            "file": "../comps/Valid/Valid.js",
+            "line": 1700,
+            "description": "响应表单子对象的 blur事件, 触发事件时, 如果有 focusmsg 属性, 则显示对应的提示信息",
             "access": "private",
             "tagname": "",
             "class": "JC.Valid",
@@ -11058,99 +11035,99 @@
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:549"
+            "line": " ../comps/Valid/Valid.js:571"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:549"
+            "line": " ../comps/Valid/Valid.js:571"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:549"
+            "line": " ../comps/Valid/Valid.js:571"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:635"
+            "line": " ../comps/Valid/Valid.js:657"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:635"
+            "line": " ../comps/Valid/Valid.js:657"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:635"
+            "line": " ../comps/Valid/Valid.js:657"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:700"
+            "line": " ../comps/Valid/Valid.js:722"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:700"
+            "line": " ../comps/Valid/Valid.js:722"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:700"
+            "line": " ../comps/Valid/Valid.js:722"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:700"
+            "line": " ../comps/Valid/Valid.js:722"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:700"
+            "line": " ../comps/Valid/Valid.js:722"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:780"
+            "line": " ../comps/Valid/Valid.js:803"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:780"
+            "line": " ../comps/Valid/Valid.js:803"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:780"
+            "line": " ../comps/Valid/Valid.js:803"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:818"
+            "line": " ../comps/Valid/Valid.js:841"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:818"
+            "line": " ../comps/Valid/Valid.js:841"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:818"
+            "line": " ../comps/Valid/Valid.js:841"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:818"
+            "line": " ../comps/Valid/Valid.js:841"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:818"
+            "line": " ../comps/Valid/Valid.js:841"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:1200"
+            "line": " ../comps/Valid/Valid.js:1222"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:1226"
+            "line": " ../comps/Valid/Valid.js:1248"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:1252"
+            "line": " ../comps/Valid/Valid.js:1274"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:1261"
+            "line": " ../comps/Valid/Valid.js:1283"
         },
         {
             "message": "unknown tag: attr",
-            "line": " ../comps/Valid/Valid.js:1270"
+            "line": " ../comps/Valid/Valid.js:1292"
         },
         {
             "message": "unknown tag: ignore",
@@ -11406,23 +11383,23 @@
         },
         {
             "message": "Missing item type\n根据特殊的 datatype 实现不同的计算方法",
-            "line": " ../comps/Valid/Valid.js:581"
+            "line": " ../comps/Valid/Valid.js:603"
         },
         {
             "message": "Missing item type\n响应表单子对象的 blur事件, 触发事件时, 检查并显示错误或正确的视觉效果",
-            "line": " ../comps/Valid/Valid.js:1673"
-        },
-        {
-            "message": "Missing item type\n响应表单子对象的 blur事件, 触发事件时, 如果有 focusmsg 属性, 则显示对应的提示信息",
-            "line": " ../comps/Valid/Valid.js:1681"
+            "line": " ../comps/Valid/Valid.js:1678"
         },
         {
             "message": "Missing item type\n响应表单子对象的 change 事件, 触发事件时, 检查并显示错误或正确的视觉效果",
-            "line": " ../comps/Valid/Valid.js:1688"
+            "line": " ../comps/Valid/Valid.js:1686"
         },
         {
             "message": "Missing item type\n响应表单子对象的 focus 事件, 触发事件时, 如果有 focusmsg 属性, 则显示对应的提示信息",
-            "line": " ../comps/Valid/Valid.js:1695"
+            "line": " ../comps/Valid/Valid.js:1693"
+        },
+        {
+            "message": "Missing item type\n响应表单子对象的 blur事件, 触发事件时, 如果有 focusmsg 属性, 则显示对应的提示信息",
+            "line": " ../comps/Valid/Valid.js:1700"
         },
         {
             "message": "Missing item type\nTop level namespace for Jasmine, a lightweight JavaScript BDD/spec/testing framework.",
