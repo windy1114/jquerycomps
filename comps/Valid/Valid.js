@@ -288,7 +288,7 @@
             if( _item.length ){
                 if( _type == 'form' ){
                     var _errorabort = Valid.errorAbort, tmp;
-                    _item.is('[errorabort]') && ( _errorabort = ( _tmp = _item.attr('errorabort').toLowerCase() ) == 'false' || _tmp == "0" || (!_tmp) ? false : true );
+                    _item.is('[errorabort]') && ( _errorabort = parseBool( _item.attr('errorabort') ) );
                     for( var i = 0, j = _item[0].length; i < j; i++ ){
                         if( $(_item[0][i]).is('[ignoreprocess]') ) continue;
                         !Valid.getInstance().parse( $(_item[0][i]) ) && ( _r = false );
