@@ -156,30 +156,28 @@
         _init:
             function(){
                 var _p = this;
-                $(this._view).on('BindEvent', function( _evt, _evtName, _cb ){
+                $( [ this._view, this._model ] ).on('BindEvent', function( _evt, _evtName, _cb ){
                     _p.on( _evtName, _cb );
                 });
 
-                $(this._view).on('TriggerEvent', function( _evt, _evtName, _data ){
-                    _p.trigger( _evtName, [ _data ] );
+                $([ this._view, this._model ] ).on('TriggerEvent', function( _evt, _evtName ){
+                    var _data = [].slice.apply( arguments ); _data.shift(); _data.shift();
+                    _p.trigger( _evtName, _data );
                 });
 
-                $(this._model).on('BindEvent', function( _evt, _evtName, _cb ){
-                    _p.on( _evtName, _cb );
+                _p.on( 'SetValid', function( _evt ){
+                    var _data = [].slice.apply( arguments ); _data.shift();
+                    _p._view.valid.apply( _p._view, _data );
                 });
 
-                $(this._model).on('TriggerEvent', function( _evt, _evtName, _data ){
-                    _p.trigger( _evtName, [ _data ] );
-                });
-
-                _p.on( 'SetValid', function( _evt, _data ){
-                    $.each( _data, function( _ix, _item ){
-                        _p._view.valid( $(_item) );
-                    });
-                });
-
-                _p.on( 'SetError', function( _evt, _data ){
+                _p.on( 'SetError', function( _evt ){
+                    var _data = [].slice.apply( arguments ); _data.shift();
                     _p._view.error.apply( _p._view, _data );
+                });
+
+                _p.on( 'FocusMsg', function( _evt ){
+                    var _data = [].slice.apply( arguments ); _data.shift();
+                    _p._view.focusmsg.apply( _p._view, _data );
                 });
 
                 this._view.init();
@@ -259,7 +257,8 @@
                         }
                     }
 
-                    _p._view.valid( _sitem );
+                    //_p._view.valid( _sitem );
+                    _p.trigger( 'SetValid', _sitem ); 
                 });
 
                 return _r;
@@ -339,7 +338,7 @@
      */
     Valid.focusmsg =
         function( _item, _setHide ){
-            _logic.focusmsg.apply( this, [].slice.apply( arguments ) );
+            Valid.getInstance().trigger( 'FocusMsg', [].slice.apply( arguments ) );
         }
      /**
      * 清除Valid生成的错误样式
@@ -584,7 +583,7 @@
                 switch( _dt ){
                     case 'bytetext':
                         {
-                            _len = _logic.bytelen( _val );
+                            _len = _p.bytelen( _val );
                             break;
                         }
                     case 'richtext':
@@ -600,7 +599,7 @@
 
                 JC.log( 'lengthValid: ', _min, _max, _r );
 
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
 
                 return _r;
             }
@@ -628,7 +627,7 @@
                     _r = !!$.trim( _item.val() ||'') ;
                 }
 
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item, 'reqmsg' ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item, 'reqmsg' ] );
                 JC.log( 'regmsgValid: ' + _r );
                 return _r;
             }
@@ -693,7 +692,7 @@
                     JC.log( 'nValid', _val, typeof _n, typeof _f, typeof _min, typeof _max, _min, _max );
                 }else _r = false;
 
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
 
                 return _r;
             }
@@ -730,8 +729,8 @@
 
                 if( _r ){
                     var _fromNEl, _toNEl;
-                    if( _item.is( '[fromNEl]' ) ) _fromNEl = _logic.getElement( _item.attr('fromNEl') );
-                    if( _item.is( '[toNEl]' ) ) _toNEl = _logic.getElement( _item.attr('toNEl') );
+                    if( _item.is( '[fromNEl]' ) ) _fromNEl = _p.getElement( _item.attr('fromNEl') );
+                    if( _item.is( '[toNEl]' ) ) _toNEl = _p.getElement( _item.attr('toNEl') );
 
                     if( !(_fromNEl && _fromNEl.length || _toNEl && _toNEl.length) ){
                         var _pnt = _item.parent(), _items = [];
@@ -765,7 +764,8 @@
                             
                             JC.log( +_fromNEl.val(), +_toNEl.val(), _r );
 
-                            _r && $(_p).trigger( 'TriggerEvent', [ 'SetValid', [ _fromNEl, _toNEl ] ] );
+                            _r && $(_p).trigger( 'TriggerEvent', [ 'SetValid', _fromNEl ] );
+                            _r && $(_p).trigger( 'TriggerEvent', [ 'SetValid', _toNEl ] );
 
                             if( _r ){ _fromNEl.removeClass('error'); _toNEl.removeClass('error'); }
                             else{ _fromNEl.addClass('error'); _toNEl.addClass('error'); }
@@ -773,7 +773,7 @@
                     }
                 }
 
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
 
                 return _r;
             }
@@ -798,20 +798,20 @@
                 if( !_val ) return true;
                     
                 if( _r = _re.test( _val ) ){
-                    var _utime = _logic.getTimestamp( _item.val() ), _minTime, _maxTime;
+                    var _utime = _p.getTimestamp( _item.val() ), _minTime, _maxTime;
 
                     if( _item.is('[minvalue]') && ( _r = _re.test( _item.attr('minvalue') ) ) ){
-                        _minTime = _logic.getTimestamp( _item.attr('minvalue') );
+                        _minTime = _p.getTimestamp( _item.attr('minvalue') );
                         _utime < _minTime && ( _r = false );
                     }
 
                     if( _r && _item.is('[maxvalue]') && ( _r = _re.test( _item.attr('maxvalue') ) ) ){
-                        _maxTime = _logic.getTimestamp( _item.attr('maxvalue') );
+                        _maxTime = _p.getTimestamp( _item.attr('maxvalue') );
                         _utime > _maxTime && ( _r = false );
                     }
                 }
 
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
 
                 return _r;
             }
@@ -844,8 +844,8 @@
 
                 if( _r ){
                     var _fromDateEl, _toDateEl;
-                    if( _item.is( '[fromDateEl]' ) ) _fromDateEl = _logic.getElement( _item.attr('fromDateEl') );
-                    if( _item.is( '[toDateEl]' ) ) _toDateEl = _logic.getElement( _item.attr('toDateEl') );
+                    if( _item.is( '[fromDateEl]' ) ) _fromDateEl = _p.getElement( _item.attr('fromDateEl') );
+                    if( _item.is( '[toDateEl]' ) ) _toDateEl = _p.getElement( _item.attr('toDateEl') );
 
                     if( !(_fromDateEl && _fromDateEl.length || _toDateEl && _toDateEl.length) ){
                         var _pnt = _item.parent(), _items = _pnt.find('input[datatype=daterange]');
@@ -868,19 +868,18 @@
                             _r && ( _r = _p.d( _toDateEl ) );
                             _r && ( _r = _p.d( _fromDateEl ) );
 
-                            _r && _logic.getTimestamp( _fromDateEl.val() ) > _logic.getTimestamp( _toDateEl.val() ) && ( _r = false );
+                            _r && _p.getTimestamp( _fromDateEl.val() ) > _p.getTimestamp( _toDateEl.val() ) && ( _r = false );
 
-                            _r && $(_p).trigger( 'TriggerEvent', [ 'SetValid', [ _fromDateEl, _toDateEl ] ] );
+                            _r && $(_p).trigger( 'TriggerEvent', [ 'SetValid', _fromDateEl ] );
+                            _r && $(_p).trigger( 'TriggerEvent', [ 'SetValid', _toDateEl ] );
 
                             if( _r ){ _fromDateEl.removeClass('error'); _toDateEl.removeClass('error'); }
                             else{ _fromDateEl.addClass('error'); _toDateEl.addClass('error'); }
                         }
-                        !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _fromDateEl ] ] );
-                        !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _toDateEl ] ] );
                     }
+                }else{
+                    //!_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 }
-
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
 
                 return _r;
             }
@@ -898,7 +897,7 @@
         , time: 
             function( _item ){
                 var _p = this, _r = /^(([0-1]\d)|(2[0-3])):[0-5]\d:[0-5]\d$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -915,7 +914,7 @@
         , minute: 
             function( _item ){
                 var _p = this, _r = /^(([0-1]\d)|(2[0-3])):[0-5]\d$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -935,7 +934,7 @@
             function( _item ){
                 var _p = this
                     , _r = /^[1-9][\d]{3}(?: |)(?:[\d]{4}(?: |))(?:[\d]{4}(?: |))(?:[\d]{4})(?:(?: |)[\d]{3}|)$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -955,8 +954,8 @@
         , cnname:
             function( _item ){
                 var _p = this
-                    , _r = _logic.bytelen( _item.val() ) < 32 && /^[\u4e00-\u9fa5a-zA-Z.\u3002\u2022]{2,32}$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                    , _r = _p.bytelen( _item.val() ) < 32 && /^[\u4e00-\u9fa5a-zA-Z.\u3002\u2022]{2,32}$/.test( _item.val() );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -976,7 +975,7 @@
         , username:
             function( _item ){
                 var _p = this, _r = /^[a-zA-Z0-9][\w-]{2,30}$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -995,7 +994,7 @@
         , idnumber:
             function( _item ){
                 var _p = this, _r = /^[0-9]{15}(?:[0-9]{2}(?:[0-9xX])|)$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -1015,7 +1014,7 @@
         , mobilecode: 
             function( _item, _noError ){
                 var _p = this, _r =  /^(?:13|14|15|16|18|19)[\d]{9}$/.test( _item.val() );
-                !_noError && !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_noError && !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -1049,7 +1048,7 @@
         , mobilezonecode: 
             function( _item, _noError ){
                 var _p = this, _r = /^(?:\+[0-9]{1,6} |)(?:0|)(?:13|14|15|16|18|19)\d{9}$/.test( _item.val() );
-                !_noError && !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_noError && !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -1068,7 +1067,7 @@
         , phonecode: 
             function( _item ){
                 var _p = this, _r =  /^[1-9][0-9]{6,7}$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -1089,7 +1088,7 @@
         , phone:
             function( _item, _noError ){
                 var _p = this, _r = /^(?:0(?:10|2\d|[3-9]\d\d)(?: |\-|)|)[1-9][\d]{6,7}$/.test( _item.val() );
-                !_noError && !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_noError && !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -1111,7 +1110,7 @@
             function( _item, _noError ){
                 var _p = this
                     , _r = /^(?:\+[\d]{1,6}(?: |\-)|)(?:0[\d]{2,3}(?:\-| |)|)[1-9][\d]{6,7}(?:(?: |)\#[\d]{1,6}|)$/.test( _item.val() );
-                !_noError && !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_noError && !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -1129,7 +1128,7 @@
         , phonezone: 
             function( _item ){
                 var _p = this, _r = /^[0-9]{3,4}$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -1147,7 +1146,7 @@
         , phoneext: 
             function( _item ){
                 var _p = this, _r =  /^[0-9]{1,6}$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -1170,7 +1169,7 @@
         , mobilephone:
             function( _item ){
                 var _p = this, _r = this.mobilecode( _item, true ) || this.phone( _item, true );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
 
@@ -1194,7 +1193,7 @@
         , mobilephoneall:
             function( _item ){
                 var _p = this, _r = this.mobilezonecode( _item, true ) || phoneall( _item, true );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -1219,7 +1218,7 @@
                     _r = new RegExp( $1, $2 || '' ).test( _item.val() );
                 });
 
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
 
                 return _r;
             }
@@ -1246,7 +1245,7 @@
                 var _p = this, _r, _len = parseInt( $.trim(_item.attr('datatype')).replace( /^vcode(?:\-|)/i, '' ), 10 ) || 4; 
                 JC.log( 'vcodeValid: ' + _len );
                 _r = new RegExp( '^[0-9a-zA-Z]{'+_len+'}$' ).test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -1278,6 +1277,17 @@
          */
         , richtext: function(_item){ return true; }
         /**
+         * 计算字符串的字节长度, 非 ASCII 0-255的字符视为两个字节
+         * @method  bytelen
+         * @private
+         * @static
+         * @param   {string}    _s
+         */
+        , bytelen: 
+            function( _s ){
+                return _s.replace(/[^\x00-\xff]/g,"11").length;
+            }
+        /**
          * 检查URL
          * @method  url
          * @private
@@ -1292,7 +1302,7 @@
             function( _item ){
                 var _p = this
                     , _r = /^((http|ftp|https):\/\/|)[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -1310,7 +1320,7 @@
                 //var _r = /^(?:(?:f|ht)tp\:\/\/|)((?:(?:(?:\w[\.\-\+]?)*)\w)*)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})(?:\/|)$/.test( _item.val() );
                 var _p = this
                     , _r = /^(?:htt(?:p|ps)\:\/\/|)((?:(?:(?:\w[\.\-\+]*))\w)*)((?:(?:(?:\w[\.\-\+]*){0,62})\w)+)\.(\w{2,6})(?:\/|)$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -1327,7 +1337,7 @@
             function( _item ){
                 var _p = this
                     , _r = /^((?:(?:(?:\w[\.\-\+]*))\w)*)((?:(?:(?:\w[\.\-\+]*){0,62})\w)+)\.(\w{2,6})$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -1344,7 +1354,7 @@
         , email: 
             function( _item ){
                 var _p = this, _r = /^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
@@ -1361,13 +1371,13 @@
         , zipcode: 
             function( _item ){
                 var _p = this, _r = /^[0-9]{6}$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 return _r;
             }
         /**
          * 此类型检查 2|N个对象必须至少有一个是有输入内容的, 
          * <br> 常用于 手机/电话 二填一
-         * @method  _logic.subdatatype.alternative
+         * @method  alternative
          * @private
          * @static
          * @param   {selector}  _item
@@ -1413,10 +1423,10 @@
                     _r = _hasVal;
                 }
 
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item, 'alternativemsg', true ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item, 'alternativemsg', true ] );
                 !_r && _target && _target.length 
                     && _target.each( function(){ 
-                        $(_p).trigger( 'TriggerEvent', [ 'SetError', [ $(this), 'alternativemsg', true ] ] );
+                        $(_p).trigger( 'TriggerEvent', [ 'SetError', $(this), 'alternativemsg', true ] );
                     });
                 _r && _target && _target.length 
                     && $(_p).trigger( 'TriggerEvent', [ 'SetValid', _target ] );
@@ -1426,7 +1436,7 @@
         /**
          * 此类型检查 2|N 个对象填写的值必须一致
          * 常用于注意时密码验证/重置密码
-         * @method  _logic.subdatatype.reconfirm
+         * @method  reconfirm
          * @private
          * @static
          * @param   {selector}  _item
@@ -1466,16 +1476,88 @@
                     _target.each( function(){ if( _item.val() != $(this).val() ) return _r = false; } );
                 }
 
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', [ _item, 'reconfirmmsg', true ] ] );
+                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item, 'reconfirmmsg', true ] );
                 !_r && _target.length && _target.each( function(){ 
-                    $(_p).trigger( 'TriggerEvent', [ 'SetError', [ $(this), 'reconfirmmsg', true ] ] );
+                    $(_p).trigger( 'TriggerEvent', [ 'SetError', $(this), 'reconfirmmsg', true ] );
                 } );
                 _r && _target.length
                     && $(_p).trigger( 'TriggerEvent', [ 'SetValid', _target ] );
 
                 return _r;
             }
+        , findFocusmsgEle:
+            function( _item ){
+                return _item.find( '~ em.focusmsg' );
+            }
+        , findErrorEle:
+            function( _item ){
+                var _r = _item.find( '~ em.error' );
+                if( _item.attr('emel') ) _r = $( ('#' + _item.attr('emel')).replace(/[\#]+/g, '#' ) );
+                return _r;
+            }
+        /**
+         * 获取 _selector 对象
+         * <br />这个方法的存在是为了向后兼容qwrap, qwrap DOM参数都为ID
+         * @method  getElement
+         * @private
+         * @static
+         * @param   {selector}  _selector
+         */
+        , getElement: 
+            function( _selector, _item ){
+                if( /^\^$/.test( _selector ) ){
+                    _selector = $( _item.parent().find('~ em.error') );
+                }else if( /^[\w-]+$/.test( _selector ) ) {
+                    _selector = '#' + _selector;
+                }
+                _selector = _selector.replace( /[\#]+/g, '#' );
+                return $(_selector );
+            }
+        /**
+         * 获取对应的错误信息, 默认的错误信息有 reqmsg, errmsg, <br />
+         * 注意: 错误信息第一个字符如果为空格的话, 将完全使用用户定义的错误信息, 将不会动态添加 请上传/选择/填写
+         * @method  getMsg
+         * @private
+         * @static
+         * @param   {selector}  _item
+         * @param   {string}    _msgAttr    - 显示指定需要读取的错误信息属性名, 默认为 reqmsg, errmsg, 通过该属性可以指定别的属性名
+         * @param   {bool}      _fullMsg    - 显示指定错误信息为属性的值, 而不是自动添加的 请上传/选择/填写
+         */
+        , getMsg: 
+            function( _item, _msgAttr, _fullMsg ){
+                var _msg = _item.is('[errmsg]') ? ' ' + _item.attr('errmsg') : _item.is('[reqmsg]') ? _item.attr('reqmsg') : '';
+                _msgAttr && (_msg = _item.attr( _msgAttr ) || _msg );
+                _fullMsg && _msg && ( _msg = ' ' + _msg );
 
+                if( _msg && !/^[\s]/.test( _msg ) ){
+                    switch( _item.prop('type').toLowerCase() ){
+                        case 'file': _msg = '请上传' + _msg; break;
+
+                        case 'select-multiple':
+                        case 'select-one':
+                        case 'select': _msg = '请选择' + _msg; break;
+
+                        case 'textarea':
+                        case 'password':
+                        case 'text': _msg = '请填写' + _msg; break;
+                    }
+                }
+
+                JC.log( '_msg: ' + _msg, _item.prop('type').toLowerCase() );
+
+                return $.trim(_msg);
+            }
+        /**
+         * 获取日期字符串的 timestamp, 字符串格式为 YYYY[^\d]*?MM[^\d]*?DD
+         * @method  _logic.getTimestamp
+         * @private
+         * @static
+         * @param   {string}    _date_str
+         */
+        , getTimestamp:
+            function( _date_str ){
+                return parseISODate( _date_str ).getTime();
+            }
     };
     
     function View( _model ){
@@ -1497,12 +1579,14 @@
          */
         , valid:
             function( _item, _tm ){
+                _item && ( _item = $(_item) );
                 if( !Valid.isValidItem( _item ) ) return false;
+                var _p = this;
                 setTimeout(function(){
                     _item.removeClass('error');
                     _item.find('~ em:not("em.focusmsg, em.error")').show();
                     _item.find('~ em.error').hide();
-                    _item.attr('emel') && _logic.getElement( _item.attr('emel'), _item ).hide();
+                    _item.attr('emel') && _p._model.getElement( _item.attr('emel'), _item ).hide();
                 }, _tm || 150);
             }
         /**
@@ -1516,19 +1600,22 @@
          */
         , error: 
             function( _item, _msgAttr, _fullMsg ){
+                JC.log( _item, 1 );
+                _item && ( _item = $(_item) );
                 if( !Valid.isValidItem( _item ) ) return false;
                 if( _item.is( '[validnoerror]' ) ) return;
+                JC.log( _item, 2 );
 
-                var arg = arguments;
+                var _p = this, arg = arguments;
 
                 setTimeout(function(){
-                    var _msg = _logic.getMsg.apply( null, [].slice.call( arg ) ), _errEm;
+                    var _msg = _p._model.getMsg.apply( _p._model, [].slice.call( arg ) ), _errEm;
 
                     _item.addClass( 'error' );
                     _item.find('~ em:not(.error)').hide();
 
                     if( _item.is( '[emEl]' ) ){
-                        ( _errEm = _logic.getElement( _item.attr( 'emEl' ) , _item) ) && _errEm.length && _errEm.addClass('error');
+                        ( _errEm = _p._model.getElement( _item.attr( 'emEl' ) , _item) ) && _errEm.length && _errEm.addClass('error');
                     }
                     !( _errEm && _errEm.length ) && ( _errEm = _item.find('~ em.error') );
                     if( !_errEm.length ){
@@ -1540,150 +1627,38 @@
 
                 return false;
             }
-
-
+        , focusmsg:
+            function( _item, _setHide ){
+                if( _item && ( _item = $( _item ) ).length && _item.is('[focusmsg]') ){
+                    var _focusmsgem = this._model.findFocusmsgEle( _item )
+                        , _errorEm = this._model.findErrorEle( _item );
+                    if( _setHide ){
+                        _focusmsgem.hide();
+                        JC.log( 'hide focusmsg', _focusmsgem.length );
+                        return;
+                    }
+                    if( _errorEm.length && _errorEm.is(':visible') ) return;
+                        JC.log( 'show focusmsg' );
+                    !_focusmsgem.length 
+                        && ( _focusmsgem = $('<em class="focusmsg"></em>')
+                             , _item.after( _focusmsgem )
+                           );
+                    _focusmsgem.removeClass( 'isvalid' ).removeClass( 'iserror' );
+                    _item.attr('validnoerror', true);
+                    var _r = Valid.getInstance().parse( _item );
+                    _item.removeAttr('validnoerror');
+                    _r ? _focusmsgem.addClass('isvalid') : _focusmsgem.addClass( 'iserror' );
+                    _focusmsgem.html( _item.attr('focusmsg') ).show();
+                }
+            }
     };
-    /**
-     * 私有逻辑处理对象, 验证所需的所有规则和方法都存放于此对象
-     * @property _logic
-     * @type {Object}
-     * @static
-     * @private
-     */
-    var _logic =
-        {
-            focusmsg:
-                function( _item, _setHide ){
-                    if( _item && ( _item = $( _item ) ).length && _item.is('[focusmsg]') ){
-                        var _focusmsgem = _logic._findFocusmsgEle( _item )
-                            , _errorEm = _logic._findErrorEle( _item );
-                        if( _setHide ){
-                            _focusmsgem.hide();
-                            JC.log( 'hide focusmsg', _focusmsgem.length );
-                            return;
-                        }
-                        if( _errorEm.length && _errorEm.is(':visible') ) return;
-                            JC.log( 'show focusmsg' );
-                        !_focusmsgem.length 
-                            && ( _focusmsgem = $('<em class="focusmsg"></em>')
-                                 , _item.after( _focusmsgem )
-                               );
-                        _focusmsgem.removeClass( 'isvalid' ).removeClass( 'iserror' );
-                        _item.attr('validnoerror', true);
-                        var _r = Valid.getInstance().parse( _item );
-                        _item.removeAttr('validnoerror');
-                        _r ? _focusmsgem.addClass('isvalid') : _focusmsgem.addClass( 'iserror' );
-                        _focusmsgem.html( _item.attr('focusmsg') ).show();
-                    }
-                }
-            , _findFocusmsgEle:
-                function( _item ){
-                    return _item.find( '~ em.focusmsg' );
-                }
-            , _findErrorEle:
-                function( _item ){
-                    var _r = _item.find( '~ em.error' );
-                    if( _item.attr('emel') ) _r = $( ('#' + _item.attr('emel')).replace(/[\#]+/g, '#' ) );
-                    return _r;
-                }
-            /**
-             * 获取 _selector 对象
-             * <br />这个方法的存在是为了向后兼容qwrap, qwrap DOM参数都为ID
-             * @method  _logic.getElement
-             * @private
-             * @static
-             * @param   {selector}  _selector
-             */
-            , getElement: 
-                function( _selector, _item ){
-                    if( /^\^$/.test( _selector ) ){
-                        _selector = $( _item.parent().find('~ em.error') );
-                    }else if( /^[\w-]+$/.test( _selector ) ) {
-                        _selector = '#' + _selector;
-                    }
-                    return $(_selector );
-                }
-            /**
-             * 获取对应的错误信息, 默认的错误信息有 reqmsg, errmsg, <br />
-             * 注意: 错误信息第一个字符如果为空格的话, 将完全使用用户定义的错误信息, 将不会动态添加 请上传/选择/填写
-             * @method  _logic.getMsg
-             * @private
-             * @static
-             * @param   {selector}  _item
-             * @param   {string}    _msgAttr    - 显示指定需要读取的错误信息属性名, 默认为 reqmsg, errmsg, 通过该属性可以指定别的属性名
-             * @param   {bool}      _fullMsg    - 显示指定错误信息为属性的值, 而不是自动添加的 请上传/选择/填写
-             */
-            , getMsg: 
-                function( _item, _msgAttr, _fullMsg ){
-                    var _msg = _item.is('[errmsg]') ? ' ' + _item.attr('errmsg') : _item.is('[reqmsg]') ? _item.attr('reqmsg') : '';
-                    _msgAttr && (_msg = _item.attr( _msgAttr ) || _msg );
-                    _fullMsg && _msg && ( _msg = ' ' + _msg );
-
-                    if( _msg && !/^[\s]/.test( _msg ) ){
-                        switch( _item.prop('type').toLowerCase() ){
-                            case 'file': _msg = '请上传' + _msg; break;
-
-                            case 'select-multiple':
-                            case 'select-one':
-                            case 'select': _msg = '请选择' + _msg; break;
-
-                            case 'textarea':
-                            case 'password':
-                            case 'text': _msg = '请填写' + _msg; break;
-                        }
-                    }
-
-                    JC.log( '_msg: ' + _msg, _item.prop('type').toLowerCase() );
-
-                    return $.trim(_msg);
-                }
-            /**
-             * 计算字符串的字节长度, 非 ASCII 0-255的字符视为两个字节
-             * @method  _logic.bytelen
-             * @private
-             * @static
-             * @param   {string}    _s
-             */
-            , bytelen: 
-                function( _s ){
-                    return _s.replace(/[^\x00-\xff]/g,"11").length;
-                }
-            /**
-             * 获取日期字符串的 timestamp, 字符串格式为 YYYY[^\d]*?MM[^\d]*?DD
-             * @method  _logic.getTimestamp
-             * @private
-             * @static
-             * @param   {string}    _date_str
-             */
-            , getTimestamp:
-                function( _date_str ){
-                    _date_str = _date_str.replace( /[^\d]/g, '' );
-                    return new Date( _date_str.slice(0,4), parseInt( _date_str.slice( 4, 6 ), 10 ) - 1, _date_str.slice( 6, 8) ).getTime();
-                }
-            /**
-             * 此对象存储可供检查的子类型
-             * @property    _logic.subdatatype
-             * @type        Object
-             * @private
-             * @static
-             */
-            , subdatatype: {
-            }//subdatatype
-        };//_logic
     /**
      * 响应表单子对象的 blur事件, 触发事件时, 检查并显示错误或正确的视觉效果
      * @private
      */
     $(document).delegate( 'input[type=text], input[type=password], textarea', 'blur', function($evt){
-        Valid.focusmsg( $(this), true );
+        Valid.getInstance().trigger( 'FocusMsg',  [ $(this), true ] );
         Valid.check( $(this) );
-    });
-    /**
-     * 响应表单子对象的 blur事件, 触发事件时, 如果有 focusmsg 属性, 则显示对应的提示信息
-     * @private
-     */
-    $(document).delegate( 'select, input[type=file]', 'blur', function($evt){
-        Valid.focusmsg( $(this), true );
     });
     /**
      * 响应表单子对象的 change 事件, 触发事件时, 检查并显示错误或正确的视觉效果
@@ -1697,7 +1672,14 @@
      * @private
      */
     $(document).delegate( 'input[type=text], input[type=password], textarea, select, input[type=file]', 'focus', function($evt){
-        Valid.focusmsg( $(this) );
+        Valid.getInstance().trigger( 'FocusMsg',  [ $(this) ] );
+    });
+    /**
+     * 响应表单子对象的 blur事件, 触发事件时, 如果有 focusmsg 属性, 则显示对应的提示信息
+     * @private
+     */
+    $(document).delegate( 'select, input[type=file]', 'blur', function($evt){
+        Valid.getInstance().trigger( 'FocusMsg',  [ $(this), true ] );
     });
 
-}(jQuery));
+}(jQuery))
