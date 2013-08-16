@@ -1473,7 +1473,7 @@
                 !( _target && _target.length ) && ( _target = _item.parent().find('[subdatatype=reconfirm]') );
 
                 if( _target && _target.length ){
-                    _target.each( function(){ if( _item.val() != $(this).val() ) return _r = false; } );
+                    _target.each( function(){ if( _item.val() != $(this).val() )  _r = false; } );
                 }
 
                 !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item, 'reconfirmmsg', true ] );
