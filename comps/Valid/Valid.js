@@ -4,7 +4,7 @@
 ;(function($){
     !window.JC && (window.JC = { log:function(){} });
     /**
-     * 表单验证
+     * <b>表单验证</b> (单例模式)
      * <br />全局访问请使用 JC.Valid 或 Valid
      * <p><b>requires</b>: <a href='window.jQuery.html'>jQuery</a></p>
      * <p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>
@@ -135,9 +135,9 @@
      * @namespace JC
      * @class Valid
      * @static
-     * @version dev 0.2
+     * @version     0.2,  2013-08-15(函数模式改单例模式)
+     * @version     0.1,  2013-05-22
      * @author  qiushaowei   <suches@btbtd.org> | 75 team
-     * @date    2013-08-15(函数模式改单例模式), 2013-05-22
      */
     JC.Valid = window.Valid = Valid;
     
@@ -156,21 +156,21 @@
         _init:
             function(){
                 var _p = this;
-                $( [ this._view, this._model ] ).on('BindEvent', function( _evt, _evtName, _cb ){
+                $( [ this._view, this._model ] ).on(Model.BIND, function( _evt, _evtName, _cb ){
                     _p.on( _evtName, _cb );
                 });
 
-                $([ this._view, this._model ] ).on('TriggerEvent', function( _evt, _evtName ){
+                $([ this._view, this._model ] ).on(Model.TRIGGER, function( _evt, _evtName ){
                     var _data = sliceArgs( arguments ); _data.shift(); _data.shift();
                     _p.trigger( _evtName, _data );
                 });
 
-                _p.on( 'SetValid', function( _evt ){
+                _p.on( Model.CORRECT, function( _evt ){
                     var _data = sliceArgs( arguments ); _data.shift();
                     _p._view.valid.apply( _p._view, _data );
                 });
 
-                _p.on( 'SetError', function( _evt ){
+                _p.on( Model.ERROR, function( _evt ){
                     var _data = sliceArgs( arguments ); _data.shift();
                     _p._view.error.apply( _p._view, _data );
                 });
@@ -217,49 +217,35 @@
                         var _sitem = $(this);
                         if( !_p._model.isAvalible( _sitem ) ) return;
                         if( !_p._model.isValid( _sitem ) ) return;
+                        if( _p._model.isIgnoreProcess( _sitem ) ) return;
 
                         var _dt = _p._model.parseDatatype( _sitem )
                             , _subdt = _p._model.parseSubdatatype( _sitem )
                             , _nm = _sitem.prop('nodeName').toLowerCase();
 
                         JC.log( 'datatype:', _dt, _subdt );
-                        //TODO: 这里需要更详细的判断, control, form, Valid.autoTrim
+
                         switch( _nm ){
                             case 'input':
                             case 'textarea':
                                 {
-                                    Valid.autoTrim && ( _sitem.val( $.trim( _sitem.val() ) ) );
-                                    _sitem.val( $.trim( _sitem.val()||'' ) );
+                                    _p._model.isAutoTrim( _sitem ) && _sitem.val( $.trim( _sitem.val() ) );
                                     break;
                                 }
                         }
 
-                        if( !_p._model.reqmsg( _sitem ) ){
-                            _r = false;
-                            return;
-                        }
-
-                        if( !_p._model.lengthValid( _sitem ) ){
-                            _r = false;
-                            return;
-                        }
+                        if( !_p._model.reqmsg( _sitem ) ){ _r = false; return; }
+                        if( !_p._model.lengthValid( _sitem ) ){ _r = false; return; }
 
                         if( _dt && _p._model[ _dt ] && _sitem.val() ){
-                            if( !_p._model[ _dt ]( _sitem ) ){
-                                _r = false;
-                                return;
-                            }
+                            if( !_p._model[ _dt ]( _sitem ) ){ _r = false; return; }
                         }
                         
                         if( _subdt && _p._model[ _subdt ] && ( _sitem.val() || _subdt == 'alternative' ) ){
-                            if( !_p._model[ _subdt ]( _sitem ) ){
-                                _r = false;
-                                return;
-                            }
+                            if( !_p._model[ _subdt ]( _sitem ) ){ _r = false; return; }
                         }
 
-                        //_p._view.valid( _sitem );
-                        _p.trigger( 'SetValid', _sitem ); 
+                        _p.trigger( Model.CORRECT, _sitem ); 
                     });
                 });
                 return _r;
@@ -273,7 +259,6 @@
                     if( _p._model.isForm( _item ) ){
                         var _errorabort = _p._model.isErrorAbort( _item ), tmp;
                         for( i = 0, j = _item[0].length; i < j; i++ ){
-                            if( _p._model.isIgnoreProcess( $(_item[0][i]) ) ) continue;
                             !_p.parse( $(_item[0][i]) ) && ( _r = false );
                             if( _errorabort && !_r ) break;
                         }
@@ -291,22 +276,18 @@
                             case 'form': 
                                 {
                                     for( var i = 0, j = _item[0].length; i < j; i++ ){
-                                        var tmp = $(_item[0][i]);
-                                        Valid.setValid( tmp, 1 );
+                                        Valid.setValid( $(_item[0][i]), 1, true );
                                     }
                                     break;
                                 }
-                            default: Valid.setValid( _item, 1 ); break;
+                            default: Valid.setValid( _item, 1, true ); break;
                         }
                     });
 
                 });
                 return this;
             }
-        , isValid:
-            function( _selector ){
-                return this._model.isValid( _selector );
-            }
+        , isValid: function( _selector ){ return this._model.isValid( _selector ); }
         , formHasValue:
             function( _fm, _ignoreSelector ){
                var _r = false, _item, _nt;
@@ -315,12 +296,10 @@
                 if( _fm && _fm.length ){
                     for( var i = 0, j = _fm[0].length; i < j; i++ ){
                         _item = $(_fm[0][i]);
-                        if( _item.is('[disabled]') ) return;
+                        if( _item.is('[disabled]') ) continue;
                         _nt = _item.prop('nodeName').toLowerCase();
 
-                        if( _ignoreSelector ){
-                            if( _item.is( _ignoreSelector ) ) continue;
-                        }
+                        if( _ignoreSelector && _item.is( _ignoreSelector ) ) continue;
                                         
                         switch( _item.prop('type').toLowerCase() ){
 
@@ -398,10 +377,7 @@
      * @param   {int}       _tm     延时 _tm 毫秒显示处理结果, 默认=150
      * @static
      */
-    Valid.setValid = 
-        function(_item, _tm){ 
-            return Valid.getInstance().trigger( 'SetValid', sliceArgs( arguments) ); 
-        }
+    Valid.setValid = function(_item, _tm){ return Valid.getInstance().trigger( Model.CORRECT, sliceArgs( arguments) ); };
     /**
      * 把一个表单项的状态设为错误状态
      * @method  setError
@@ -411,10 +387,7 @@
      * @static
      */
     Valid.setError = 
-        function(_item, _msgAttr, _fullMsg){ 
-            return Valid.getInstance().trigger( 'SetError', sliceArgs( arguments) );
-        }
-
+        function(_item, _msgAttr, _fullMsg){ return Valid.getInstance().trigger( Model.ERROR, sliceArgs( arguments) ); };
     /**
      * 显示 focusmsg 属性的提示信息( 如果有的话 )
      * @method  focusmsg
@@ -423,9 +396,23 @@
      * @static
      */
     Valid.focusmsg =
-        function( _item, _setHide ){
-            return Valid.getInstance().trigger( 'FocusMsg', sliceArgs( arguments ) );
-        }
+        function( _item, _setHide ){ return Valid.getInstance().trigger( 'FocusMsg', sliceArgs( arguments ) ); };
+    /**
+     * focus 时,是否总是显示 focusmsg 提示信息
+     * @property    focusmsgEverytime
+     * @type        bool
+     * @default     true
+     * @static
+     */
+    Valid.focusmsgEverytime = true;
+    /**
+     * 验证正确时, 是否显示正确的样式
+     * @property    showValidStatus
+     * @type        bool
+     * @default     false
+     * @static
+     */
+    Valid.showValidStatus = false;
      /**
      * 清除Valid生成的错误样式
      * @method clearError
@@ -436,7 +423,7 @@
      *          JC.Valid.clearError( 'input.some' );
      */
     Valid.clearError = 
-        function(){ return Valid.getInstance().clearError.apply( Valid.getInstance(), sliceArgs( arguments ) ); }
+        function(){ return Valid.getInstance().clearError.apply( Valid.getInstance(), sliceArgs( arguments ) ); };
     /**
      * 验证发生错误时, 是否终止继续验证
      * <br /> 为真终止继续验证, 为假将验证表单的所有项, 默认为 false
@@ -486,11 +473,22 @@
             });
      */
     Valid.formHasValue =
-        function(){ return Valid.getInstance().formHasValue.apply( Valid.getInstance(), sliceArgs( arguments ) ); }
+        function(){ return Valid.getInstance().formHasValue.apply( Valid.getInstance(), sliceArgs( arguments ) ); };
     
     function Model(){
         this._init();
     }
+
+    Model.TRIGGER = 'TriggerEvent';
+    Model.BIND = 'BindEvent';
+    Model.ERROR = 'ValidError';
+    Model.CORRECT = 'ValidCorrect';
+
+    Model.SELECTOR_ERROR = '~ em.error, ~ em.errormsg';
+
+    Model.CSS_ERROR = 'error errormsg';
+
+    Model.FILTER_ERROR = 'em.error em.errormsg';
     
     Model.prototype = {
         _init:
@@ -557,6 +555,72 @@
                 });
                 return _r;
             }
+        , isAutoTrim:
+            function( _item ){
+                _item = $( _item );
+                var _r = Valid.autoTrim, _form = getJqParent( _item, 'form' );
+                _form.length && _form.is( '[validautotrim]' ) && ( _r = parseBool( _form.attr('validautotrim') ) );
+                _item.is( '[validautotrim]' ) && ( _r = parseBool( _item.attr('validautotrim') ) );
+                return _r;
+            }
+        , isReqmsg: function( _item ){ return _item.is('[reqmsg]'); }
+        , isValidMsg: 
+            function( _item ){ 
+                _item = $( _item );
+                var _r = Valid.showValidStatus, _form = getJqParent( _item, 'form' );
+                _form.length && _form.is( '[validmsg]' ) && ( _r = parseBool( _form.attr('validmsg') ) );
+                _item.is( '[validmsg]' ) && ( _r = parseBool( _item.attr('validmsg') ) );
+                return _r;
+            }
+
+        , isMinlength: function( _item ){ return _item.is('[minlength]'); }
+        , isMaxlength: function( _item ){ return _item.is('[maxlength]'); }
+        , minlength: function( _item ){ return parseInt( _item.attr('minlength'), 10 ) || 0; }
+        , maxlength: function( _item ){ return parseInt( _item.attr('maxlength'), 10 ) || 0; }
+
+        , isMinvalue: function( _item ){ return _item.is('[minvalue]'); }
+        , isMaxvalue: function( _item ){ return _item.is('[maxvalue]'); }
+
+        , isDatatarget: function( _item ){ return _item.is( '[datatarget]'); }
+        , datatarget: function( _item ){ return $( _item.attr( 'datatarget') ); }
+
+        , minvalue: 
+            function( _item, _isFloat ){ 
+                if( typeof _isFloat == 'string' ){
+                    var _datatype = _isFloat.toLowerCase().trim();
+                    switch( _datatype ){
+                        default:
+                            {
+                                return parseISODate( _item.attr('minvalue') );
+                            }
+                    }
+                }else{
+                    if( _isFloat ){
+                        return parseFloat( _item.attr('minvalue') ) || 0; 
+                    }else{
+                        return parseInt( _item.attr('minvalue'), 10 ) || 0; 
+                    }
+                }
+            }
+        , maxvalue: 
+            function( _item, _isFloat ){ 
+                if( typeof _isFloat == 'string' ){
+                    var _datatype = _isFloat.toLowerCase().trim();
+                    switch( _datatype ){
+                        default:
+                            {
+                                return parseISODate( _item.attr('maxvalue') );
+                            }
+                    }
+                }else{
+                    if( _isFloat ){
+                        return parseFloat( _item.attr('maxvalue') ) || 0; 
+                    }else{
+                        return parseInt( _item.attr('maxvalue'), 10 ) || 0; 
+                    }
+
+                }
+            }
         /**
          * 检查内容的长度
          * @method  lengthValid
@@ -575,20 +639,15 @@
         , lengthValid: 
             function( _item ){
                 var _p = this, _r = true
+                    , _item = $( _item )
                     , _dt = _p.parseDatatype( _item )
-                    , _min, _max, _val = $.trim( _item.val() ), _len
+                    , _min, _max
+                    , _val = $.trim( _item.val() ), _len
                     ;
                 if( !_val ) return _r;
 
-                if( _item.is( '[minlength]' ) ){
-                    JC.log( 'minlength' );
-                    _min = parseInt( _item.attr( 'minlength' ), 10 ) || 0;
-                }
-                
-                if( _item.is( '[maxlength]' ) ){
-                    JC.log( 'maxlength' );
-                    _max = parseInt( _item.attr( 'maxlength' ), 10 ) || 0;
-                }
+                _p.isMinlength( _item ) && ( _min = _p.minlength( _item ) );
+                _p.isMaxlength( _item ) && ( _max = _p.maxlength( _item ) );
                 /**
                  * 根据特殊的 datatype 实现不同的计算方法
                  */
@@ -609,38 +668,10 @@
                 _min && ( _len < _min ) && ( _r = false );
                 _max && ( _len > _max ) && ( _r = false );
 
-                JC.log( 'lengthValid: ', _min, _max, _r );
+                JC.log( 'lengthValid: ', _min, _max, _r, _val.length );
 
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
 
-                return _r;
-            }
-
-        /**
-         * 检查内容是否为空,
-         * <br>如果声明了该属性, 那么 value 须不为空
-         * @method  reqmsg
-         * @private
-         * @static
-         * @param   {selector}  _item
-         * @example
-                <div class="f-l">
-                    <input type="TEXT" name="company_name" reqmsg="公司名称" /> <em>公司名称描述</em>
-                </div>
-         */
-        , reqmsg: 
-            function( _item ){
-                if( !_item.is('[reqmsg]') ) return true;
-
-                var _r, _p = this;
-                if( _item.val() && _item.val().constructor == Array ){
-                    _r = !!( $.trim( _item.val().join('') + '' ) );
-                }else{
-                    _r = !!$.trim( _item.val() ||'') ;
-                }
-
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item, 'reqmsg' ] );
-                JC.log( 'regmsgValid: ' + _r );
                 return _r;
             }
         /**
@@ -667,7 +698,7 @@
          *
          */
         , n: 
-            function( _item ){
+            function( _item, _noError ){
                 var _p = this, _r = true
                     , _valStr = _item.val()
                     , _val = +_valStr
@@ -675,16 +706,7 @@
                     , _max = Math.pow( 10, 10 )
                     , _n, _f, _tmp;
 
-                if( _item.is('[minvalue]') ){
-                    if( /\./.test( _item.attr('minvalue') ) ){
-                        _tmp = parseFloat( _item.attr('minvalue') );
-                    }else{
-                        _tmp = parseInt( _item.attr('minvalue') );
-                    }
-                    if( !isNaN( _tmp ) ){
-                        _min += _tmp;
-                    }
-                }
+                _p.isMinvalue( _item ) && ( _min = _p.minvalue( _item, /\./.test( _item.attr('minvalue') ) ) || _min );
 
                 if( !isNaN( _val ) && _val >= _min ){
                     _item.attr('datatype').replace( /^n[^\-]*\-(.*)$/, function( $0, $1 ){
@@ -692,19 +714,29 @@
                         _n = _tmp[0];
                         _f = _tmp[1];
                     });
-                    if( _item.is('[maxvalue]') ) _max = +_item.attr('maxvalue') || _max;
+
+                    _p.isMaxvalue( _item ) && ( _max = _p.maxvalue( _item, /\./.test( _item.attr('maxvalue') ) ) || _max );
 
                     if( _val >= _min && _val <= _max ){
-                        typeof _n != 'undefined' && typeof _f != 'undefined' && ( _r = new RegExp( '^(?:\-|)(?:[\\d]{0,'+_n+'}|)(?:\\.[\\d]{1,'+_f+'}|)$' ).test( _valStr ) );
-                        typeof _n != 'undefined' && typeof _f == 'undefined' && ( _r = new RegExp( '^(?:\-|)[\\d]{1,'+_n+'}$' ).test( _valStr ) );
-                        typeof _n == 'undefined' && typeof _f != 'undefined' && ( _r = new RegExp( '^(?:\-|)\\.[\\d]{1,'+_f+'}$' ).test( _valStr ) );
+                        typeof _n != 'undefined' 
+                            && typeof _f != 'undefined' 
+                            && ( _r = new RegExp( '^(?:\-|)(?:[\\d]{0,'+_n+'}|)(?:\\.[\\d]{1,'+_f+'}|)$' ).test( _valStr ) );
+
+                        typeof _n != 'undefined' 
+                            && typeof _f == 'undefined' 
+                            && ( _r = new RegExp( '^(?:\-|)[\\d]{1,'+_n+'}$' ).test( _valStr ) );
+
+                        typeof _n == 'undefined' 
+                            && typeof _f != 'undefined' 
+                            && ( _r = new RegExp( '^(?:\-|)\\.[\\d]{1,'+_f+'}$' ).test( _valStr ) );
+
                         typeof _f == 'undefined' && /\./.test( _valStr ) && ( _r = false );
                     } else _r = false;
 
-                    JC.log( 'nValid', _val, typeof _n, typeof _f, typeof _min, typeof _max, _min, _max );
+                    //JC.log( 'n', _val, typeof _n, typeof _f, typeof _min, typeof _max, _min, _max );
                 }else _r = false;
 
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && !_noError && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
 
                 return _r;
             }
@@ -735,29 +767,26 @@
          */
         , nrange:
             function( _item ){
-                var _p = this, _r = _p.n( _item ), _min, _max;
+                var _p = this, _r = _p.n( _item ), _min, _max, _fromNEl, _toNEl, _items;
 
                 if( _r ){
-                    var _fromNEl, _toNEl;
-                    if( _item.is( '[fromNEl]' ) ) _fromNEl = _p.getElement( _item.attr('fromNEl') );
-                    if( _item.is( '[toNEl]' ) ) _toNEl = _p.getElement( _item.attr('toNEl') );
+                    if( _item.is( '[fromNEl]' ) ) {
+                        _fromNEl = _p.getElement( _item.attr('fromNEl') );
+                        _toNEl = _item;
+                    }
+                    if( _item.is( '[toNEl]' ) ){
+                        _fromNEl = _item;
+                        _toNEl = _p.getElement( _item.attr('toNEl') );
+                    }
 
                     if( !(_fromNEl && _fromNEl.length || _toNEl && _toNEl.length) ){
-                        var _pnt = _item.parent(), _items = [];
-                            _pnt.find('input[datatype]').each( function(){
-                                var _sp = $(this);
-                                /nrange/i.test( _sp.attr('datatype') ) && _items.push( this );
-                            });
-                            JC.log( 'ccc', _items.length );
-                            if( _items.length === 2 ){
-                                _fromNEl = $(_items[0]);
-                                _toNEl = $(_items[1]);
-                            }
+                        _items = _p.sametypeitems( _item );
+                        if( _items.length >= 2 ){
+                            _fromNEl = $(_items[0]);
+                            _toNEl = $(_items[1]);
+                        }
                     }
                     if( _fromNEl && _fromNEl.length || _toNEl && _toNEl.length ){
-
-                        _fromNEl && _fromNEl.length && !( _toNEl && _toNEl.length ) && ( _toNEl = _item );
-                        !(_fromNEl && _fromNEl.length) && _toNEl && _toNEl.length && ( _fromNEl = _item );
 
                         JC.log( 'nrange', _fromNEl.length, _toNEl.length );
 
@@ -766,23 +795,22 @@
                         
                         if( _toNEl[0] != _fromNEl[0] && _toNEl.val().length && _fromNEl.val().length ){
 
-                            _r && ( _r = _p.n( _toNEl ) );
-                            _r && ( _r = _p.n( _fromNEl ) );
+                            _r && ( _r = _p.n( _toNEl, true ) );
+                            _r && ( _r = _p.n( _fromNEl, true ) );
 
                             _r && ( +_fromNEl.val() ) > ( +_toNEl.val() ) && ( _r = false );
                             
-                            JC.log( +_fromNEl.val(), +_toNEl.val(), _r );
+                            JC.log( 'nrange:', +_fromNEl.val(), +_toNEl.val(), _r );
 
-                            _r && $(_p).trigger( 'TriggerEvent', [ 'SetValid', _fromNEl ] );
-                            _r && $(_p).trigger( 'TriggerEvent', [ 'SetValid', _toNEl ] );
+                            _r && $(_p).trigger( Model.TRIGGER, [ Model.CORRECT, _fromNEl ] );
+                            _r && $(_p).trigger( Model.TRIGGER, [ Model.CORRECT, _toNEl ] );
 
-                            if( _r ){ _fromNEl.removeClass('error'); _toNEl.removeClass('error'); }
-                            else{ _fromNEl.addClass('error'); _toNEl.addClass('error'); }
+                            !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _fromNEl ] );
+                            !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _toNEl ] );
+                            return _r;
                         }
                     }
                 }
-
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
 
                 return _r;
             }
@@ -802,38 +830,35 @@
                 </div>
          */
         , d: 
-            function( _item ){
-                var _p = this, _val = $.trim( _item.val() ), _r, _re = /^[\d]{4}([\/.-]|)[01][\d]\1[0-3][\d]$/;
-                if( !_val ) return true;
+            function( _item, _noError ){
+                var _p = this, _val = $.trim( _item.val() ), _r = true, _date = parseISODate( _val ), _tmpDate;
                     
-                if( _r = _re.test( _val ) ){
-                    var _utime = _p.getTimestamp( _item.val() ), _minTime, _maxTime;
+                if( _val && _date ){
 
-                    if( _item.is('[minvalue]') && ( _r = _re.test( _item.attr('minvalue') ) ) ){
-                        _minTime = _p.getTimestamp( _item.attr('minvalue') );
-                        _utime < _minTime && ( _r = false );
+                    if( _p.isMinvalue( _item ) && ( _tmpDate = _p.minvalue( _item, 'd' ) ) ){
+                        _date.getTime() < _tmpDate.getTime() && ( _r = false );
                     }
 
-                    if( _r && _item.is('[maxvalue]') && ( _r = _re.test( _item.attr('maxvalue') ) ) ){
-                        _maxTime = _p.getTimestamp( _item.attr('maxvalue') );
-                        _utime > _maxTime && ( _r = false );
+                    if( _r && _p.isMaxvalue( _item ) && ( _tmpDate = _p.maxvalue( _item, 'd' ) ) ){
+                        _date.getTime() > _tmpDate.getTime() && ( _r = false );
                     }
                 }
 
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && !_noError && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
 
                 return _r;
             }
+        , 'date': function(){ return this.d.apply( this, sliceArgs( arguments ) ); }
         /**
          * 检查两个输入框的日期
          * <br />日期格式为 YYYYMMDD, YYYY/MM/DD, YYYY-MM-DD, YYYY.MM.DD
          * <br /> <b>注意:</b> 如果不显示指定 fromDateEl, toDateEl, 
-         *              将会从父级查找 datatype=datarange属性的input, 如果数量等于2, 则会进行验证, 不等2将忽略
+         *              将会从父级查找 datatype=daterange属性的input, 如果数量等于2, 则会进行验证, 不等2将忽略
          * @method  daterange
          * @private
          * @static
          * @param   {selector}  _item
-         * @attr    {require}               datatype    - datarange
+         * @attr    {require}               datatype    - daterange
          * @attr    {selector|optional}     fromDateEl  - 起始日期选择器
          * @attr    {selector|optional}     toDateEl    - 结束日期选择器
          * @attr    {date string|optional}  minvalue    - 日期的下限
@@ -849,45 +874,48 @@
          */
         , daterange:
             function( _item ){
-                var _p = this, _r = _p.d( _item ), _min, _max;
+                var _p = this, _r = _p.d( _item ), _min, _max, _fromDateEl, _toDateEl, _items;
 
                 if( _r ){
-                    var _fromDateEl, _toDateEl;
-                    if( _item.is( '[fromDateEl]' ) ) _fromDateEl = _p.getElement( _item.attr('fromDateEl') );
-                    if( _item.is( '[toDateEl]' ) ) _toDateEl = _p.getElement( _item.attr('toDateEl') );
+                    if( _item.is( '[fromDateEl]' ) ) {
+                        _fromDateEl = _p.getElement( _item.attr('fromDateEl') );
+                        _toDateEl = _item;
+                    }
+                    if( _item.is( '[toDateEl]' ) ){
+                        _fromDateEl = _item;
+                        _toDateEl = _p.getElement( _item.attr('toDateEl') );
+                    }
 
-                    if( !(_fromDateEl && _fromDateEl.length || _toDateEl && _toDateEl.length) ){
-                        var _pnt = _item.parent(), _items = _pnt.find('input[datatype=daterange]');
-                            if( _items.length === 2 ){
-                                _fromDateEl = $(_items[0]);
-                                _toDateEl = $(_items[1]);
-                            }
+                    if( !(_fromDateEl && _fromDateEl.length && _toDateEl && _toDateEl.length) ){
+                        _items = _p.sametypeitems( _item );
+                        if( _items.length >= 2 ){
+                            _fromDateEl = $(_items[0]);
+                            _toDateEl = $(_items[1]);
+                        }
                     }
                     if( _fromDateEl && _fromDateEl.length || _toDateEl && _toDateEl.length ){
-
-                        _fromDateEl && _fromDateEl.length && !( _toDateEl && _toDateEl.length ) && ( _toDateEl = _item );
-                        !(_fromDateEl && _fromDateEl.length) && _toDateEl && _toDateEl.length && ( _fromDateEl = _item );
 
                         JC.log( 'daterange', _fromDateEl.length, _toDateEl.length );
 
                         _toDateEl.val( $.trim( _toDateEl.val() ) );
                         _fromDateEl.val( $.trim( _fromDateEl.val() ) );
+
                         if( _toDateEl[0] != _fromDateEl[0] && _toDateEl.val().length && _fromDateEl.val().length ){
 
-                            _r && ( _r = _p.d( _toDateEl ) );
-                            _r && ( _r = _p.d( _fromDateEl ) );
+                            _r && ( _r = _p.d( _toDateEl, true ) ) && ( _min = parseISODate( _fromDateEl.val() ) );
+                            _r && ( _r = _p.d( _fromDateEl, true ) ) && ( _max = parseISODate( _toDateEl.val() ) );
 
-                            _r && _p.getTimestamp( _fromDateEl.val() ) > _p.getTimestamp( _toDateEl.val() ) && ( _r = false );
+                            _r && _min && _max 
+                               && _min.getTime() > _max.getTime() 
+                               && ( _r = false );
 
-                            _r && $(_p).trigger( 'TriggerEvent', [ 'SetValid', _fromDateEl ] );
-                            _r && $(_p).trigger( 'TriggerEvent', [ 'SetValid', _toDateEl ] );
+                            _r && $(_p).trigger( Model.TRIGGER, [ Model.CORRECT, _fromDateEl ] );
+                            _r && $(_p).trigger( Model.TRIGGER, [ Model.CORRECT, _toDateEl ] );
 
-                            if( _r ){ _fromDateEl.removeClass('error'); _toDateEl.removeClass('error'); }
-                            else{ _fromDateEl.addClass('error'); _toDateEl.addClass('error'); }
+                            !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _fromDateEl ] );
+                            !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _toDateEl ] );
                         }
                     }
-                }else{
-                    //!_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
                 }
 
                 return _r;
@@ -906,7 +934,7 @@
         , time: 
             function( _item ){
                 var _p = this, _r = /^(([0-1]\d)|(2[0-3])):[0-5]\d:[0-5]\d$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -923,7 +951,7 @@
         , minute: 
             function( _item ){
                 var _p = this, _r = /^(([0-1]\d)|(2[0-3])):[0-5]\d$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -943,7 +971,7 @@
             function( _item ){
                 var _p = this
                     , _r = /^[1-9][\d]{3}(?: |)(?:[\d]{4}(?: |))(?:[\d]{4}(?: |))(?:[\d]{4})(?:(?: |)[\d]{3}|)$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -964,7 +992,7 @@
             function( _item ){
                 var _p = this
                     , _r = _p.bytelen( _item.val() ) < 32 && /^[\u4e00-\u9fa5a-zA-Z.\u3002\u2022]{2,32}$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -984,7 +1012,7 @@
         , username:
             function( _item ){
                 var _p = this, _r = /^[a-zA-Z0-9][\w-]{2,30}$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -1003,7 +1031,7 @@
         , idnumber:
             function( _item ){
                 var _p = this, _r = /^[0-9]{15}(?:[0-9]{2}(?:[0-9xX])|)$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -1023,7 +1051,7 @@
         , mobilecode: 
             function( _item, _noError ){
                 var _p = this, _r =  /^(?:13|14|15|16|18|19)[\d]{9}$/.test( _item.val() );
-                !_noError && !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_noError && !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -1057,7 +1085,7 @@
         , mobilezonecode: 
             function( _item, _noError ){
                 var _p = this, _r = /^(?:\+[0-9]{1,6} |)(?:0|)(?:13|14|15|16|18|19)\d{9}$/.test( _item.val() );
-                !_noError && !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_noError && !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -1076,7 +1104,7 @@
         , phonecode: 
             function( _item ){
                 var _p = this, _r =  /^[1-9][0-9]{6,7}$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -1097,7 +1125,7 @@
         , phone:
             function( _item, _noError ){
                 var _p = this, _r = /^(?:0(?:10|2\d|[3-9]\d\d)(?: |\-|)|)[1-9][\d]{6,7}$/.test( _item.val() );
-                !_noError && !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_noError && !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -1119,7 +1147,7 @@
             function( _item, _noError ){
                 var _p = this
                     , _r = /^(?:\+[\d]{1,6}(?: |\-)|)(?:0[\d]{2,3}(?:\-| |)|)[1-9][\d]{6,7}(?:(?: |)\#[\d]{1,6}|)$/.test( _item.val() );
-                !_noError && !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_noError && !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -1137,7 +1165,7 @@
         , phonezone: 
             function( _item ){
                 var _p = this, _r = /^[0-9]{3,4}$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -1155,7 +1183,7 @@
         , phoneext: 
             function( _item ){
                 var _p = this, _r =  /^[0-9]{1,6}$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -1178,7 +1206,7 @@
         , mobilephone:
             function( _item ){
                 var _p = this, _r = this.mobilecode( _item, true ) || this.phone( _item, true );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
 
@@ -1202,7 +1230,7 @@
         , mobilephoneall:
             function( _item ){
                 var _p = this, _r = this.mobilezonecode( _item, true ) || phoneall( _item, true );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -1227,7 +1255,7 @@
                     _r = new RegExp( $1, $2 || '' ).test( _item.val() );
                 });
 
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
 
                 return _r;
             }
@@ -1254,7 +1282,7 @@
                 var _p = this, _r, _len = parseInt( $.trim(_item.attr('datatype')).replace( /^vcode(?:\-|)/i, '' ), 10 ) || 4; 
                 JC.log( 'vcodeValid: ' + _len );
                 _r = new RegExp( '^[0-9a-zA-Z]{'+_len+'}$' ).test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -1311,7 +1339,7 @@
             function( _item ){
                 var _p = this
                     , _r = /^((http|ftp|https):\/\/|)[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -1329,7 +1357,7 @@
                 //var _r = /^(?:(?:f|ht)tp\:\/\/|)((?:(?:(?:\w[\.\-\+]?)*)\w)*)((?:(?:(?:\w[\.\-\+]?){0,62})\w)+)\.(\w{2,6})(?:\/|)$/.test( _item.val() );
                 var _p = this
                     , _r = /^(?:htt(?:p|ps)\:\/\/|)((?:(?:(?:\w[\.\-\+]*))\w)*)((?:(?:(?:\w[\.\-\+]*){0,62})\w)+)\.(\w{2,6})(?:\/|)$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -1346,7 +1374,7 @@
             function( _item ){
                 var _p = this
                     , _r = /^((?:(?:(?:\w[\.\-\+]*))\w)*)((?:(?:(?:\w[\.\-\+]*){0,62})\w)+)\.(\w{2,6})$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -1363,7 +1391,7 @@
         , email: 
             function( _item ){
                 var _p = this, _r = /^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -1380,7 +1408,7 @@
         , zipcode: 
             function( _item ){
                 var _p = this, _r = /^[0-9]{6}$/.test( _item.val() );
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
         /**
@@ -1423,8 +1451,8 @@
                 var _p = this, _r = true, _target;
                 JC.log( 'alternative' );
 
-                _item.is( '[datatarget]' ) && (_target = $(_item.attr('datatarget')) );
-                !( _target && _target.length ) && ( _target = _item.parent().find('[subdatatype=alternative]') );
+                _p.isDatatarget( _item ) && (_target = _p.datatarget( _item ) );
+                !( _target && _target.length ) && ( _target = _p.samesubtypeitems( _item ) );
 
                 if( _target.length && !$.trim( _item.val() ) ){
                     var _hasVal = false;
@@ -1432,13 +1460,17 @@
                     _r = _hasVal;
                 }
 
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item, 'alternativemsg', true ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item, 'alternativemsg', true ] );
                 !_r && _target && _target.length 
                     && _target.each( function(){ 
-                        $(_p).trigger( 'TriggerEvent', [ 'SetError', $(this), 'alternativemsg', true ] );
+                        $(_p).trigger( Model.TRIGGER, [ Model.ERROR, $(this), 'alternativemsg', true ] );
                     });
-                _r && _target && _target.length 
-                    && $(_p).trigger( 'TriggerEvent', [ 'SetValid', _target ] );
+
+                if( _r && _target && _target.length ){
+                    _target.each( function(){
+                        $(_p).trigger( Model.TRIGGER, [ Model.CORRECT, $(this) ] );
+                    });
+                }
 
                 return _r;
             }
@@ -1478,30 +1510,45 @@
 
                 JC.log( 'reconfirm' );
 
-                _item.is( '[datatarget]' ) && (_target = $(_item.attr('datatarget')) );
-                !( _target && _target.length ) && ( _target = _item.parent().find('[subdatatype=reconfirm]') );
+                _p.isDatatarget( _item ) && (_target = _p.datatarget( _item ) );
+                !( _target && _target.length ) && ( _target = _p.samesubtypeitems( _item ) );
 
                 if( _target && _target.length ){
                     _target.each( function(){ if( _item.val() != $(this).val() )  _r = false; } );
                 }
 
-                !_r && $(_p).trigger( 'TriggerEvent', [ 'SetError', _item, 'reconfirmmsg', true ] );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item, 'reconfirmmsg', true ] );
                 !_r && _target.length && _target.each( function(){ 
-                    $(_p).trigger( 'TriggerEvent', [ 'SetError', $(this), 'reconfirmmsg', true ] );
+                    $(_p).trigger( Model.TRIGGER, [ Model.ERROR, $(this), 'reconfirmmsg', true ] );
                 } );
-                _r && _target.length
-                    && $(_p).trigger( 'TriggerEvent', [ 'SetValid', _target ] );
 
+                if( _r && _target && _target.length ){
+                    _target.each( function(){
+                        $(_p).trigger( Model.TRIGGER, [ Model.CORRECT, $(this) ] );
+                    });
+                }
                 return _r;
             }
-        , findFocusmsgEle:
+        , findValidEle:
             function( _item ){
-                return _item.find( '~ em.focusmsg' );
+                var _selector = '~ em.validmsg', _r = _item.find( _selector ), _tmp;
+                if( _item.attr('validel') 
+                        && ( _tmp = _p.getElement( _item.attr('validel'), _item, _selector ) ).length ) _r = _tmp;
+                return _r;
+            }
+        , findFocusEle:
+            function( _item ){
+                var _selector = '~ em.focusmsg', _r = _item.find( _selector ), _tmp;
+                if( _item.attr('focusel') 
+                        && ( _tmp = _p.getElement( _item.attr('focusel'), _item, _selector ) ).length ) _r = _tmp;
+                return _r;
             }
         , findErrorEle:
             function( _item ){
-                var _r = _item.find( '~ em.error' );
-                if( _item.attr('emel') ) _r = $( ('#' + _item.attr('emel')).replace(/[\#]+/g, '#' ) );
+                var _p = this;
+                var _selector = Model.SELECTOR_ERROR, _r = _item.find( _selector );
+                if( _item.attr('emel') 
+                        && ( _tmp = _p.getElement( _item.attr('emel'), _item, _selector ) ).length ) _r = _tmp;
                 return _r;
             }
         /**
@@ -1513,9 +1560,10 @@
          * @param   {selector}  _selector
          */
         , getElement: 
-            function( _selector, _item ){
+            function( _selector, _item, _subselector ){
                 if( /^\^$/.test( _selector ) ){
-                    _selector = $( _item.parent().find('~ em.error') );
+                    _subselector = _subselector || Model.SELECTOR_ERROR;
+                    _selector = $( _item.parent().find( _subselector ) );
                 }else if( /^[\w-]+$/.test( _selector ) ) {
                     _selector = '#' + _selector;
                 }
@@ -1525,14 +1573,14 @@
         /**
          * 获取对应的错误信息, 默认的错误信息有 reqmsg, errmsg, <br />
          * 注意: 错误信息第一个字符如果为空格的话, 将完全使用用户定义的错误信息, 将不会动态添加 请上传/选择/填写
-         * @method  getMsg
+         * @method  errorMsg
          * @private
          * @static
          * @param   {selector}  _item
          * @param   {string}    _msgAttr    - 显示指定需要读取的错误信息属性名, 默认为 reqmsg, errmsg, 通过该属性可以指定别的属性名
          * @param   {bool}      _fullMsg    - 显示指定错误信息为属性的值, 而不是自动添加的 请上传/选择/填写
          */
-        , getMsg: 
+        , errorMsg: 
             function( _item, _msgAttr, _fullMsg ){
                 var _msg = _item.is('[errmsg]') ? ' ' + _item.attr('errmsg') : _item.is('[reqmsg]') ? _item.attr('reqmsg') : '';
                 _msgAttr && (_msg = _item.attr( _msgAttr ) || _msg );
@@ -1551,21 +1599,65 @@
                         case 'text': _msg = '请填写' + _msg; break;
                     }
                 }
-
-                JC.log( '_msg: ' + _msg, _item.prop('type').toLowerCase() );
-
                 return $.trim(_msg);
             }
         /**
-         * 获取日期字符串的 timestamp, 字符串格式为 YYYY[^\d]*?MM[^\d]*?DD
-         * @method  _logic.getTimestamp
+         * 检查内容是否为空,
+         * <br>如果声明了该属性, 那么 value 须不为空
+         * @method  reqmsg
          * @private
          * @static
-         * @param   {string}    _date_str
+         * @param   {selector}  _item
+         * @example
+                <div class="f-l">
+                    <input type="TEXT" name="company_name" reqmsg="公司名称" /> <em>公司名称描述</em>
+                </div>
          */
-        , getTimestamp:
-            function( _date_str ){
-                return parseISODate( _date_str ).getTime();
+        , reqmsg: 
+            function( _item ){
+                var _r = true, _p = this;
+                if( !_p.isReqmsg( _item ) ) return _r;
+
+                if( _item.val() && _item.val().constructor == Array ){
+                    _r = !!( $.trim( _item.val().join('') + '' ) );
+                }else{
+                    _r = !!$.trim( _item.val() ||'') ;
+                }
+
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item, 'reqmsg' ] );
+                JC.log( 'regmsgValid: ' + _r );
+                return _r;
+            }
+
+        , sametypeitems:
+            function( _item ){
+                var _p = this, _r = []
+                    , _pnt = _item.parent()
+                    , _type = _item.attr('datatype')
+                    , _re = new RegExp( _type, 'i' )
+                    ;
+                _pnt.find('input[datatype]').each( function(){
+                    _re.test( $(this).attr('datatype') ) && _r.push( $(this) );
+                });
+                return _r.length ? $( _r ) : _r;
+            }
+        , samesubtypeitems:
+            function( _item ){
+                var _p = this, _r = []
+                    , _pnt = _item.parent()
+                    , _type = _item.attr('subdatatype')
+                    , _re = new RegExp( _type, 'i' )
+                    ;
+                _pnt.find('input[subdatatype]').each( function(){
+                    _re.test( $(this).attr('subdatatype') ) && _r.push( $(this) );
+                });
+                return _r.length ? $( _r ) : _r;
+            }
+        , focusmsgeverytime:
+            function( _item ){
+                var _r = Valid.focusmsgEverytime;
+                _item.is( '[focusmsgeverytime]' ) && ( _r = parseBool( _item.attr('focusmsgeverytime') ) );
+                return _r;
             }
     };
     
@@ -1585,18 +1677,51 @@
          * @static
          * @param   {selector}  _item
          * @param   {int}       _tm
+         * @param   {bool}      _noStyle
          */
         , valid:
-            function( _item, _tm ){
+            function( _item, _tm, _noStyle ){
                 _item && ( _item = $(_item) );
-                var _p = this;
+                var _p = this, _tmp;
                 if( !_p._model.isValid( _item ) ) return false;
                 setTimeout(function(){
-                    _item.removeClass('error');
-                    _item.find('~ em:not("em.focusmsg, em.error")').show();
-                    _item.find('~ em.error').hide();
-                    _item.attr('emel') && _p._model.getElement( _item.attr('emel'), _item ).hide();
+                    _item.removeClass( Model.CSS_ERROR );
+                    _item.find( printf( '~ em:not("em.focusmsg, em.validmsg, {0}")', Model.FILTER_ERROR ) ).show();
+                    _item.find( Model.SELECTOR_ERROR ).hide();
+                    _item.attr('emel') 
+                        && ( _tmp = _p._model.getElement( _item.attr('emel'), _item ) )
+                        && _tmp.hide();
+
+                    typeof _noStyle == 'undefined' && !_item.val().trim() && ( _noStyle = 1 );
+                    _p.validMsg( _item, _noStyle );
                 }, _tm || 150);
+            }
+        , validMsg:
+            function( _item, _noStyle ){
+                var _p = this, _msg = ( _item.attr('validmsg') || '' ).trim().toLowerCase();
+
+                if( _p._model.isValidMsg( _item ) ){
+                    if( _msg == 'true' || _msg == '1' ) _msg = '';
+                    !_msg && ( _msg = '&nbsp;' ); //chrome bug, 内容为空会换行
+                    var _focusmsgem = _p._model.findFocusEle( _item )
+                        , _validmsgem = _p._model.findValidEle( _item )
+                        , _errorEm = _p._model.findErrorEle( _item )
+                        ;
+
+                    !_validmsgem.length 
+                        && ( _validmsgem = $( '<em class="validmsg"></em>' )
+                             , _item.after( _validmsgem )
+                           );
+
+                    _validmsgem.html( _msg );
+                    _noStyle 
+                        ? _validmsgem.hide() 
+                        : ( _validmsgem.show()
+                                , _focusmsgem && _focusmsgem.hide()
+                                , _errorEm && _errorEm.hide()
+                          )
+                        ;
+                }
             }
         /**
          * 显示错误的视觉效果
@@ -1611,24 +1736,26 @@
             function( _item, _msgAttr, _fullMsg ){
                 _item && ( _item = $(_item) );
                 var _p = this, arg = arguments;
-                if( !_p._model.isValid( _item ) ) return false;
-                if( _item.is( '[validnoerror]' ) ) return;
+                if( !_p._model.isValid( _item ) ) return true;
+                if( _item.is( '[validnoerror]' ) ) return true;
 
                 setTimeout(function(){
-                    var _msg = _p._model.getMsg.apply( _p._model, [].slice.call( arg ) ), _errEm;
+                    var _msg = _p._model.errorMsg.apply( _p._model, sliceArgs( arg ) ), _errEm;
 
-                    _item.addClass( 'error' );
-                    _item.find('~ em:not(.error)').hide();
+                    _item.addClass( Model.CSS_ERROR );
+                    _item.find( printf( '~ em:not({0})', Model.FILTER_ERROR ) ).hide();
 
                     if( _item.is( '[emEl]' ) ){
-                        ( _errEm = _p._model.getElement( _item.attr( 'emEl' ) , _item) ) && _errEm.length && _errEm.addClass('error');
+                        ( _errEm = _p._model.getElement( _item.attr( 'emEl' ) , _item) ) 
+                            && _errEm.addClass( Model.CSS_ERROR );
                     }
-                    !( _errEm && _errEm.length ) && ( _errEm = _item.find('~ em.error') );
+                    !( _errEm && _errEm.length ) && ( _errEm = _item.find( Model.SELECTOR_ERROR ) );
                     if( !_errEm.length ){
-                        ( _errEm = $('<em class="error"></em>') ).insertAfter( _item );
+                        ( _errEm = $( printf( '<em class="{0}"></em>', Model.CSS_ERROR ) ) ).insertAfter( _item );
                     }
-                    JC.log( 'error: ' + _msg );
                     _errEm.html( _msg ).show() 
+
+                    JC.log( 'error:', _msg );
                 }, 150);
 
                 return false;
@@ -1636,28 +1763,52 @@
         , focusmsg:
             function( _item, _setHide ){
                 if( _item && ( _item = $( _item ) ).length && _item.is('[focusmsg]') ){
-                    var _focusmsgem = this._model.findFocusmsgEle( _item )
-                        , _errorEm = this._model.findErrorEle( _item );
-                    if( _setHide ){
+                    JC.log( 'focusmsg', new Date().getTime() );
+
+                    var _r, _p = this
+                        , _focusmsgem = _p._model.findFocusEle( _item )
+                        , _validmsgem = _p._model.findValidEle( _item )
+                        , _errorEm = _p._model.findErrorEle( _item )
+                        ;
+
+                    if( _setHide && _focusmsgem && _focusmsgem.length ){
                         _focusmsgem.hide();
-                        JC.log( 'hide focusmsg', _focusmsgem.length );
                         return;
                     }
-                    if( _errorEm.length && _errorEm.is(':visible') ) return;
-                        JC.log( 'show focusmsg' );
+
+                    _errorEm.length && _errorEm.is(':visible') && _errorEm.hide();
+                    if( _validmsgem.length && _validmsgem.is(':visible') ) return;
+
                     !_focusmsgem.length 
                         && ( _focusmsgem = $('<em class="focusmsg"></em>')
                              , _item.after( _focusmsgem )
                            );
-                    _focusmsgem.removeClass( 'isvalid' ).removeClass( 'iserror' );
-                    _item.attr('validnoerror', true);
-                    var _r = Valid.getInstance().parse( _item );
-                    _item.removeAttr('validnoerror');
-                    _r ? _focusmsgem.addClass('isvalid') : _focusmsgem.addClass( 'iserror' );
-                    _focusmsgem.html( _item.attr('focusmsg') ).show();
+
+                    if( _item.is( '[validnoerror]' ) ){
+                        _r = Valid.getInstance().parse( _item );
+                    }else{
+                        _item.attr('validnoerror', true);
+                        _r = Valid.getInstance().parse( _item );
+                        _item.removeAttr('validnoerror');
+                    }
+
+                    if( _p._model.focusmsgeverytime( _item ) ){
+                        _focusmsgem.html( _item.attr('focusmsg') ).show();
+                    }else{
+                        _r && _focusmsgem.html( _item.attr('focusmsg') ).show();
+                    }
+
                 }
             }
     };
+    /**
+     * 解析错误时触发的时件
+     * @event ValidError
+     */
+    /**
+     * 解析正确时触发的时件
+     * @event ValidCorrect
+     */
     /**
      * 响应表单子对象的 blur事件, 触发事件时, 检查并显示错误或正确的视觉效果
      * @private

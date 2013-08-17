@@ -4,6 +4,7 @@
  * @method  sliceArgs
  * @param   {arguments}     args
  * @return Array
+ * @static
  */
 function sliceArgs( _arg ){
     var _r = [], _i, _len;
@@ -351,6 +352,7 @@ function easyEffect( _cb, _maxVal, _startVal, _duration, _stepMs ){
  * @method parseBool
  * @param   {*} _input
  * @return bool
+ * @static
  */
 function parseBool( _input ){
     if( typeof _input == 'string' ){
@@ -364,4 +366,29 @@ function parseBool( _input ){
     }
     return !!_input;
 }
+/**
+ * 获取 selector 的指定父级标签
+ * @method  getJqParent
+ * @param   {selector}  _selector
+ * @param   {selector}  _filter
+ * @return selector
+ * @require jquery
+ * @static
+ */
+function getJqParent( _selector, _filter ){
+    _selector = $(_selector);
+    var _r;
 
+    if( _filter ){
+        while( (_selector = _selector.parent()).length ){
+            if( _selector.is( _filter ) ){
+                _r = _selector;
+                break;
+            }
+        }
+    }else{
+        _r = _selector.parent();
+    }
+
+    return _r;
+}
