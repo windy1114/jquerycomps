@@ -77,25 +77,13 @@
                         .replace(/\{msg\}/g, _msg)
                         .replace(/\{status\}/g, _logic.getStatusClass(_status||'') );
             var _ins = JC.Dialog(_tpl);
-                _ins.on('close', function(){
-                    JC.Dialog.msgbox.timeout && clearTimeout( JC.Dialog.msgbox.timeout );
-                });
+
             _logic.fixWidth( _msg, _ins );
             _cb && _ins.on('close', _cb);
-
-            JC.Dialog.msgbox.timeout && clearTimeout( JC.Dialog.msgbox.timeout );
-            JC.Dialog.msgbox.timeout = setTimeout( function(){ _ins.close(); }, _closeMs || JC.Dialog.msgbox.closeMs );
+            _ins.autoClose();
 
             return _ins;
         };
-    /**
-     * 定义 JC.Dialog.msgbox 自动关闭的间隔, 单位毫秒
-     * @property    closeMs
-     * @type    int
-     * @default 2000
-     * @static
-     */
-    JC.Dialog.msgbox.closeMs = 2000;
     /**
      * 自定义 JC.Dialog.alert 的显示模板
      * @property    tpl
@@ -104,14 +92,6 @@
      * @static
      */
     JC.Dialog.msgbox.tpl;
-    /**
-     * 获取延时关闭 JC.Dialog.msgbox 的 timeout 对象
-     * @property    timeout
-     * @type    timeout
-     * @default undefined
-     * @static
-     */
-    JC.Dialog.msgbox.timeout;
     /**
      * 会话框 alert 提示
      * <br /><b>注意, 这是个方法, 写 @class 属性是为了生成文档</b>
@@ -469,8 +449,8 @@
         if( !(_paneltype in JC.Dialog) ) return;
 
         _panel = JC.Dialog[ _paneltype ]( _panelmsg, _panelstatus );
-        _p.is('[panelautoclose]') && _panel.addAutoClose( !parseBool( _p.attr('panelautoclose') ) );
-        parseBool( _p.attr('panelautoclose') ) && _evt.stopPropagation();
+        _p.is('[panelclickclose]') && _panel.clickClose( !parseBool( _p.attr('panelclickclose') ) );
+        parseBool( _p.attr('panelclickclose') ) && _evt.stopPropagation();
             
         if( _paneltype == 'msgbox' ){
             _callback && _panel.on( 'close', _callback );

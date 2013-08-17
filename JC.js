@@ -211,7 +211,7 @@
                 _paths.length && document.write( _paths.join('') );
             }
        /**
-        * 对 USE 过的资源进行唯一性判断, 避免重复加载
+        * 保存 use 过的资源路径, 以便进行唯一性判断, 避免重复加载
         * @property     _USE_CACHE
         * @type     object
         * @default  {}

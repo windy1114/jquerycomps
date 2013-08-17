@@ -30,20 +30,10 @@
             }
             var _ins = _logic.popup( JC.msgbox.tpl || _logic.tpls.msgbox, _msg, _popupSrc, _status );
                 _cb && _ins.on('close', _cb );
-
-            JC.msgbox.timeout && clearTimeout( JC.msgbox.timeout );
-            JC.msgbox.timeout = setTimeout( function(){ _ins.close(); }, _closeMs || JC.msgbox.closeMs );
+                _ins.autoClose();
 
             return _ins;
         };
-    /**
-     * 定义 JC.msgbox 自动关闭的间隔, 单位毫秒
-     * @property    closeMs
-     * @type    int
-     * @default 2000
-     * @static
-     */
-    JC.msgbox.closeMs = 2000;
     /**
      * 自定义 JC.msgbox 的显示模板
      * @property    tpl
@@ -52,14 +42,6 @@
      * @static
      */
     JC.msgbox.tpl;
-    /**
-     * 获取延时关闭 JC.msgbox 的 timeout 对象
-     * @property    timeout
-     * @type    timeout
-     * @default undefined
-     * @static
-     */
-    JC.msgbox.timeout;
     /**
      * alert 提示 popup
      * <br /> 这个是不带 蒙板的 popup 弹框
@@ -129,26 +111,6 @@
      * @static
      */
     JC.confirm.tpl;
-    /**
-     * 隐藏 或 从DOM清除所有 JC.alert/JC.confirm
-     * <br /><b>注意, 这是个方法, 写 @class 属性是为了生成文档</b>
-     * @namespace JC
-     * @class hideAllPopup
-     * @static
-     * @constructor
-     * @param   {bool}  _isClose    为真从DOM清除JC.alert/JC.confirm, 为假隐藏, 默认为false
-     * @example
-     *      JC.hideAllPopup();         //隐藏所有JC.alert, JC.confirm
-     *      JC.hideAllPopup( true );   //从 DOM 清除所有 JC.alert, JC.confirm
-     */
-    JC.hideAllPopup =
-        function( _isClose ){
-            if( _isClose ){
-                $('body > div.UPanelPopup_identifer').remove();
-            }else{
-                $('body > div.UPanelPopup_identifer').hide();
-            }
-        };
     /**
      * 弹框逻辑处理方法集
      * @property    _logic
@@ -601,8 +563,8 @@
 
         if( !(_paneltype in JC) ) return;
         _panel = JC[ _paneltype ]( _panelmsg, _p, _panelstatus );
-        _p.is('[panelautoclose]') && _panel.addAutoClose( !parseBool( _p.attr('panelautoclose') ) );
-        parseBool( _p.attr('panelautoclose') ) &&  _evt.stopPropagation();
+        _p.is('[panelclickclose]') && _panel.clickClose( !parseBool( _p.attr('panelclickclose') ) );
+        parseBool( _p.attr('panelclickclose') ) &&  _evt.stopPropagation();
 
         if( _paneltype == 'msgbox' ){
             _callback && _panel.on( 'close', _callback );

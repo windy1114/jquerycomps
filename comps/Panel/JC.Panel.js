@@ -6,6 +6,20 @@
      * <p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>
      * | <a href='http://jc.openjavascript.org/docs_api/classes/JC.Panel.html' target='_blank'>API docs</a>
      * | <a href='../../comps/Panel/_demo' target='_blank'>demo link</a></p>
+     * <h2>可用的 html attribute</h2>
+     * <dl>
+     *      <dt>panelfocusbutton = bool, default = true</dt>
+     *      <dd>显示 Panel 时, 是否自动 foucs 到按钮上</dd>
+     *
+     *      <dt>panelclickclose = bool</dt>
+     *      <dd>点击 Panel 外时, 是否关闭 panel</dd>
+     *
+     *      <dt>panelautoclose = bool</dt>
+     *      <dd>Panel 是否自动关闭, 默认关闭时间间隔 = 2000 ms</dd>
+     *
+     *      <dt>panelautoclosems = int, default = 2000 ms</dt>
+     *      <dd>自动关闭 Panel 的时间间隔</dd>
+     * </dl>
      * @namespace JC
      * @class Panel
      * @constructor
@@ -82,12 +96,21 @@
     Panel.focusButton = true;
     /**
      * 页面点击时, 是否自动关闭 Panel
-     * @property    autoClose
+     * @property    clickClose
      * @type        bool
      * @default     false
      * @static
      */
-    Panel.autoClose = false;
+    Panel.clickClose = false;
+    /**
+     * 自动关闭的时间间隔, 单位毫秒
+     * <br />调用 ins.autoClose() 时生效
+     * @property    autoCloseMs
+     * @type        int
+     * @default     2000
+     * @static
+     */
+    Panel.autoCloseMs = 2000;
     
     Panel.prototype = {
         /**
@@ -118,6 +141,8 @@
 
                 this._model.addEvent( 'cancel_default'
                                     , function( _evt, _panel ){ _panel.trigger('close'); } );
+
+                this._model.panelautoclose() && this.autoClose();
 
                return this;
             }    
@@ -236,25 +261,47 @@
             }
         /**
          * 判断点击页面时, 是否自动关闭 Panel
-         * @method  isAutoClose
+         * @method  isClickClose
          * @return bool
          */
-        , isAutoClose:
+        , isClickClose:
             function(){
-                return this._model.panelautoclose();
+                return this._model.panelclickclose();
             }
         /**
          * 点击页面时, 添加自动隐藏功能
-         * @method  addAutoClose
+         * @method  clickClose
          * @param   {bool}          _removeAutoClose
          */
-        , addAutoClose:
+        , clickClose:
             function( _removeAutoClose ){
-                _removeAutoClose && this.layout() && this.layout().removeAttr('panelautoclose');
-                !_removeAutoClose && this.layout() && this.layout().attr('panelautoclose', true);
+                _removeAutoClose && this.layout() && this.layout().removeAttr('panelclickclose');
+                !_removeAutoClose && this.layout() && this.layout().attr('panelclickclose', true);
                 return this;
             }
         /**
+         * 添加自动关闭功能
+         * @method  autoClose
+         * @param   {bool}          _removeAutoClose
+         */
+        , autoClose:
+            function( _callback, _ms ){
+                var _p = this, _tm;
+                _ms = _p._model.panelautoclosems( _ms );
+
+                Panel._autoCloseTimeout && clearTimeout( Panel._autoCloseTimeout );
+                _p.on('close', function(){
+                    Panel._autoCloseTimeout && clearTimeout( Panel._autoCloseTimeout );
+                });
+                Panel._autoCloseTimeout = 
+                    setTimeout( function(){
+                        _callback && _p.on( 'close', _callback );
+                        _p.close();
+                    }, _ms );
+
+                return this;
+            }
+         /**
          * focus 到 button
          * <br />优先查找 input[eventtype=confirm], input[type=submit], button[eventtype=confirm], button[type=submit]
          * <br />input[eventtype=cancel], input[type=buton], button[eventtype=cancel], button[type=button]
@@ -597,12 +644,29 @@
                 }
                 return _r;
             }
+        , panelclickclose:
+            function(){
+                var _r = Panel.clickClose;
+                if( this.panel.is( '[panelclickclose]' ) ){
+                    _r = parseBool( this.panel.attr('panelclickclose') );
+                }
+                return _r;
+            }
         , panelautoclose:
             function(){
-                var _r = Panel.autoClose;
+                var _r;
                 if( this.panel.is( '[panelautoclose]' ) ){
                     _r = parseBool( this.panel.attr('panelautoclose') );
                 }
+                return _r;
+            }
+        , panelautoclosems:
+            function( _ms ){
+                var _r = Panel.autoCloseMs;
+                if( this.panel.is( '[panelautoclosems]' ) ){
+                    _r = parseInt( this.panel.attr('panelautoclosems'), 10 );
+                }
+                typeof _ms == 'number' && ( _r = _ms );
                 return _r;
             }
     };
@@ -849,12 +913,34 @@
       */
      JC.hideAllPanel = 
          function( _isClose ){
-            if( _isClose ){
-                $('div.UPanel').remove();
-            }else{
-                $('div.UPanel').hide();
-            }
+            $('div.UPanel').each( function(){
+                var _p = $(this), _ins = Panel.getInstance( _p );
+                if( !_ins ) return;
+                _ins.hide();
+                _isClose && _ins.close();
+            });
          };
+    /**
+     * 隐藏 或 从DOM清除所有 JC.alert/JC.confirm
+     * <br /><b>注意, 这是个方法, 写 @class 属性是为了生成文档</b>
+     * @namespace JC
+     * @class hideAllPopup
+     * @static
+     * @constructor
+     * @param   {bool}  _isClose    为真从DOM清除JC.alert/JC.confirm, 为假隐藏, 默认为false
+     * @example
+     *      JC.hideAllPopup();         //隐藏所有JC.alert, JC.confirm
+     *      JC.hideAllPopup( true );   //从 DOM 清除所有 JC.alert, JC.confirm
+     */
+    JC.hideAllPopup =
+        function( _isClose ){
+            if( _isClose ){
+                $('body > div.UPanelPopup_identifer').remove();
+            }else{
+                $('body > div.UPanelPopup_identifer').hide();
+            }
+        };
+
     /**
      * 监听Panel的所有点击事件
      * <br />如果事件源有 eventtype 属性, 则会触发eventtype的事件类型
@@ -872,7 +958,7 @@
 
     $(document).delegate('div.UPanel', 'click', function( _evt ){
         var _p = $(this), _ins = Panel.getInstance( _p );
-        if( _ins && _ins.isAutoClose() ){
+        if( _ins && _ins.isClickClose() ){
             _evt.stopPropagation();
         }
     });
@@ -880,7 +966,7 @@
     $(window).on('click', function( _evt ){
         $('div.UPanel').each( function(){
             var _p = $(this), _ins = Panel.getInstance( _p );
-            if( _ins && _ins.isAutoClose() ){
+            if( _ins && _ins.isClickClose() && _ins.layout() && _ins.layout().is(':visible') ){
                 _ins.hide();
                 _ins.close();
             }
@@ -892,12 +978,7 @@
         switch( _kc ){
             case 27:
                 {
-                    $('div.UPanel').each( function(){
-                        var _p = $(this), _ins = Panel.getInstance( _p );
-                        if( !_ins ) return;
-                        _ins.hide();
-                        _ins.close();
-                    });
+                    JC.hideAllPanel( 1 );
                     break;
                 }
         }
