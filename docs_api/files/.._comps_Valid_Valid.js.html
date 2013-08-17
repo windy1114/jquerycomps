@@ -1701,6 +1701,7 @@
             }
         , findErrorEle:
             function( _item ){
+                var _p = this;
                 var _selector = Model.SELECTOR_ERROR, _r = _item.find( _selector );
                 if( _item.attr(&#x27;emel&#x27;) 
                         &amp;&amp; ( _tmp = _p.getElement( _item.attr(&#x27;emel&#x27;), _item, _selector ) ).length ) _r = _tmp;
@@ -1847,6 +1848,7 @@
                         &amp;&amp; ( _tmp = _p._model.getElement( _item.attr(&#x27;emel&#x27;), _item ) )
                         &amp;&amp; _tmp.hide();
 
+                    typeof _noStyle == &#x27;undefined&#x27; &amp;&amp; !_item.val().trim() &amp;&amp; ( _noStyle = 1 );
                     _p.validMsg( _item, _noStyle );
                 }, _tm || 150);
             }
@@ -1868,7 +1870,13 @@
                            );
 
                     _validmsgem.html( _msg );
-                    _noStyle ? _validmsgem.hide() : _validmsgem.show();
+                    _noStyle 
+                        ? _validmsgem.hide() 
+                        : ( _validmsgem.show()
+                                , _focusmsgem &amp;&amp; _focusmsgem.hide()
+                                , _errorEm &amp;&amp; _errorEm.hide()
+                          )
+                        ;
                 }
             }
         /**
@@ -1924,7 +1932,7 @@
                         return;
                     }
 
-                    if( _errorEm.length &amp;&amp; _errorEm.is(&#x27;:visible&#x27;) ) return;
+                    _errorEm.length &amp;&amp; _errorEm.is(&#x27;:visible&#x27;) &amp;&amp; _errorEm.hide();
                     if( _validmsgem.length &amp;&amp; _validmsgem.is(&#x27;:visible&#x27;) ) return;
 
                     !_focusmsgem.length 
