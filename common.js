@@ -1,5 +1,13 @@
 !String.prototype.trim && ( String.prototype.trim = function(){ return $.trim( this ); } );
 /**
+ * 全局 css z-index 控制属性
+ * @property    ZINDEX_COUNT
+ * @type        int
+ * @default     50001
+ * @static
+ */
+window.ZINDEX_COUNT = window.ZINDEX_COUNT || 50001;
+/**
  * 把函数的参数转为数组
  * @method  sliceArgs
  * @param   {arguments}     args

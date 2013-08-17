@@ -2,7 +2,6 @@
 //TODO: 错误时, 添加 class iserror 
 //TODO: 添加 validmsg, 正确时的提示, class = isvalid 
 ;(function($){
-    !window.JC && (window.JC = { log:function(){} });
     /**
      * <b>表单验证</b> (单例模式)
      * <br />全局访问请使用 JC.Valid 或 Valid
@@ -19,16 +18,21 @@
      * <h2>Form Control的可用 html attribute</h2>
      * <dl>
      *      <dt>reqmsg = 错误提示</dt>
-     *      <dd>值不能为空</dd>
+     *      <dd>值不能为空, class=error errormsg</dd>
      *
      *      <dt>errmsg = 错误提示</dt>
-     *      <dd>格式错误, 但不验证为空的值</dd>
+     *      <dd>格式错误, 但不验证为空的值, class=error errormsg</dd>
      *
      *      <dt>focusmsg = 控件获得焦点的提示信息</dt>
      *      <dd>
-     *          这个只作提示用
-     *          <br />如果 control 的内容是正确的 class=focusmsg isvalid
-     *          <br />如果 control 的内容是错误的 class=focusmsg iserror
+     *          这个只作提示用, class=focusmsg
+     *      </dd>
+     *
+     *      <dt>validmsg = bool | string</dt>
+     *      <dd>
+     *          内容填写正确时显示的 提示信息, class=validmsg
+     *          <br />如果 = 0, false, 将不显示提示信息
+     *          <br />如果 = 1, true, 将不显示提示文本
      *      </dd>
      *
      *      <dt>emel = selector</dt>
@@ -49,6 +53,9 @@
      *
      *      <dt>maxvalue = [number|ISO date](最大值)</dt>
      *      <dd>验证内容的最大值, 但不验证为空的值</dd>
+     *
+     *      <dt>validitemcallback = function name</dt>
+     *      <dd>对一个 control 作检查后的回调, 无论正确与否都会触发</dt>
      *
      *      <dt>datatype: 常用数据类型</dt>
      *      <dd><b>n:</b> 检查是否为正确的数字</dd>
@@ -450,6 +457,22 @@
      */
     Valid.autoTrim = true;
     /**
+     * 对一个 control 作检查后的回调, 无论正确与否都会触发
+     * @property    itemCallback
+     * @type        function
+     * @default     undefined
+     * @static
+     * @example
+            $(document).ready( function($evt){
+                JC.Valid.itemCallback =
+                    function( _item, _isValid ){
+                        JC.log( 'JC.Valid.itemCallback _isValid:', _isValid );
+                    };
+            });
+     */
+    Valid.itemCallback;
+
+    /**
      * 检查一个表单是否有内容
      * @method  formHasValue
      * @param   {selector}      _fm
@@ -572,7 +595,23 @@
                 _item.is( '[validmsg]' ) && ( _r = parseBool( _item.attr('validmsg') ) );
                 return _r;
             }
-
+        , validitemcallback: 
+            function( _item ){ 
+                _item = $( _item );
+                var _r = Valid.itemCallback, _form = getJqParent( _item, 'form' ), _tmp;
+                _form.length 
+                    && _form.is( '[validitemcallback]' ) 
+                    && ( _tmp = _form.attr('validitemcallback') )
+                    && ( _tmp = window[ _tmp ] )
+                    && ( _r = _tmp )
+                    ;
+                _item.is( '[validitemcallback]' ) 
+                    && ( _tmp = _item.attr('validitemcallback') )
+                    && ( _tmp = window[ _tmp ] )
+                    && ( _r = _tmp )
+                    ;
+                return _r;
+            }
         , isMinlength: function( _item ){ return _item.is('[minlength]'); }
         , isMaxlength: function( _item ){ return _item.is('[maxlength]'); }
         , minlength: function( _item ){ return parseInt( _item.attr('minlength'), 10 ) || 0; }
@@ -1694,6 +1733,7 @@
 
                     typeof _noStyle == 'undefined' && !_item.val().trim() && ( _noStyle = 1 );
                     _p.validMsg( _item, _noStyle );
+                    ( _tmp = _p._model.validitemcallback( _item ) ) && _tmp( _item, true );
                 }, _tm || 150);
             }
         , validMsg:
@@ -1756,7 +1796,9 @@
                     _errEm.html( _msg ).show() 
 
                     JC.log( 'error:', _msg );
+
                 }, 150);
+                ( _tmp = _p._model.validitemcallback( _item ) ) && _tmp( _item, false);
 
                 return false;
             }

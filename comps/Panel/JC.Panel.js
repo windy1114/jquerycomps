@@ -1,6 +1,4 @@
 ;(function($){
-    !window.JC && (window.JC = { log:function(){} });
-    window.ZINDEX_COUNT = window.ZINDEX_COUNT || 50001;
     window.Panel = JC.Panel = Panel;
     /**
      * 弹出层基础类 JC.Panel

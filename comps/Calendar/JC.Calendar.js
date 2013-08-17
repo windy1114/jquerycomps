@@ -1,6 +1,4 @@
 (function($){
-    !window.JC && (window.JC = { log:function(){} });
-    window.ZINDEX_COUNT = window.ZINDEX_COUNT || 50001;
     /**
      * 日期选择组件
      * <br />全局访问请使用 JC.Calendar 或 Calendar
