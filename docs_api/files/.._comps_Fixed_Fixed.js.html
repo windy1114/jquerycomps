@@ -159,10 +159,10 @@
 ;(function($){
     window.Fixed = JC.Fixed = Fixed;
     /**
-     * 标签固定位置显示
+     * 内容固定于屏幕某个位置显示
      * &lt;dl&gt;
-     *      &lt;dd&gt;&lt;b&gt;requires&lt;/b&gt;: &lt;a href=&#x27;window.jQuery.html&#x27;&gt;jQuery&lt;/a&gt;&lt;/dd&gt;
-     *      &lt;dd&gt;&lt;b&gt;requires&lt;/b&gt;: &lt;a href=&#x27;.window.html#property_$.support.isFixed&#x27;&gt;$.support.isFixed&lt;/a&gt;&lt;/dd&gt;
+     *      &lt;dd&gt;&lt;b&gt;require&lt;/b&gt;: &lt;a href=&#x27;window.jQuery.html&#x27;&gt;jQuery&lt;/a&gt;&lt;/dd&gt;
+     *      &lt;dd&gt;&lt;b&gt;require&lt;/b&gt;: &lt;a href=&#x27;.window.html#property_$.support.isFixed&#x27;&gt;$.support.isFixed&lt;/a&gt;&lt;/dd&gt;
      * &lt;/dl&gt;
      * &lt;p&gt;&lt;a href=&#x27;https://github.com/openjavascript/jquerycomps&#x27; target=&#x27;_blank&#x27;&gt;JC Project Site&lt;/a&gt;
      * | &lt;a href=&#x27;http://jc.openjavascript.org/docs_api/classes/JC.Fixed.html&#x27; target=&#x27;_blank&#x27;&gt;API docs&lt;/a&gt;
@@ -173,17 +173,18 @@
      * @param   {selector|string}   _selector   
      * @version dev 0.1
      * @author  qiushaowei   &lt;suches@btbtd.org&gt; | 75 Team
-     * @date    2013-07-20
+     * @date    2013-08-18
      * @example
      */
     function Fixed( _selector ){
+        if( Fixed.getInstance( _selector ) ) return Fixed.getInstance( _selector );
+        Fixed.getInstance( _selector, this );
+
         this._model = new Model( _selector );
         this._view = new View( this._model );
 
         this._init();
     }
-
-    Fixed.autoInit = true;
     
     Fixed.prototype = {
         _init:
@@ -217,12 +218,6 @@
          */
         , hide: function(){ this._view.hide(); return this; }
         /**
-         * 获取 显示 Fixed 的触发源选择器, 比如 a 标签
-         * @method  selector
-         * @return  selector
-         */ 
-        , selector: function(){ return this._model.selector(); }
-        /**
          * 获取 Fixed 外观的 选择器
          * @method  layout
          * @return  selector
@@ -246,7 +241,7 @@
     }
     /**
      * 获取或设置 Fixed 的实例
-     * @method getInstance
+     * @method  getInstance
      * @param   {selector}      _selector
      * @static
      * @return  {Fixed instance}
@@ -261,23 +256,45 @@
             return _selector.data(&#x27;FixedIns&#x27;);
         };
     /**
-     * 判断 selector 是否可以初始化 Fixed
-     * @method  isFixed
-     * @param   {selector}      _selector
+     * 页面加载完毕时, 是否自动初始化
+     * &lt;br /&gt; 识别 class=js_autoFixed
+     * @property    autoInit
+     * @type        bool
+     * @default     true
      * @static
-     * @return  bool
      */
-    Fixed.isFixed =
-        function( _selector ){
-            var _r;
-            _selector 
-                &amp;&amp; ( _selector = $(_selector) ).length 
-                &amp;&amp; ( _r = _selector.is( &#x27;[Fixedlayout]&#x27; ) );
-            return _r;
+    Fixed.autoInit = true;
+    /**
+     * 滚动的持续时间( 时间运动 )
+     * @property    durationms
+     * @type        int
+     * @default     300
+     * @static
+     */
+    Fixed.durationms = 300;
+    /**
+     * 每次滚动的时间间隔( 时间运动 )
+     * @property    stepms
+     * @type        int
+     * @default     3
+     * @static
+     */
+    Fixed.stepms = 3;
+    /**
+     * 设置或者清除 interval
+     * &lt;br /&gt;避免多个 interval 造成的干扰
+     * @method  interval
+     * @param   {interval}      _interval
+     * @static
+     */
+    Fixed.interval =
+        function( _interval ){
+            Fixed._interval &amp;&amp; clearInterval( Fixed._interval );
+            _interval &amp;&amp; ( Fixed._interval = _interval );
         };
     
-    function Model( _selector ){
-        this._selector = _selector;
+    function Model( _layout ){
+        this._layout = _layout;
     }
     
     Model.prototype = {
@@ -286,18 +303,78 @@
                 return this;
             }
 
-        , isFixTop: function(){ return this._selector.is(&#x27;[fixtop]&#x27;); }
-        , isFixRight: function(){ return this._selector.is(&#x27;[fixright]&#x27;); }
-        , isFixBottom: function(){ return this._selector.is(&#x27;[fixbottom]&#x27;); }
-        , isFixLeft: function(){ return this._selector.is(&#x27;[fixleft]&#x27;); }
+        , isFixedTop: function(){ return this._layout.is(&#x27;[fixedtop]&#x27;); }
+        , isFixedRight: function(){ return this._layout.is(&#x27;[fixedright]&#x27;); }
+        , isFixedBottom: function(){ return this._layout.is(&#x27;[fixedbottom]&#x27;); }
+        , isFixedLeft: function(){ return this._layout.is(&#x27;[fixedleft]&#x27;); }
 
-        , fixtop: function(){ return parseInt( this._selector.attr(&#x27;fixtop&#x27;), 10 ); }
-        , fixright: function(){ return parseInt( this._selector.attr(&#x27;fixright&#x27;), 10 ); }
-        , fixbottom: function(){ return parseInt( this._selector.attr(&#x27;fixbottom&#x27;), 10 ); }
-        , fixleft: function(){ return parseInt( this._selector.attr(&#x27;fixleft&#x27;), 10 ); }
+        , fixedtop: function(){ return parseInt( this._layout.attr(&#x27;fixedtop&#x27;), 10 ); }
+        , fixedright: function(){ return parseInt( this._layout.attr(&#x27;fixedright&#x27;), 10 ); }
+        , fixedbottom: function(){ return parseInt( this._layout.attr(&#x27;fixedbottom&#x27;), 10 ); }
+        , fixedleft: function(){ return parseInt( this._layout.attr(&#x27;fixedleft&#x27;), 10 ); }
+        , fixeddurationms: 
+            function( _fixedSelector ){ 
+                var _r;
 
-        , selector: function(){ return this._selector; }
-        , layout: function(){}
+                this.layout().is(&#x27;[fixeddurationms]&#x27;)
+                    &amp;&amp; ( _r = parseInt( this.layout().attr(&#x27;fixeddurationms&#x27;) ) )
+
+                _fixedSelector.is(&#x27;[fixeddurationms]&#x27;)
+                    &amp;&amp; ( _r = parseInt( _fixedSelector.attr(&#x27;fixeddurationms&#x27;) ) )
+
+                typeof _r == &#x27;undefined&#x27; &amp;&amp; ( _r = Fixed.durationms );
+                isNaN( _r ) &amp;&amp; ( _r = Fixed.durationms );
+                
+                return _r;
+            }
+
+        , fixedstepms: 
+            function( _fixedSelector ){ 
+                var _r;
+
+                this.layout().is(&#x27;[fixedstepms]&#x27;)
+                    &amp;&amp; ( _r = parseInt( this.layout().attr(&#x27;fixedstepms&#x27;) ) )
+
+                _fixedSelector.is(&#x27;[fixedstepms]&#x27;)
+                    &amp;&amp; ( _r = parseInt( _fixedSelector.attr(&#x27;fixedstepms&#x27;) ) )
+
+                typeof _r == &#x27;undefined&#x27; &amp;&amp; ( _r = Fixed.stepms );
+                isNaN( _r ) &amp;&amp; ( _r = Fixed.stepms );
+
+                return _r;
+            }
+
+        , fixedmoveto: 
+            function( _item ){ 
+                var _r = &#x27;&#x27;;
+                _item 
+                    &amp;&amp; ( _item = $( _item ) ) 
+                    &amp;&amp; _item.length 
+                    &amp;&amp; ( _r = _item.attr(&#x27;fixedmoveto&#x27;) || &#x27;&#x27; );
+                return _r.trim();
+            }
+        , moveToItem: 
+            function(){ 
+                var _r = this.layout().is(&#x27;[fixedmoveto]&#x27;) ? this.layout() : null, _tmp;
+                if( !_r ){
+                    ( _tmp = this._layout.find(&#x27;[fixedmoveto]&#x27;) ).length &amp;&amp; ( _r = _tmp );
+                }
+                return _r; 
+            }
+
+        , layout: function(){ return this._layout; }
+
+        , fixedmoveeffect:
+            function(){
+                var _r = true, _moveItem = this.moveToItem();
+
+                _moveItem &amp;&amp; _moveItem.length 
+                    &amp;&amp; _moveItem.is( &#x27;[fixedmoveeffect]&#x27; )
+                    &amp;&amp; ( _r = parseBool( _moveItem.attr(&#x27;fixedmoveeffect&#x27;) ) )
+                    ;
+
+                return _r;
+            }
     };
     
     function View( _model ){
@@ -307,7 +384,117 @@
     View.prototype = {
         init:
             function() {
+
+                $.support.isFixed ? this._initFixedSupport() : this._initFixedUnsupport();
+
+                this._initMoveTo();
+                this._model.layout().show();
+
                 return this;
+            }
+
+        , _initMoveTo:
+            function(){
+                var _p = this, _moveItem = _p._model.moveToItem();
+                if( !( _moveItem &amp;&amp; _moveItem.length ) ) return;
+
+                _moveItem.on( &#x27;click&#x27;, function( _evt ){
+                    var _sp = $(this), _moveVal = _p._model.fixedmoveto( _sp ).toLowerCase();
+                    //JC.log( &#x27;_moveItem click:&#x27;, _moveVal, new Date().getTime() );
+                    _p._processMoveto( _moveVal, _sp );
+                });
+
+                $(window).on(&#x27;resize&#x27;, function(){
+                    Fixed.interval();
+                });
+
+                mousewheelEvent( function mousewheel( _evt ){ Fixed.interval(); });
+            }
+
+        , _processMoveto:
+            function( _moveVal, _moveItem ){
+                if( !_moveVal ) return;
+
+                var _p = this
+                    , _end = parseInt( _moveVal, 10 )
+                    , _docHeight = $(document).height()
+                    , _max = _docHeight - $(window).height()
+                    , _begin = $(document).scrollTop()
+                    , _count = _begin, _tmpCount = 0
+                    , _isUp, _endVal, _beginVal, _tmp
+                    ;
+                if( isNaN( _end ) ){
+                    //JC.log( &#x27;isNaN:&#x27;, _end );
+                    switch( _moveVal ){
+                        case &#x27;top&#x27;:
+                            {
+                                _end = 0;
+                                break;
+                            }
+                        case &#x27;bottom&#x27;:
+                            {
+                                _end = _max;
+                                //JC.log( &#x27;bottom&#x27; );
+                                break;
+                            }
+                        default:
+                            {
+                                _tmp = $( _moveVal );
+                                if( _tmp.length ){
+                                    _end = _tmp.offset().top;
+                                }
+                                break;
+                            }
+                    }
+                }
+                ( isNaN( _end ) || _end &lt; 0 ) &amp;&amp; ( _end = 0 );
+                _end &gt; _max &amp;&amp; ( _end = _max );
+
+                //JC.log( _moveVal, _begin, _end );
+
+                if( _begin == _end ) return;
+
+                _isUp = _end &lt; _begin ? true : false;
+                _endVal = _begin &gt; _end ? _begin : _end;
+                _beginVal = _begin &gt; _end ? _end : _begin;
+
+                /*
+                JC.log( &#x27;_processMoveto:&#x27;, _begin, _end, _isUp, _beginVal, _endVal, _max, _docHeight );
+                JC.log( 
+                        &#x27;durationms:&#x27;, _p._model.fixeddurationms( _moveItem )
+                        , &#x27;stepms:&#x27;, _p._model.fixedstepms( _moveItem )
+                      );
+                */
+
+                Fixed.interval(
+                    easyEffect( 
+                        function( _cur, _done ){
+                            _isUp &amp;&amp; ( _cur = _endVal - _cur );
+                            //console.log( &#x27;Fixed scrollTo:&#x27;, _cur, _tmpCount++ );
+                            $(document).scrollTop( _cur );
+                        }
+                        , _endVal
+                        , _beginVal 
+                        , _p._model.fixeddurationms( _moveItem )
+                        , _p._model.fixedstepms( _moveItem )
+                    )
+                );
+            }
+
+        , _initFixedSupport:
+            function(){
+                var _p = this;
+
+                _p._model.isFixedTop() &amp;&amp; _p._model.layout().css( &#x27;top&#x27;, _p._model.fixedtop() + &#x27;px&#x27; );
+                _p._model.isFixedRight() &amp;&amp; _p._model.layout().css( &#x27;right&#x27;, _p._model.fixedright() + &#x27;px&#x27; );
+                _p._model.isFixedBottom() &amp;&amp; _p._model.layout().css( &#x27;bottom&#x27;, _p._model.fixedbottom() + &#x27;px&#x27; );
+                _p._model.isFixedLeft() &amp;&amp; _p._model.layout().css( &#x27;left&#x27;, _p._model.fixedleft() + &#x27;px&#x27; );
+
+                _p._model.layout().css( &#x27;position&#x27;, &#x27;fixed&#x27; );
+            }
+
+        , _initFixedUnsupport:
+            function(){
             }
 
         , hide:
@@ -321,10 +508,13 @@
 
     $(document).ready( function(){
         if( !Fixed.autoInit ) return;
-
-        $( &#x27;div.js_autoFixed, dl.js_autoFixed, ul.js_autoFixed, ol.js_autoFixed, button.js_autoFixed&#x27;).each( function(){
-            new Fixed( $(this) );
-        });
+        $([
+            &#x27;div.js_autoFixed&#x27;
+            , &#x27;dl.js_autoFixed&#x27;
+            , &#x27;ul.js_autoFixed&#x27;
+            , &#x27;ol.js_autoFixed&#x27;
+            , &#x27;button.js_autoFixed&#x27;
+           ].join() ).each( function(){ new Fixed( $(this) ); });
     });
 
 }(jQuery));

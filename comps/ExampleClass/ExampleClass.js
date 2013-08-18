@@ -19,6 +19,9 @@
      * @example
      */
     function ExampleClass( _selector ){
+        if( ExampleClass.getInstance( _selector ) ) return ExampleClass.getInstance( _selector );
+        ExampleClass.getInstance( _selector, this );
+
         this._model = new Model( _selector );
         this._view = new View( this._model );
 

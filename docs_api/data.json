@@ -370,7 +370,7 @@
             "namespace": "JC",
             "file": "../comps/ExampleClass/ExampleClass.js",
             "line": 3,
-            "description": "ExampleClass 模板类\n<br />要新建一个组件时, 直接 copy ExampleClass 组件改一下命名就可以开始编码了\n<p><b>requires</b>: <a href='window.jQuery.html'>jQuery</a></p>\n<p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>\n| <a href='http://jc.openjavascript.org/docs_api/classes/JC.ExampleClass.html' target='_blank'>API docs</a>\n| <a href='../../comps/ExampleClass/_demo' target='_blank'>demo link</a></p>",
+            "description": "ExampleClass 模板类\n<br />要新建一个组件时, 直接 copy ExampleClass 组件改一下命名就可以开始编码了\n<dl>\n     <dd><b>requires</b>: <a href='window.jQuery.html'>jQuery</a></dd>\n</dl>\n<p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>\n| <a href='http://jc.openjavascript.org/docs_api/classes/JC.ExampleClass.html' target='_blank'>API docs</a>\n| <a href='../../comps/ExampleClass/_demo' target='_blank'>demo link</a></p>",
             "is_constructor": 1,
             "params": [
                 {
@@ -397,7 +397,7 @@
             "namespace": "JC",
             "file": "../comps/Fixed/Fixed.js",
             "line": 3,
-            "description": "标签固定位置显示\n<dl>\n     <dd><b>requires</b>: <a href='window.jQuery.html'>jQuery</a></dd>\n     <dd><b>requires</b>: <a href='.window.html#property_$.support.isFixed'>$.support.isFixed</a></dd>\n</dl>\n<p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>\n| <a href='http://jc.openjavascript.org/docs_api/classes/JC.Fixed.html' target='_blank'>API docs</a>\n| <a href='../../comps/Fixed/_demo' target='_blank'>demo link</a></p>",
+            "description": "内容固定于屏幕某个位置显示\n<dl>\n     <dd><b>require</b>: <a href='window.jQuery.html'>jQuery</a></dd>\n     <dd><b>require</b>: <a href='.window.html#property_$.support.isFixed'>$.support.isFixed</a></dd>\n</dl>\n<p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>\n| <a href='http://jc.openjavascript.org/docs_api/classes/JC.Fixed.html' target='_blank'>API docs</a>\n| <a href='../../comps/Fixed/_demo' target='_blank'>demo link</a></p>",
             "is_constructor": 1,
             "params": [
                 {
@@ -408,7 +408,7 @@
             ],
             "version": "dev 0.1",
             "author": "qiushaowei   <suches@btbtd.org> | 75 Team",
-            "date": "2013-07-20",
+            "date": "2013-08-18",
             "example": [
                 ""
             ]
@@ -2125,7 +2125,7 @@
         },
         {
             "file": "../comps/ExampleClass/ExampleClass.js",
-            "line": 43,
+            "line": 48,
             "description": "显示 ExampleClass",
             "itemtype": "method",
             "name": "show",
@@ -2137,7 +2137,7 @@
         },
         {
             "file": "../comps/ExampleClass/ExampleClass.js",
-            "line": 49,
+            "line": 54,
             "description": "隐藏 ExampleClass",
             "itemtype": "method",
             "name": "hide",
@@ -2149,7 +2149,7 @@
         },
         {
             "file": "../comps/ExampleClass/ExampleClass.js",
-            "line": 55,
+            "line": 60,
             "description": "获取 显示 ExampleClass 的触发源选择器, 比如 a 标签",
             "itemtype": "method",
             "name": "selector",
@@ -2161,7 +2161,7 @@
         },
         {
             "file": "../comps/ExampleClass/ExampleClass.js",
-            "line": 61,
+            "line": 66,
             "description": "获取 ExampleClass 外观的 选择器",
             "itemtype": "method",
             "name": "layout",
@@ -2173,7 +2173,7 @@
         },
         {
             "file": "../comps/ExampleClass/ExampleClass.js",
-            "line": 67,
+            "line": 72,
             "description": "使用 jquery on 绑定事件",
             "itemtype": "method",
             "name": "on",
@@ -2198,7 +2198,7 @@
         },
         {
             "file": "../comps/ExampleClass/ExampleClass.js",
-            "line": 75,
+            "line": 80,
             "description": "使用 jquery trigger 绑定事件",
             "itemtype": "method",
             "name": "trigger",
@@ -2218,7 +2218,7 @@
         },
         {
             "file": "../comps/ExampleClass/ExampleClass.js",
-            "line": 83,
+            "line": 88,
             "description": "获取或设置 ExampleClass 的实例",
             "itemtype": "method",
             "name": "getInstance",
@@ -2239,7 +2239,7 @@
         },
         {
             "file": "../comps/ExampleClass/ExampleClass.js",
-            "line": 99,
+            "line": 104,
             "description": "判断 selector 是否可以初始化 ExampleClass",
             "itemtype": "method",
             "name": "isExampleClass",
@@ -2259,7 +2259,7 @@
         },
         {
             "file": "../comps/Fixed/Fixed.js",
-            "line": 49,
+            "line": 50,
             "description": "显示 Fixed",
             "itemtype": "method",
             "name": "show",
@@ -2271,7 +2271,7 @@
         },
         {
             "file": "../comps/Fixed/Fixed.js",
-            "line": 55,
+            "line": 56,
             "description": "隐藏 Fixed",
             "itemtype": "method",
             "name": "hide",
@@ -2283,19 +2283,7 @@
         },
         {
             "file": "../comps/Fixed/Fixed.js",
-            "line": 61,
-            "description": "获取 显示 Fixed 的触发源选择器, 比如 a 标签",
-            "itemtype": "method",
-            "name": "selector",
-            "return": {
-                "description": "selector"
-            },
-            "class": "JC.Fixed",
-            "namespace": "JC"
-        },
-        {
-            "file": "../comps/Fixed/Fixed.js",
-            "line": 67,
+            "line": 62,
             "description": "获取 Fixed 外观的 选择器",
             "itemtype": "method",
             "name": "layout",
@@ -2307,7 +2295,7 @@
         },
         {
             "file": "../comps/Fixed/Fixed.js",
-            "line": 73,
+            "line": 68,
             "description": "使用 jquery on 绑定事件",
             "itemtype": "method",
             "name": "on",
@@ -2332,7 +2320,7 @@
         },
         {
             "file": "../comps/Fixed/Fixed.js",
-            "line": 81,
+            "line": 76,
             "description": "使用 jquery trigger 绑定事件",
             "itemtype": "method",
             "name": "trigger",
@@ -2352,7 +2340,7 @@
         },
         {
             "file": "../comps/Fixed/Fixed.js",
-            "line": 89,
+            "line": 84,
             "description": "获取或设置 Fixed 的实例",
             "itemtype": "method",
             "name": "getInstance",
@@ -2373,21 +2361,54 @@
         },
         {
             "file": "../comps/Fixed/Fixed.js",
-            "line": 105,
-            "description": "判断 selector 是否可以初始化 Fixed",
+            "line": 100,
+            "description": "页面加载完毕时, 是否自动初始化\n<br /> 识别 class=js_autoFixed",
+            "itemtype": "property",
+            "name": "autoInit",
+            "type": "bool",
+            "default": "true",
+            "static": 1,
+            "class": "JC.Fixed",
+            "namespace": "JC"
+        },
+        {
+            "file": "../comps/Fixed/Fixed.js",
+            "line": 109,
+            "description": "滚动的持续时间( 时间运动 )",
+            "itemtype": "property",
+            "name": "durationms",
+            "type": "int",
+            "default": "300",
+            "static": 1,
+            "class": "JC.Fixed",
+            "namespace": "JC"
+        },
+        {
+            "file": "../comps/Fixed/Fixed.js",
+            "line": 117,
+            "description": "每次滚动的时间间隔( 时间运动 )",
+            "itemtype": "property",
+            "name": "stepms",
+            "type": "int",
+            "default": "3",
+            "static": 1,
+            "class": "JC.Fixed",
+            "namespace": "JC"
+        },
+        {
+            "file": "../comps/Fixed/Fixed.js",
+            "line": 125,
+            "description": "设置或者清除 interval\n<br />避免多个 interval 造成的干扰",
             "itemtype": "method",
-            "name": "isFixed",
+            "name": "interval",
             "params": [
                 {
-                    "name": "_selector",
+                    "name": "_interval",
                     "description": "",
-                    "type": "Selector"
+                    "type": "Interval"
                 }
             ],
             "static": 1,
-            "return": {
-                "description": "bool"
-            },
             "class": "JC.Fixed",
             "namespace": "JC"
         },
@@ -11194,7 +11215,7 @@
         },
         {
             "file": "../common.js",
-            "line": 358,
+            "line": 366,
             "description": "把输入值转换为布尔值",
             "itemtype": "method",
             "name": "parseBool",
@@ -11213,7 +11234,7 @@
         },
         {
             "file": "../common.js",
-            "line": 377,
+            "line": 385,
             "description": "获取 selector 的指定父级标签",
             "itemtype": "method",
             "name": "getJqParent",
@@ -11238,11 +11259,32 @@
         },
         {
             "file": "../common.js",
-            "line": 403,
+            "line": 411,
             "description": "判断是否支持 CSS position: fixed",
             "itemtype": "property",
             "name": "$.support.isFixed",
             "type": "bool",
+            "static": 1,
+            "class": ".window"
+        },
+        {
+            "file": "../common.js",
+            "line": 439,
+            "description": "绑定或清除 mousewheel 事件",
+            "itemtype": "method",
+            "name": "mousewheelEvent",
+            "params": [
+                {
+                    "name": "_cb",
+                    "description": "",
+                    "type": "Function"
+                },
+                {
+                    "name": "_detach",
+                    "description": "",
+                    "type": "Bool"
+                }
+            ],
             "static": 1,
             "class": ".window"
         },
@@ -11622,7 +11664,7 @@
         },
         {
             "message": "unknown tag: require",
-            "line": " ../common.js:377"
+            "line": " ../common.js:385"
         },
         {
             "message": "Missing item type\n//TODO 添加事件响应机制",

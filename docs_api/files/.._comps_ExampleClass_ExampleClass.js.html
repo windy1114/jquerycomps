@@ -161,7 +161,9 @@
     /**
      * ExampleClass 模板类
      * &lt;br /&gt;要新建一个组件时, 直接 copy ExampleClass 组件改一下命名就可以开始编码了
-     * &lt;p&gt;&lt;b&gt;requires&lt;/b&gt;: &lt;a href=&#x27;window.jQuery.html&#x27;&gt;jQuery&lt;/a&gt;&lt;/p&gt;
+     * &lt;dl&gt;
+     *      &lt;dd&gt;&lt;b&gt;requires&lt;/b&gt;: &lt;a href=&#x27;window.jQuery.html&#x27;&gt;jQuery&lt;/a&gt;&lt;/dd&gt;
+     * &lt;/dl&gt;
      * &lt;p&gt;&lt;a href=&#x27;https://github.com/openjavascript/jquerycomps&#x27; target=&#x27;_blank&#x27;&gt;JC Project Site&lt;/a&gt;
      * | &lt;a href=&#x27;http://jc.openjavascript.org/docs_api/classes/JC.ExampleClass.html&#x27; target=&#x27;_blank&#x27;&gt;API docs&lt;/a&gt;
      * | &lt;a href=&#x27;../../comps/ExampleClass/_demo&#x27; target=&#x27;_blank&#x27;&gt;demo link&lt;/a&gt;&lt;/p&gt;
@@ -175,6 +177,9 @@
      * @example
      */
     function ExampleClass( _selector ){
+        if( ExampleClass.getInstance( _selector ) ) return ExampleClass.getInstance( _selector );
+        ExampleClass.getInstance( _selector, this );
+
         this._model = new Model( _selector );
         this._view = new View( this._model );
 

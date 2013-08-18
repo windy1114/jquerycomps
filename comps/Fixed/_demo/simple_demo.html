@@ -33,34 +33,42 @@
 <script>
     JC.debug = true;
     JC.use( 'Fixed' );
+
 </script>
 </head>    
 <body>
     <dl>
         <dt>Fixed 功能演示</dt>
+        <dd>durationms = 300, stepms = 3</dd>
         <dd>
-            <div class="layout layout2 js_autoFixed" fixedtop="40" fixedleft="60" >
+            <div class="layout layout2 js_autoFixed" fixedtop="90" fixedleft="60" fixeddurationms="2000" >
+                <p>durationms = 2000</p>
                 <br />
-                <br />
-                <button type="button" fixedmoveto="#point1">moveto #point1</button>
+                <button type="button" fixedmoveto="top">moveto top</button>
+                <button type="button" fixedmoveto="bottom">moveto bottom</button>
             </div>
         </dd>
         <dd>
             <div class="layout layout1 js_autoFixed" fixedtop="40" fixedright="60" >
                 <br />
                 <br />
+                <button type="button" fixedmoveto="top">moveto top</button>
+                <button type="button" fixedmoveto="#point1">moveto #point1</button>
                 <button type="button" fixedmoveto="bottom">moveto bottom</button>
             </div>
         </dd>
         <dd>
-            <button type="button" class="JCTop js_autoFixed" style="display:inline!important;"
-                fixedmoveto="0"
+            <button type="button" class="JCTop js_autoFixed" 
+                fixedleft="60"
+                fixedbottom="120"
+                fixedmoveto="document"
             ></button>
         </dd>
         <dd>
-            <button type="button" class="JCTop js_autoFixed" 
-                style="left: 60px!important; bottom: 120px!important; display:inline!important;"
-                fixedmoveto="#point1"
+            <button type="button" class="JCTop js_autoFixed"
+                fixedright="60"
+                fixedbottom="40"
+                fixedmoveto="0"
             ></button>
         </dd>
     </dl>

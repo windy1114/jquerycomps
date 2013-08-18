@@ -1,12 +1,10 @@
 
 .JCTop {
-    border:none!important;
     background: transparent url('images/top.gif') no-repeat left top;
     width: 48px;
     height: 46px;
     cursor: pointer;
-    right: 60px;
-    bottom: 40px;
+    border:none;
     display: none;
 }
 
