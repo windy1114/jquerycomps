@@ -1,1 +1,0 @@
-(function(b){window.Test=JC.Test=a;function a(c){}}(jQuery));
