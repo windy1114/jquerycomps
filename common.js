@@ -400,3 +400,32 @@ function getJqParent( _selector, _filter ){
 
     return _r;
 }
+/**
+ * 判断是否支持 CSS position: fixed
+ * @property    $.support.isFixed
+ * @type        bool
+ * @static
+ */
+$.support.isFixed = (function (){
+    try{
+        var r, contain = $( document.documentElement ),
+            el = $( "<div style='position:fixed;top:100px;visibility:hidden;'>x</div>" ).appendTo( contain ),
+            originalHeight = contain[ 0 ].style.height,
+            w = window;
+        
+        contain.height( screen.height * 2 + "px" );
+     
+        w.scrollTo( 0, 100 );
+     
+        r = el[ 0 ].getBoundingClientRect().top === 100;
+     
+        contain.height( originalHeight );
+     
+        el.remove();
+     
+        w.scrollTo( 0, 0 );
+     
+        return r;
+    }catch(ex){}
+})();
+
