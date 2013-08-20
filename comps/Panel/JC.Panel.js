@@ -98,7 +98,7 @@
      * 页面点击时, 是否自动关闭 Panel
      * @property    clickClose
      * @type        bool
-     * @default     false
+     * @default     true
      * @static
      */
     Panel.clickClose = true;
