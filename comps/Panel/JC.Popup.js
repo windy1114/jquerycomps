@@ -30,7 +30,7 @@
             }
             var _ins = _logic.popup( JC.msgbox.tpl || _logic.tpls.msgbox, _msg, _popupSrc, _status );
                 _cb && _ins.on('close', _cb );
-                _ins.autoClose();
+                setTimeout( function(){ _ins.autoClose(); }, 1 );
 
             return _ins;
         };

@@ -101,7 +101,7 @@
      * @default     false
      * @static
      */
-    Panel.clickClose = false;
+    Panel.clickClose = true;
     /**
      * 自动关闭的时间间隔, 单位毫秒
      * <br />调用 ins.autoClose() 时生效
@@ -121,30 +121,30 @@
         _init:
             function(){
                 var _p = this;
-                this._view.getPanel().data('PanelInstace', this);
+                _p._view.getPanel().data('PanelInstace', _p);
 
                 /**
                  * 初始化Panel 默认事件
                  * @private
                  */
-                this._model.addEvent( 'close_default'
+                _p._model.addEvent( 'close_default'
                                     , function( _evt, _panel ){ _panel._view.close(); } );
 
-                this._model.addEvent( 'show_default'
+                _p._model.addEvent( 'show_default'
                                     , function( _evt, _panel ){ _panel._view.show(); } );
 
-                this._model.addEvent( 'hide_default'
+                _p._model.addEvent( 'hide_default'
                                     , function( _evt, _panel ){ _panel._view.hide(); } );
 
-                this._model.addEvent( 'confirm_default'
+                _p._model.addEvent( 'confirm_default'
                                     , function( _evt, _panel ){ _panel.trigger('close'); } );
 
-                this._model.addEvent( 'cancel_default'
+                _p._model.addEvent( 'cancel_default'
                                     , function( _evt, _panel ){ _panel.trigger('close'); } );
 
-                this._model.panelautoclose() && this.autoClose();
+                _p._model.panelautoclose() && _p.autoClose();
 
-               return this;
+               return _p;
             }    
         /**
          * 为Panel绑定事件
@@ -604,12 +604,13 @@
          */
         _init:
             function(){
-                var _selector = typeof this.selector != 'undefined' ? $(this.selector) : undefined;
+                var _p = this, _selector = typeof this.selector != 'undefined' ? $(this.selector) : undefined;
+                Panel.ignoreClick = true;
                 if( _selector && _selector.length ){
                     this.selector = _selector;
                     JC.log( 'user tpl', this.selector.parent().length );
                     if( !this.selector.parent().length ){
-                        this.selector.appendTo( $(document.body ) );
+                        _p.selector.appendTo( $(document.body ) );
                     }
                 }else if( !_selector || _selector.length === 0 ){
                     this.footers = this.bodys;
@@ -617,6 +618,7 @@
                     this.headers = this.selector;
                     this.selector = undefined;
                 }
+                setTimeout( function(){ Panel.ignoreClick = false; }, 1 );
                 return this;
             }
         /**
@@ -973,6 +975,7 @@
     });
 
     $(document).on('click', function( _evt ){
+        if( Panel.ignoreClick ) return;
         $('div.UPanel').each( function(){
             var _p = $(this), _ins = Panel.getInstance( _p );
             if( _ins && _ins.isClickClose() && _ins.layout() && _ins.layout().is(':visible') ){
