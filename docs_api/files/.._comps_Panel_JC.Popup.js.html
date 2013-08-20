@@ -188,7 +188,7 @@
             }
             var _ins = _logic.popup( JC.msgbox.tpl || _logic.tpls.msgbox, _msg, _popupSrc, _status );
                 _cb &amp;&amp; _ins.on(&#x27;close&#x27;, _cb );
-                _ins.autoClose();
+                setTimeout( function(){ _ins.autoClose(); }, 1 );
 
             return _ins;
         };
@@ -413,7 +413,10 @@
         , hideEffect:
             function( _panel, _popupSrc, _doneCb ){
                 _popupSrc &amp;&amp; ( _popupSrc = $(_popupSrc) );
-                if( !(_popupSrc &amp;&amp; _popupSrc.length ) ) return;
+                if( !(_popupSrc &amp;&amp; _popupSrc.length ) ) {
+                    _doneCb &amp;&amp; _doneCb( _panel );
+                    return;
+                }
                 if( !( _panel &amp;&amp; _panel.selector ) ) return;
 
                 var _poffset = _popupSrc.offset(), _selector = _panel.selector();
@@ -440,6 +443,11 @@
                             &#x27;top&#x27;: _top + _curVal + &#x27;px&#x27;
                             , &#x27;height&#x27;: _sh - _curVal + &#x27;px&#x27;
                         });
+
+                        if( _popupSrc &amp;&amp; !_popupSrc.is(&#x27;:visible&#x27;) ){
+                            clearInterval( _dom.interval );
+                            _doneCb &amp;&amp; _doneCb( _panel );
+                        }
 
                         if( _sh === _curVal ) _selector.hide();
                         _done &amp;&amp; _doneCb &amp;&amp; _doneCb( _panel );

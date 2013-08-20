@@ -256,10 +256,10 @@
      * 页面点击时, 是否自动关闭 Panel
      * @property    clickClose
      * @type        bool
-     * @default     false
+     * @default     true
      * @static
      */
-    Panel.clickClose = false;
+    Panel.clickClose = true;
     /**
      * 自动关闭的时间间隔, 单位毫秒
      * &lt;br /&gt;调用 ins.autoClose() 时生效
@@ -279,30 +279,30 @@
         _init:
             function(){
                 var _p = this;
-                this._view.getPanel().data(&#x27;PanelInstace&#x27;, this);
+                _p._view.getPanel().data(&#x27;PanelInstace&#x27;, _p);
 
                 /**
                  * 初始化Panel 默认事件
                  * @private
                  */
-                this._model.addEvent( &#x27;close_default&#x27;
+                _p._model.addEvent( &#x27;close_default&#x27;
                                     , function( _evt, _panel ){ _panel._view.close(); } );
 
-                this._model.addEvent( &#x27;show_default&#x27;
+                _p._model.addEvent( &#x27;show_default&#x27;
                                     , function( _evt, _panel ){ _panel._view.show(); } );
 
-                this._model.addEvent( &#x27;hide_default&#x27;
+                _p._model.addEvent( &#x27;hide_default&#x27;
                                     , function( _evt, _panel ){ _panel._view.hide(); } );
 
-                this._model.addEvent( &#x27;confirm_default&#x27;
+                _p._model.addEvent( &#x27;confirm_default&#x27;
                                     , function( _evt, _panel ){ _panel.trigger(&#x27;close&#x27;); } );
 
-                this._model.addEvent( &#x27;cancel_default&#x27;
+                _p._model.addEvent( &#x27;cancel_default&#x27;
                                     , function( _evt, _panel ){ _panel.trigger(&#x27;close&#x27;); } );
 
-                this._model.panelautoclose() &amp;&amp; this.autoClose();
+                _p._model.panelautoclose() &amp;&amp; _p.autoClose();
 
-               return this;
+               return _p;
             }    
         /**
          * 为Panel绑定事件
@@ -762,12 +762,13 @@
          */
         _init:
             function(){
-                var _selector = typeof this.selector != &#x27;undefined&#x27; ? $(this.selector) : undefined;
+                var _p = this, _selector = typeof this.selector != &#x27;undefined&#x27; ? $(this.selector) : undefined;
+                Panel.ignoreClick = true;
                 if( _selector &amp;&amp; _selector.length ){
                     this.selector = _selector;
                     JC.log( &#x27;user tpl&#x27;, this.selector.parent().length );
                     if( !this.selector.parent().length ){
-                        this.selector.appendTo( $(document.body ) );
+                        _p.selector.appendTo( $(document.body ) );
                     }
                 }else if( !_selector || _selector.length === 0 ){
                     this.footers = this.bodys;
@@ -775,6 +776,7 @@
                     this.headers = this.selector;
                     this.selector = undefined;
                 }
+                setTimeout( function(){ Panel.ignoreClick = false; }, 1 );
                 return this;
             }
         /**
@@ -1130,7 +1132,8 @@
         }
     });
 
-    $(window).on(&#x27;click&#x27;, function( _evt ){
+    $(document).on(&#x27;click&#x27;, function( _evt ){
+        if( Panel.ignoreClick ) return;
         $(&#x27;div.UPanel&#x27;).each( function(){
             var _p = $(this), _ins = Panel.getInstance( _p );
             if( _ins &amp;&amp; _ins.isClickClose() &amp;&amp; _ins.layout() &amp;&amp; _ins.layout().is(&#x27;:visible&#x27;) ){
@@ -1140,7 +1143,7 @@
         });
     });
 
-    $(window).on(&#x27;keyup&#x27;, function( _evt ){
+    $(document).on(&#x27;keyup&#x27;, function( _evt ){
         var _kc = _evt.keyCode;
         switch( _kc ){
             case 27:

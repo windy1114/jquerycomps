@@ -238,7 +238,7 @@
 
             _logic.fixWidth( _msg, _ins );
             _cb &amp;&amp; _ins.on(&#x27;close&#x27;, _cb);
-            _ins.autoClose();
+            setTimeout( function(){ _ins.autoClose(); }, 1 );
 
             return _ins;
         };

@@ -255,7 +255,10 @@
         , hideEffect:
             function( _panel, _popupSrc, _doneCb ){
                 _popupSrc && ( _popupSrc = $(_popupSrc) );
-                if( !(_popupSrc && _popupSrc.length ) ) return;
+                if( !(_popupSrc && _popupSrc.length ) ) {
+                    _doneCb && _doneCb( _panel );
+                    return;
+                }
                 if( !( _panel && _panel.selector ) ) return;
 
                 var _poffset = _popupSrc.offset(), _selector = _panel.selector();
@@ -282,6 +285,11 @@
                             'top': _top + _curVal + 'px'
                             , 'height': _sh - _curVal + 'px'
                         });
+
+                        if( _popupSrc && !_popupSrc.is(':visible') ){
+                            clearInterval( _dom.interval );
+                            _doneCb && _doneCb( _panel );
+                        }
 
                         if( _sh === _curVal ) _selector.hide();
                         _done && _doneCb && _doneCb( _panel );
