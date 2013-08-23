@@ -233,7 +233,12 @@
             function( _panel ){
                 if( !_panel ){
                     _logic.hideMask();
-                    $('body > div.UPanelDialog_identifer').hide();
+                    $('body > div.UPanelDialog_identifer').each( function(){
+                        var _p = $(this), _ins = Panel.getInstance( _p );
+                        if( !_ins ) return;
+                        _ins.hide();
+                        _ins.close();
+                    });
                     $('body > div.UPanel_TMP').remove();
                 }else{
                     _panel.selector().addClass('UPanelDialog_identifer');

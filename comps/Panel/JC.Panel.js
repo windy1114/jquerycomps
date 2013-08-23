@@ -945,11 +945,12 @@
      */
     JC.hideAllPopup =
         function( _isClose ){
-            if( _isClose ){
-                $('body > div.UPanelPopup_identifer').remove();
-            }else{
-                $('body > div.UPanelPopup_identifer').hide();
-            }
+            $('body > div.UPanelPopup_identifer').each( function(){
+                var _p = $(this), _ins = Panel.getInstance( _p );
+                if( !_ins ) return;
+                _ins.hide();
+                _isClose && _ins.close();
+            });
         };
 
     /**
