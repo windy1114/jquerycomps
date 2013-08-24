@@ -262,8 +262,9 @@
      *      &lt;dd&gt;&lt;b&gt;phonecode:&lt;/b&gt; 电话号码, 7~8 位数字, [1-9][0-9]{6,7}&lt;/dd&gt;
      *      &lt;dd&gt;&lt;b&gt;phone:&lt;/b&gt; 带区号的电话号码, [区号][空格|空白|-]7~8位电话号码&lt;/dd&gt;
      *      &lt;dd&gt;&lt;b&gt;phoneall:&lt;/b&gt; 带国家代码, 区号, 分机号的电话号码, [+国家代码][区号][空格|空白|-]7~8位电话号码#1~6位&lt;/dd&gt;
-     *      &lt;dd&gt;&lt;b&gt;phonezone:&lt;/b&gt; 电话区号, 3~4位数字&lt;/dd&gt;
+     *      &lt;dd&gt;&lt;b&gt;phonezone:&lt;/b&gt; 电话区号, 3~4位数字. phonezone-n,m 可指定位数长度&lt;/dd&gt;
      *      &lt;dd&gt;&lt;b&gt;phoneext:&lt;/b&gt; 电话分机号, 1~6位数字&lt;/dd&gt;
+     *      &lt;dd&gt;&lt;b&gt;countrycode:&lt;/b&gt; 地区代码, [+]1~6位数字&lt;/dd&gt;
      *      &lt;dd&gt;&lt;b&gt;mobilephone:&lt;/b&gt; mobilecode | phone&lt;/dd&gt;
      *      &lt;dd&gt;&lt;b&gt;mobilephoneall:&lt;/b&gt; mobilezonecode | phoneall&lt;/dd&gt;
      *      &lt;dd&gt;&lt;b&gt;reg:&lt;/b&gt; 自定义正则校验, /正则规则/[igm]&lt;/dd&gt;
@@ -1365,7 +1366,12 @@
          */
         , phonezone: 
             function( _item ){
-                var _p = this, _r = /^[0-9]{3,4}$/.test( _item.val() );
+                var _p = this, _v = _item.val().trim(), _r, _re = /^[0-9]{3,4}$/, _pattern;
+
+                _pattern = _item.attr(&#x27;datatype&#x27;).split(&#x27;-&#x27;);
+                _pattern.length &gt; 1 &amp;&amp; ( _re = new RegExp( &#x27;^[0-9]{&#x27; + _pattern[1] + &#x27;}$&#x27; ) );
+
+                _r = _re.test( _v );
                 !_r &amp;&amp; $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
@@ -1592,6 +1598,23 @@
         , email: 
             function( _item ){
                 var _p = this, _r = /^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test( _item.val() );
+                !_r &amp;&amp; $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
+                return _r;
+            }
+        /**
+         * 检查地区代码
+         * @method  countrycode
+         * @private
+         * @static
+         * @param   {selector}  _item
+         * @example
+                &lt;div class=&quot;f-l&quot;&gt;
+                    &lt;input type=&quot;TEXT&quot; name=&quot;company_countrycode&quot; datatype=&quot;countrycode&quot; errmsg=&quot;请填写正确的地区代码&quot;&gt;
+                &lt;/div&gt;
+         */
+        , countrycode: 
+            function( _item ){
+                var _p = this, _v = _item.val().trim(), _r = /^(?:\+|)[\d]{1,6}$/.test( _v );
                 !_r &amp;&amp; $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }

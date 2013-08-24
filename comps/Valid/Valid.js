@@ -104,8 +104,9 @@
      *      <dd><b>phonecode:</b> 电话号码, 7~8 位数字, [1-9][0-9]{6,7}</dd>
      *      <dd><b>phone:</b> 带区号的电话号码, [区号][空格|空白|-]7~8位电话号码</dd>
      *      <dd><b>phoneall:</b> 带国家代码, 区号, 分机号的电话号码, [+国家代码][区号][空格|空白|-]7~8位电话号码#1~6位</dd>
-     *      <dd><b>phonezone:</b> 电话区号, 3~4位数字</dd>
+     *      <dd><b>phonezone:</b> 电话区号, 3~4位数字. phonezone-n,m 可指定位数长度</dd>
      *      <dd><b>phoneext:</b> 电话分机号, 1~6位数字</dd>
+     *      <dd><b>countrycode:</b> 地区代码, [+]1~6位数字</dd>
      *      <dd><b>mobilephone:</b> mobilecode | phone</dd>
      *      <dd><b>mobilephoneall:</b> mobilezonecode | phoneall</dd>
      *      <dd><b>reg:</b> 自定义正则校验, /正则规则/[igm]</dd>
@@ -1207,7 +1208,12 @@
          */
         , phonezone: 
             function( _item ){
-                var _p = this, _r = /^[0-9]{3,4}$/.test( _item.val() );
+                var _p = this, _v = _item.val().trim(), _r, _re = /^[0-9]{3,4}$/, _pattern;
+
+                _pattern = _item.attr('datatype').split('-');
+                _pattern.length > 1 && ( _re = new RegExp( '^[0-9]{' + _pattern[1] + '}$' ) );
+
+                _r = _re.test( _v );
                 !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
@@ -1434,6 +1440,23 @@
         , email: 
             function( _item ){
                 var _p = this, _r = /^[A-Z0-9._%-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test( _item.val() );
+                !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
+                return _r;
+            }
+        /**
+         * 检查地区代码
+         * @method  countrycode
+         * @private
+         * @static
+         * @param   {selector}  _item
+         * @example
+                <div class="f-l">
+                    <input type="TEXT" name="company_countrycode" datatype="countrycode" errmsg="请填写正确的地区代码">
+                </div>
+         */
+        , countrycode: 
+            function( _item ){
+                var _p = this, _v = _item.val().trim(), _r = /^(?:\+|)[\d]{1,6}$/.test( _v );
                 !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item ] );
                 return _r;
             }
