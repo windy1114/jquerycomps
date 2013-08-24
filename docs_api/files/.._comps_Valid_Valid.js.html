@@ -784,7 +784,10 @@
         , isMaxvalue: function( _item ){ return _item.is(&#x27;[maxvalue]&#x27;); }
 
         , isDatatarget: function( _item ){ return _item.is( &#x27;[datatarget]&#x27;); }
-        , datatarget: function( _item ){ return $( _item.attr( &#x27;datatarget&#x27;) ); }
+        , datatarget: 
+            function( _item ){ 
+                return parentSelector( _item, _item.attr(&#x27;datatarget&#x27;) );
+            }
 
         , minvalue: 
             function( _item, _isFloat ){ 
@@ -1687,11 +1690,13 @@
                 !_r &amp;&amp; $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item, &#x27;alternativemsg&#x27;, true ] );
                 !_r &amp;&amp; _target &amp;&amp; _target.length 
                     &amp;&amp; _target.each( function(){ 
+                        if( _item[0] == this ) return;
                         $(_p).trigger( Model.TRIGGER, [ Model.ERROR, $(this), &#x27;alternativemsg&#x27;, true ] );
                     });
 
                 if( _r &amp;&amp; _target &amp;&amp; _target.length ){
                     _target.each( function(){
+                        if( _item[0] == this ) return;
                         $(_p).trigger( Model.TRIGGER, [ Model.CORRECT, $(this) ] );
                     });
                 }
@@ -1743,11 +1748,13 @@
 
                 !_r &amp;&amp; $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item, &#x27;reconfirmmsg&#x27;, true ] );
                 !_r &amp;&amp; _target.length &amp;&amp; _target.each( function(){ 
+                    if( _item[0] == this ) return;
                     $(_p).trigger( Model.TRIGGER, [ Model.ERROR, $(this), &#x27;reconfirmmsg&#x27;, true ] );
                 } );
 
                 if( _r &amp;&amp; _target &amp;&amp; _target.length ){
                     _target.each( function(){
+                        if( _item[0] == this ) return;
                         $(_p).trigger( Model.TRIGGER, [ Model.CORRECT, $(this) ] );
                     });
                 }

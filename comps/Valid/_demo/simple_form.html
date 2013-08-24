@@ -664,12 +664,12 @@
                     <div>如果需要显式指定比较的control, 请用 datatarget=selector</div>
                 </div>
                 <div class="f-l">
-                    <input type="text" name="alternative_test[]" value="" 
+                    <input type="text" name="alternative_test[]" class="test" value="" 
                         datatype="n" subdatatype="alternative" 
                         errmsg="请填写正确的正整数"
                         alternativemsg="数值1和数值2至少需要填写一个"
                         /> <em>数值1</em>
-                    <input type="text" name="alternative_test[]" value="" 
+                    <input type="text" name="alternative_test[]" class="test" value="" 
                         datatype="n" subdatatype="alternative" 
                         errmsg="请填写正确的正整数"
                         alternativemsg="数值1和数值2至少需要填写一个"
@@ -678,6 +678,32 @@
                     <em class="validmsg"></em>
                 </div>
                 </dd>
+
+                <dd>
+                <div class="f-l label">
+                    <div>N 个 control 至少有一个值是非空值 </div>
+                    <div>datatype: n</div>
+                    <label>subdatatype: alternative</label>
+                    <div>如果需要显式指定比较的control, 请用 datatarget=selector</div>
+                </div>
+                <div class="f-l">
+                    <input type="text" name="alternative_test[]" class="test" value="" 
+                        datatype="n" subdatatype="alternative" 
+                        errmsg="请填写正确的正整数"
+                        alternativemsg="数值1和数值2至少需要填写一个"
+                        datatarget="/input.test"
+                        /> <em>数值1</em>
+                    <input type="text" name="alternative_test[]" class="test" value="" 
+                        datatype="n" subdatatype="alternative" 
+                        errmsg="请填写正确的正整数"
+                        alternativemsg="数值1和数值2至少需要填写一个"
+                        datatarget="/input.test"
+                        /> <em>数值2</em>
+                    <em class="error"></em>
+                    <em class="validmsg"></em>
+                </div>
+                </dd>
+
 
                 <dd>
                 <div class="f-l label">

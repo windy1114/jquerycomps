@@ -626,7 +626,10 @@
         , isMaxvalue: function( _item ){ return _item.is('[maxvalue]'); }
 
         , isDatatarget: function( _item ){ return _item.is( '[datatarget]'); }
-        , datatarget: function( _item ){ return $( _item.attr( 'datatarget') ); }
+        , datatarget: 
+            function( _item ){ 
+                return parentSelector( _item, _item.attr('datatarget') );
+            }
 
         , minvalue: 
             function( _item, _isFloat ){ 
@@ -1529,11 +1532,13 @@
                 !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item, 'alternativemsg', true ] );
                 !_r && _target && _target.length 
                     && _target.each( function(){ 
+                        if( _item[0] == this ) return;
                         $(_p).trigger( Model.TRIGGER, [ Model.ERROR, $(this), 'alternativemsg', true ] );
                     });
 
                 if( _r && _target && _target.length ){
                     _target.each( function(){
+                        if( _item[0] == this ) return;
                         $(_p).trigger( Model.TRIGGER, [ Model.CORRECT, $(this) ] );
                     });
                 }
@@ -1585,11 +1590,13 @@
 
                 !_r && $(_p).trigger( Model.TRIGGER, [ Model.ERROR, _item, 'reconfirmmsg', true ] );
                 !_r && _target.length && _target.each( function(){ 
+                    if( _item[0] == this ) return;
                     $(_p).trigger( Model.TRIGGER, [ Model.ERROR, $(this), 'reconfirmmsg', true ] );
                 } );
 
                 if( _r && _target && _target.length ){
                     _target.each( function(){
+                        if( _item[0] == this ) return;
                         $(_p).trigger( Model.TRIGGER, [ Model.CORRECT, $(this) ] );
                     });
                 }
