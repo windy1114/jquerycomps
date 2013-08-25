@@ -31,4 +31,13 @@
                 }, _durationMs);
             }
     };
+    JC.AutoSelect && ( JC.Form.initAutoSelect = JC.AutoSelect );
+    /**
+     * select 级联下拉框无限联动
+     * <br />这个方法已经摘取出来, 单独成为一个类.
+     * <br />详情请见: <a href="../../docs_api/classes/JC.AutoSelect.html">JC.AutoSelect.html</a>
+     * <br />目前摘出去的类与之前的逻辑保持向后兼容, 但在不久的将来将会清除这个方法
+     * @method  JC.Form.initAutoSelect
+     * @static
+     */
 }(jQuery));

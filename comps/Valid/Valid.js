@@ -1637,6 +1637,8 @@
                 if( /^\^$/.test( _selector ) ){
                     _subselector = _subselector || Model.SELECTOR_ERROR;
                     _selector = $( _item.parent().find( _subselector ) );
+                }else if( /^\//.test( _selector ) ) {
+                    return parentSelector( _item, _selector );
                 }else if( /^[\w-]+$/.test( _selector ) ) {
                     _selector = '#' + _selector;
                 }

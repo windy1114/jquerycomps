@@ -45,6 +45,8 @@
             
                 <li><a href="../classes/JC.alert.html">JC.alert</a></li>
             
+                <li><a href="../classes/JC.AutoSelect.html">JC.AutoSelect</a></li>
+            
                 <li><a href="../classes/JC.Calendar.html">JC.Calendar</a></li>
             
                 <li><a href="../classes/JC.confirm.html">JC.confirm</a></li>
@@ -1795,6 +1797,8 @@
                 if( /^\^$/.test( _selector ) ){
                     _subselector = _subselector || Model.SELECTOR_ERROR;
                     _selector = $( _item.parent().find( _subselector ) );
+                }else if( /^\//.test( _selector ) ) {
+                    return parentSelector( _item, _selector );
                 }else if( /^[\w-]+$/.test( _selector ) ) {
                     _selector = &#x27;#&#x27; + _selector;
                 }
