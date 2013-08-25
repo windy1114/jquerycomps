@@ -18,13 +18,13 @@
         <script src="./data/data1.js"></script>
         <script>
             JC.debug = true; 
-            JC.use('Form');
+            JC.use('AutoSelect');
 
             $(document).ready(function(){
 
-                //JC.Form.initAutoSelect.hideEmpty = true;
+                //JC.AutoSelect.hideEmpty = true;
 
-                JC.Form.initAutoSelect.dataFilter = 
+                JC.AutoSelect.dataFilter = 
                     function( _data, _select ){
                         var _r = _data;
                         if( _data && !_data.length && _data.data ){
@@ -33,7 +33,7 @@
                         return _r;
                     };
 
-               JC.Form.initAutoSelect.inited =
+               JC.AutoSelect.inited =
                     function(){
                         JC.log( 'user inited' );
                     };
