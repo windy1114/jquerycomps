@@ -1,4 +1,7 @@
 ;(function($){
+    /**
+     * 销售二期, 复合日历组件
+     */
     window.Bizs = window.Bizs || {};
     window.Bizs.MultiDate = MultiDate;
 
@@ -109,21 +112,8 @@
 
             return _selector.data('MultiDateIns');
         };
-    /**
-     * 判断 selector 是否可以初始化 MultiDate
-     * @method  isMultiDate
-     * @param   {selector}      _selector
-     * @static
-     * @return  bool
-     */
-    MultiDate.isMultiDate =
-        function( _selector ){
-            var _r;
-            _selector 
-                && ( _selector = $(_selector) ).length 
-                && ( _r = _selector.is( '[MultiDatelayout]' ) );
-            return _r;
-        };
+
+    MultiDate.maxDate;
     
     function Model( _selector ){
         this._selector = _selector;
@@ -161,6 +151,8 @@
                         _p.updateHiddenDate();
                     };
                 _p.mddate().attr('calendarhide', _hidecb );
+
+                !_p.mddate().is('[maxvalue]') && MultiDate.maxDate && _p.mddate().attr('maxvalue', formatISODate( MultiDate.maxDate ) );
 
                 return _p;
             }
@@ -273,9 +265,14 @@
     };
 
     $(document).ready( function(){
-        $('select.js_autoMultidate').each( function(){
-            new MultiDate( $(this) );
-        });
+
+        JC.Tips && ( JC.Tips.autoInit = false );
+
+        setTimeout( function(){
+            $('select.js_autoMultidate').each( function(){
+                new MultiDate( $(this) );
+            });
+        }, 200);
     });
 
 }(jQuery));

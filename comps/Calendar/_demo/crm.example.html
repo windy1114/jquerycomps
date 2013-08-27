@@ -16,7 +16,9 @@
     JC.debug = true; JC.use( 'Tips, Calendar, Form' );
 
     $(document).ready( function(){
-        JC.Tips && ( JC.Tips.autoInit = false );
+        var _maxMultidate = new Date();
+            _maxMultidate.setDate( _maxMultidate.getDate() - 1 );
+            window.Bizs && Bizs.MultiDate && ( Bizs.MultiDate.maxDate = _maxMultidate );
     });
 </script>
 </head>    
