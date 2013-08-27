@@ -76,8 +76,36 @@
         if( Calendar.getInstance( _selector ) ) return Calendar.getInstance( _selector );
         Calendar.getInstance( _selector, this );
 
-        this._model = new Model( _selector );
-        this._view = new View( this._model );
+        var _type = Calendar.type( _selector );
+
+        JC.log( 'Calendar init:', _type, new Date().getTime() );
+
+        switch( _type ){
+            case 'week': 
+                {
+                    this._model = new Calendar.WeekModel( _selector );
+                    this._view = new Calendar.WeekView( this._model );
+                    break;
+                }
+            case 'month': 
+                {
+                    this._model = new Calendar.MonthModel( _selector );
+                    this._view = new Calendar.MonthView( this._model );
+                    break;
+                }
+            case 'season': 
+                {
+                    this._model = new Calendar.SeasonModel( _selector );
+                    this._view = new Calendar.SeasonView( this._model );
+                    break;
+                }
+            default:
+                {
+                    this._model = new Calendar.Model( _selector );
+                    this._view = new Calendar.View( this._model );
+                    break;
+                }
+        }
 
         this._init();
     }
@@ -106,7 +134,17 @@
          * @method  show
          * @return  CalendarInstance
          */
-        , show: function(){ this._view.show(); return this; }
+        , show: 
+            function(){ 
+                Calendar.hide(); 
+                Calendar.lastIpt = this._model.selector();
+                this._view.show(); 
+
+                Calendar.layoutInitedCallback && Calendar.layoutInitedCallback( $('body > div.UXCCalendar:visible'), _selector );
+                Calendar._triggerShow();
+
+                return this; 
+            }
         /**
          * 隐藏 Calendar
          * @method  hide
@@ -153,10 +191,29 @@
             if( typeof _selector == 'string' && !/</.test( _selector ) ) 
                     _selector = $(_selector);
             if( !(_selector && _selector.length ) || ( typeof _selector == 'string' ) ) return;
-            typeof _setter != 'undefined' && _selector.data( 'CalendarIns', _setter );
+            var _type = Calendar.type( _selector ), _insName = 'CalendarIns_' + _type;
+            typeof _setter != 'undefined' && _selector.data( _insName, _setter );
 
-            return _selector.data('CalendarIns');
+            return _selector.data( _insName );
         };
+    Calendar.type =
+        function( _selector ){
+            _selector = $(_selector);
+            var _r, _type = $.trim(_selector.attr('multidate') || '').toLowerCase() 
+                || $.trim(_selector.attr('datatype') || '').toLowerCase();
+            switch( _type ){
+                case 'week': 
+                case 'month': 
+                case 'season': 
+                    {
+                        _r = _type;
+                        break;
+                    }
+                default: _r = 'date'; break;
+            }
+            return _r;
+        };
+
     /** 
      * 判断选择器是否为日历组件的对象
      * @method  isCalendar
@@ -217,19 +274,10 @@
         function( _selector ){ 
             _selector = $( _selector );
             if( !(_selector && _selector.length) ) return;
-            $('body > div.UXCCalendar').hide();
-            Calendar.lastIpt = _selector;
-            _selector = $(_selector);
-            var _type = $.trim(_selector.attr('multidate') || '').toLowerCase() || $.trim(_selector.attr('datatype') || '').toLowerCase();
-            switch( _type ){
-                case 'week': Calendar.pickWeek && Calendar.pickWeek( _selector ); break;
-                case 'month': Calendar.pickMonth && Calendar.pickMonth( _selector ); break;
-                case 'season': Calendar.pickSeason && Calendar.pickSeason( _selector ); break;
-                default: _logic.pickDate( _selector );
-            }
-
-            Calendar.layoutInitedCallback && Calendar.layoutInitedCallback( $('body > div.UXCCalendar:visible'), _selector );
-            Calendar._triggerShow();
+            var _ins = Calendar.getInstance( _selector );
+            !_ins && ( _ins = new Calendar( _selector ) );
+            _ins.show();
+            return;
         }; 
     /**
      * 设置是否在 DOM 加载完毕后, 自动初始化所有日期控件
@@ -323,18 +371,17 @@
      * @method  getDate
      * @static
      * @param   {selector}  _selector   显示日历组件的input
-     * return   Object  { date: 0, minvalue: 0, maxvalue: 0, initMinvalue: 0, initMaxvalue: 0 }
+     * return   { date: date, minvalue: date|null, maxvalue: date|null, enddate: date|null }
      */
     Calendar.getDate =
         function( _selector ){
-            var _r = { date: 0, minvalue: 0, maxvalue: 0, initMinvalue: 0, initMaxvalue: 0 }, _tmp;
+            var _r = { date: null, minvalue: null, maxvalue: null, enddate: null }, _tmp;
 
             if( _tmp = parseISODate( _selector.val() ) ) _r.date = _tmp;
             else{
                 if( _selector.val() && (_tmp = _selector.val().replace( /[^\d]/g, '' ) ).length == 16 ){
                     _r.date = parseISODate( _tmp.slice( 0, 8 ) );
-                    _r.rangeStart = cloneDate( _r.date );
-                    _r.rangeEnd = parseISODate( _tmp.slice( 8 ) );
+                    _r.enddate = parseISODate( _tmp.slice( 8 ) );
                 }else{
                     _r.date = new Date();
                 }
@@ -343,18 +390,7 @@
             _r.minvalue = parseISODate( _selector.attr('minvalue') );
             _r.maxvalue = parseISODate( _selector.attr('maxvalue') );
             
-            //_r.minvalue && ( _r.initMinvalue = cloneDate( _r.minvalue ) );
-            //_r.maxvalue && ( _r.initMaxvalue = cloneDate( _r.maxvalue ) );
-            Calendar.updateInitYearList( _r );
             return _r;
-        };
-    Calendar.updateInitYearList =
-        function( _dateObj ){
-            _dateObj.initMinvalue = cloneDate( _dateObj.date );
-            _dateObj.initMinvalue.setFullYear( _dateObj.initMinvalue.getFullYear() - Calendar.defaultDateSpan );
-
-            _dateObj.initMaxvalue = cloneDate( _dateObj.date );
-            _dateObj.initMaxvalue.setFullYear( _dateObj.initMaxvalue.getFullYear() + Calendar.defaultDateSpan );
         };
     /**
      * 每周的中文对应数字
@@ -388,11 +424,11 @@
         };
     /**
      * 设置日历组件的显示位置
-     * @method  setPosition
+     * @method  position
      * @static
      * @param   {selector}  _ipt    需要显示日历组件的文本框
      */
-    Calendar.setPosition =
+    Calendar.position =
         function( _ipt, _layout ){
             if( !( _ipt && _layout ) ) return;
             _layout.css( {'left': '-9999px', 'top': '-9999px', 'z-index': ZINDEX_COUNT++ } ).show();
@@ -416,6 +452,39 @@
             JC.log( _lw, _lh, _iw, _ih, _ioset.left, _ioset.top, _winw, _winh );
             JC.log( _scrtop, _x, _y );
         };
+    /**
+     * 这个方法后续版本不再使用, 请使用 Calendar.position
+     */
+    Calendar.setPosition = Calendar.position;
+    /**
+     * 初始化日历组件的触发按钮
+     * @method  _logic.initTrigger
+     * @param   {selector}      _selector   
+     * @private
+     */
+    Calendar.initTrigger = 
+        function( _selector ){
+           _selector.each( function(){
+                var _p = $(this), _nodeName = (_p.prop('nodeName')||'').toLowerCase();
+
+                if( _nodeName != 'input' ){ 
+                    Calendar.initTrigger( _selector.find( $('input[type=text]') ) ); 
+                    return; 
+                }
+
+                if( !($.trim( _p.attr('datatype') || '').toLowerCase() == 'date' 
+                        || $.trim( _p.attr('multidate') || '')
+                        || $.trim( _p.attr('datatype') || '').toLowerCase() == 'daterange') ) return;
+
+                var _btn = _p.find( '+ input.UXCCalendar_btn' );
+                if( !_btn.length ){
+                    _p.after( _btn = $('<input type="button" class="UXCCalendar_btn"  />') );
+                }
+                _btn.data( Calendar.INPUT, _p );
+            });
+        };
+
+    Calendar.INPUT = 'CalendarInput';
     
     function Model( _selector ){
         this._selector = _selector;
@@ -429,7 +498,98 @@
             }
 
         , selector: function(){ return this._selector; }
-        , layout: function(){}
+        , layout: 
+            function(){
+                var _r = $('#UXCCalendar');
+
+                if( !_r.length ){
+                    _r = $( Calendar.tpl || this.tpl ).hide();
+                    _r.attr('id', 'UXCCalendar').hide().appendTo( document.body );
+                    var _month = $( [
+                                '<option value="0">一月</option>'
+                                , '<option value="1">二月</option>'
+                                , '<option value="2">三月</option>'
+                                , '<option value="3">四月</option>'
+                                , '<option value="4">五月</option>'
+                                , '<option value="5">六月</option>'
+                                , '<option value="6">七月</option>'
+                                , '<option value="7">八月</option>'
+                                , '<option value="8">九月</option>'
+                                , '<option value="9">十月</option>'
+                                , '<option value="10">十一月</option>'
+                                , '<option value="11">十二月</option>'
+                            ].join('') ).appendTo( _r.find('select.UMonth' ) );
+
+                    _r.data('confirmMethod', _logic.onConfirm );
+                    _r.data('updateYearMethod', _logic.updateYear );
+                 }
+                return _r;
+            }
+        , startYear:
+            function( _dateo ){
+                var _span = Calendar.defaultDateSpan, _r = _dateo.date.getFullYear();
+                this.selector().is('[calendardatespan]') 
+                    && ( _span = parseInt( this.selector().attr('calendardatespan'), 10 ) );
+                return _r - _span;
+            }
+        , endYear:
+            function( _dateo ){
+                var _span = Calendar.defaultDateSpan, _r = _dateo.date.getFullYear();
+                this.selector().is('[calendardatespan]') 
+                    && ( _span = parseInt( this.selector().attr('calendardatespan'), 10 ) );
+                return _r + _span;
+            }
+        , currentcanselect:
+            function(){
+                var _r = true;
+                this._model.selector().is('[currentcanselect]') 
+                    && ( currentcanselect = parseBool( this._model.selector().attr('currentcanselect') ) );
+                return _r;
+            }
+        , tpl:
+            [
+            '<div id="UXCCalendar" class="UXCCalendar">'
+            ,'    <div class="UHeader">'
+            ,'        <select class="UYear"></select>'
+            ,'        <img class="UImg yearctl" align="absMiddle" usemap="#UXCCalendar_Year" />'
+            ,'        <map name="UXCCalendar_Year"><area shape="rect" coords="0,0,13,8" href="#" action="up"><area shape="rect" coords="0,10,13,17" href="#" action="down"></map>'
+            ,'        <select class="UMonth"></select>'
+            ,'        <img class="UImg monthctl" align="absMiddle" usemap="#UXCCalendar_Month"  />'
+            ,'        <map name="UXCCalendar_Month"><area shape="rect" coords="0,0,13,8" href="#" action="up"><area shape="rect" coords="0,10,13,17" href="#" action="down"></map>'
+            ,'    </div>'
+            ,'    <table class="UTable">'
+            ,'        <thead>'
+            ,'            <tr>'
+            ,'                <th>一</th>'
+            ,'                <th>二</th>'
+            ,'                <th>三</th>'
+            ,'                <th>四</th>'
+            ,'                <th>五</th>'
+            ,'                <th>六</th>'
+            ,'                <th>日</th>'
+            ,'            </tr>'
+            ,'        </thead>'
+            ,'   </table>'
+            ,'   <table class="UTable UTableBorder">'
+            ,'        <tbody>'
+            ,'           <!--<tr>'
+            ,'                <td class="cur"><a href="#">2</a></td>'
+            ,'                <td class="unable"><a href="#">2</a></td>'
+            ,'                <td class="weekend cur"><a href="#">6</a></td>'
+            ,'                <td class="weekend hover"><a href="#">13</a></td>'
+            ,'                <td class="weekend other"><a href="#">41</a></td>'
+            ,'                <td class="weekend other"><a href="#">42</a></td>'
+            ,'            </tr>-->'
+            ,'        </tbody>'
+            ,'    </table>'
+            ,'    <div class="UFooter">'
+            ,'        <button type="button" class="UConfirm">确定</button>'
+            ,'        <button type="button" class="UClear">清空</button>'
+            ,'        <button type="button" class="UCancel">取消</button>'
+            ,'    </div>'
+            ,'</div>'
+            ].join('')
+
     };
     
     function View( _model ){
@@ -449,26 +609,92 @@
 
         , show:
             function(){
+                var _dateo = Calendar.getDate( this._model.selector() );
+                JC.log( 'Calendar.View: show', new Date().getTime(), formatISODate( _dateo.date ) );
+
+                this._buildLayout( _dateo );
+                this._buildDone();
+            }
+        , _buildLayout:
+            function( _dateo ){
+                this._model.layout();
+
+                this._buildHeader( _dateo );
+                this._buildBody( _dateo );
+                this._buildFooter( _dateo );
+            }
+        , _buildHeader:
+            function( _dateo ){
+                var _p = this
+                    , _layout = _p._model.layout()
+                    , _ls = []
+                    , _tmp
+                    , _selected = _selected = _dateo.date.getFullYear()
+                    , _startYear = _p._model.startYear( _dateo )
+                    , _endYear = _p._model.endYear( _dateo )
+                    ;
+                JC.log( _startYear, _endYear );
+                for( var i = _startYear; i <= _endYear; i++ ){
+                    _ls.push( printf( '<option value="{0}"{1}>{0}</option>', i, i === _selected ? ' selected' : '' ) );
+                }
+                $( _ls.join('') ).appendTo( _layout.find('select.UYear').html('') );
+
+                $( _layout.find('select.UMonth').val( _dateo.date.getMonth() ) );
+            }
+        , _buildBody:
+            function( _dateo ){
+                var _p = this, _layout = _p._model.layout();
+                var _maxday = maxDayOfMonth( _dateo.date ), _weekday = _dateo.date.getDay() || 7
+                    , _sumday = _weekday + _maxday, _row = 6, _ls = [], _premaxday, _prebegin
+                    , _tmp, i, _class;
+
+                var _beginDate = new Date( _dateo.date.getFullYear(), _dateo.date.getMonth(), 1 );
+                var _beginWeekday = _beginDate.getDay() || 7;
+                if( _beginWeekday < 2 ){
+                    _beginDate.setDate( -( _beginWeekday - 1 + 6 ) );
+                }else{
+                    _beginDate.setDate( -( _beginWeekday - 2 ) );
+                }
+                var today = new Date();
+
+                if( _dateo.maxvalue && !_p._model.currentcanselect() ){
+                    _dateo.maxvalue.setDate( _dateo.maxvalue.getDate() - 1 );
+                }
+
+                _ls.push('<tr>');
+                for( i = 1; i <= 42; i++ ){
+                    _class = [];
+                    if( _beginDate.getDay() === 0 || _beginDate.getDay() == 6 ) _class.push('weekend');
+                    if( !isSameMonth( _dateo.date, _beginDate ) ) _class.push( 'other' );
+                    if( _dateo.minvalue && _beginDate.getTime() < _dateo.minvalue.getTime() ) 
+                        _class.push( 'unable' );
+                    if( _dateo.maxvalue && _beginDate.getTime() > _dateo.maxvalue.getTime() ) 
+                        _class.push( 'unable' );
+
+                    if( isSameDay( _beginDate, today ) ) _class.push( 'today' );
+                    if( isSameDay( _dateo.date, _beginDate ) ) _class.push( 'cur' );
+
+                    _ls.push( '<td class="', _class.join(' '),'">'
+                            ,'<a href="javascript:" date="', _beginDate.getTime(),'" title="'+formatISODate(_beginDate)+'" >'
+                            , _beginDate.getDate(), '</a></td>' );
+                    _beginDate.setDate( _beginDate.getDate() + 1 );
+                    if( i % 7 === 0 && i != 42 ) _ls.push( '</tr><tr>' );
+                }
+                _ls.push('</tr>');
+                _layout.find('table.UTableBorder tbody' ).html( $( _ls.join('') ) );
+            }
+        , _buildFooter:
+            function( _dateo ){
+            }
+        , _buildDone:
+            function(){
+               Calendar.setPosition( this._model.selector(), this._model.layout() );
+                this._model.selector().blur();
             }
     };
 
     var staticMethod = {
-        /**
-         * 初始化 _selector 中的所有日历组件
-         * @method  init
-         * @static
-         * @param   {selector}  _selector 需要初始化的日历组件父容器/日期选择input选择器
-         * @example
-                <script>
-                    $.post( url, function( _d ){
-                        _d = $(_d);
-                        _d.appendTo(body);
-                        JC.Calendar.init( _d );
-                    });
-                </script>
-         */
-        init: function( _selector ){ _logic.initTrigger( _selector ); }
-        , _triggerShow:
+        _triggerShow:
             function(){
                 var _ipt = Calendar.lastIpt, _tmp;
                 _ipt && _ipt.attr('calendarshow') 
@@ -523,174 +749,13 @@
      */
     var _logic =
     {
-        /**
-         * 初始化日历组件的触发按钮
-         * @method  _logic.initTrigger
-         * @param   {selector}      _selector   
-         * @private
-         */
-        initTrigger:
-            function( _selector ){
-               _selector.each( function(){
-                    var _p = $(this), _nodeName = (_p.prop('nodeName')||'').toLowerCase();
-                    //JC.log( '\nCalendar.init: ', _nodeName );
-
-                    if( _nodeName != 'input' ){ 
-                        _logic.initTrigger( _selector.find( $('input[type=text]') ) ); 
-                        return; 
-                    }
-                    if( !($.trim( _p.attr('datatype') || '').toLowerCase() == 'date' 
-                            || $.trim( _p.attr('multidate') || '')
-                            || $.trim( _p.attr('datatype') || '').toLowerCase() == 'daterange') ) return;
-
-                    //JC.log( 'find Calendar item:', _p.attr('name'), _p.attr('id'), _p.attr('datatype') );
-                    var _btn = _p.find( '+ input.UXCCalendar_btn' );
-                    if( !_btn.length ){
-                        _p.after( _btn = $('<input type="button" class="UXCCalendar_btn"  />') );
-                    }
-
-                    _btn[0].forCalendar = _p;
-                });
-            }
-        /**
-         * 最后一个显示日历组件的日期对象
-         * @property    _logic.lastDateObj
-         * @type        Object
-         * @private
-         */
-        , lastDateObj: null
-        /**
-         * 显示日历组件
-         * @method  _logic.pickDate
-         * @param   {selector}  _selector input[type=text][datatype=date]
-         * @private
-         */
-        , pickDate:
-            function( _selector ){
-                JC.log( 'Calendar.pickDate', new Date().getTime() );
-
-                _selector = $(_selector);
-
-                var _dateObj = _logic.lastDateObj = Calendar.getDate( _selector );
-
-                JC.log( _dateObj.date.getFullYear(), _dateObj.date.getMonth()+1, _dateObj.date.getDate() );
-
-                _logic.initDateLayout( _dateObj );
-                Calendar.setPosition( _selector, _logic.getLayout() );
-
-                _selector.blur();
-            }
-        /**
-         * 初始化日历组件的所有日期
-         *      _dateObj = { date: date, minvalue: date, maxvalue: date, initMinvalue: date, initMaxvalue: date };
-         * @method  _logic.initDateLayout
-         * @param   {DateObjects}   _dateObj   保存所有相关日期的对象
-         * @private
-         */
-        , initDateLayout:
-            function( _dateObj ){
-                Calendar.updateInitYearList( _dateObj );
-
-                _logic.initYear( _dateObj );
-                _logic.initMonth( _dateObj );
-                _logic.initMonthDate( _dateObj );
-            }
-        /**
-         * 初始化月份的所有日期
-         * @method  _logic.initMonthDate
-         * @param   {DateObjects}   _dateObj   保存所有相关日期的对象
-         * @private
-         */
-        , initMonthDate:
-            function( _dateObj ){
-                var _layout = _logic.getLayout();
-                var _maxday = maxDayOfMonth( _dateObj.date ), _weekday = _dateObj.date.getDay() || 7
-                    , _sumday = _weekday + _maxday, _row = 6, _ls = [], _premaxday, _prebegin
-                    , _tmp, i, _class;
-
-                var _beginDate = new Date( _dateObj.date.getFullYear(), _dateObj.date.getMonth(), 1 );
-                var _beginWeekday = _beginDate.getDay() || 7;
-                if( _beginWeekday < 2 ){
-                    _beginDate.setDate( -(_beginWeekday-1+6) );
-                }else{
-                    _beginDate.setDate( -(_beginWeekday-2) );
-                }
-                var today = new Date();
-
-                var ipt = JC.Calendar.lastIpt, currentcanselect = true;
-                if( ipt.is('[currentcanselect]') ) currentcanselect = parseBool( ipt.attr('currentcanselect') );
-
-                if( _dateObj.maxvalue && !currentcanselect ){
-                    _dateObj.maxvalue.setDate( _dateObj.maxvalue.getDate() - 1 );
-                }
-
-                _ls.push('<tr>');
-                for( i = 1; i <= 42; i++ ){
-                    _class = [];
-                    if( _beginDate.getDay() === 0 || _beginDate.getDay() == 6 ) _class.push('weekend');
-                    if( !isSameMonth( _dateObj.date, _beginDate ) ) _class.push( 'other' );
-                    if( _dateObj.minvalue && _beginDate.getTime() < _dateObj.minvalue.getTime() ) 
-                        _class.push( 'unable' );
-                    if( _dateObj.maxvalue && _beginDate.getTime() > _dateObj.maxvalue.getTime() ) 
-                        _class.push( 'unable' );
-
-                    if( isSameDay( _beginDate, today ) ) _class.push( 'today' );
-                    if( isSameDay( _dateObj.date, _beginDate ) ) _class.push( 'cur' );
-
-                    _ls.push( '<td class="', _class.join(' '),'">'
-                            ,'<a href="javascript:" date="', _beginDate.getTime(),'" title="'+formatISODate(_beginDate)+'" >'
-                            , _beginDate.getDate(), '</a></td>' );
-                    _beginDate.setDate( _beginDate.getDate() + 1 );
-                    if( i % 7 === 0 && i != 42 ) _ls.push( '</tr><tr>' );
-                }
-                _ls.push('</tr>');
-
-                _layout.find('table.UTableBorder tbody' ).html( $( _ls.join('') ) );
-
-                JC.log( _prebegin, _premaxday, _maxday, _weekday, _sumday, _row );
-            }
-        /**
-         * 初始化月份
-         * @method  _logic.initMonth
-         * @param   {DateObjects}   _dateObj   保存所有相关日期的对象
-         * @private
-         */
-        , initMonth:
-            function( _dateObj ){
-                var _layout = _logic.getLayout();
-                $( _layout.find('select.UMonth').val( _dateObj.date.getMonth() ) );
-            }
-        /**
-         * 初始化年份
-         * @method  _logic.initYear
-         * @param   {DateObjects}   _dateObj   保存所有相关日期的对象
-         * @private
-         */
-        , initYear:
-            function( _dateObj ){
-                var _layout = _logic.getLayout(), _ls = [], _tmp, _selected
-                    , _sYear = _dateObj.initMinvalue.getFullYear()
-                    , _eYear = _dateObj.initMaxvalue.getFullYear();
-
-                JC.log( _sYear, _eYear );
-
-                if( !_selected ) _selected = _dateObj.date.getFullYear();
-
-                for( var i = _sYear; i <= _eYear; i++ ){
-                    _tmp = '';
-                    if( _selected === i ) _tmp = " selected "
-                    _ls.push( '<option value="'+i+'"'+_tmp+'>'+i+'</option>' );
-                }
-
-                $( _ls.join('') ).appendTo( _layout.find('select.UYear').html('') );
-            }
-        /**
+         /**
          * 按年份更改日期
          * @method  _logic.updateYear
          * @param   {int}   _year   新的年份, YYYY
          * @private
          */
-        , updateYear:
+        updateYear:
             function( _year ){
                 JC.log( _year );
                 if ( !_logic.lastDateObj ) return;
@@ -733,31 +798,6 @@
          */
         , getLayout:
             function(){
-                var _r = $('#UXCCalendar');
-
-                if( !_r.length ){
-                    _r = $( Calendar.tpl || _logic.tpl );
-                    _r.attr('id', 'UXCCalendar').hide().appendTo( document.body );
-                    var _month = $( [
-                                '<option value="0">一月</option>'
-                                , '<option value="1">二月</option>'
-                                , '<option value="2">三月</option>'
-                                , '<option value="3">四月</option>'
-                                , '<option value="4">五月</option>'
-                                , '<option value="5">六月</option>'
-                                , '<option value="6">七月</option>'
-                                , '<option value="7">八月</option>'
-                                , '<option value="8">九月</option>'
-                                , '<option value="9">十月</option>'
-                                , '<option value="10">十一月</option>'
-                                , '<option value="11">十二月</option>'
-                            ].join('') ).appendTo( _r.find('select.UMonth' ) );
-                    _r.hide();
-                    _r.data('confirmMethod', _logic.onConfirm );
-                    _r.data('updateYearMethod', _logic.updateYear );
-                 }
-
-                return _r;
             }
         /**
          * 把日期赋值给文本框
@@ -800,49 +840,7 @@
          * @type    string
          * @private
          */
-        , tpl: 
-        [
-        '<div id="UXCCalendar" class="UXCCalendar">\n'
-        ,'    <div class="UHeader">\n'
-        ,'        <select class="UYear"></select>\n'
-        ,'        <img class="UImg yearctl" align="absMiddle" usemap="#UXCCalendar_Year" />\n'
-        ,'        <map name="UXCCalendar_Year"><area shape="rect" coords="0,0,13,8" href="#" action="up"><area shape="rect" coords="0,10,13,17" href="#" action="down"></map>\n'
-        ,'        <select class="UMonth"></select>\n'
-        ,'        <img class="UImg monthctl" align="absMiddle" usemap="#UXCCalendar_Month"  />\n'
-        ,'        <map name="UXCCalendar_Month"><area shape="rect" coords="0,0,13,8" href="#" action="up"><area shape="rect" coords="0,10,13,17" href="#" action="down"></map>\n'
-        ,'    </div>\n'
-        ,'    <table class="UTable">\n'
-        ,'        <thead>\n'
-        ,'            <tr>\n'
-        ,'                <th>一</th>\n'
-        ,'                <th>二</th>\n'
-        ,'                <th>三</th>\n'
-        ,'                <th>四</th>\n'
-        ,'                <th>五</th>\n'
-        ,'                <th>六</th>\n'
-        ,'                <th>日</th>\n'
-        ,'            </tr>\n'
-        ,'        </thead>\n'
-        ,'   </table>\n'
-        ,'   <table class="UTable UTableBorder">\n'
-        ,'        <tbody>\n'
-        ,'           <!--<tr>\n'
-        ,'                <td class="cur"><a href="#">2</a></td>\n'
-        ,'                <td class="unable"><a href="#">2</a></td>\n'
-        ,'                <td class="weekend cur"><a href="#">6</a></td>\n'
-        ,'                <td class="weekend hover"><a href="#">13</a></td>\n'
-        ,'                <td class="weekend other"><a href="#">41</a></td>\n'
-        ,'                <td class="weekend other"><a href="#">42</a></td>\n'
-        ,'            </tr>\n-->'
-        ,'        </tbody>\n'
-        ,'    </table>\n'
-        ,'    <div class="UFooter">\n'
-        ,'        <button type="button" class="UConfirm">确定</button>\n'
-        ,'        <button type="button" class="UClear">清空</button>\n'
-        ,'        <button type="button" class="UCancel">取消</button>\n'
-        ,'    </div>\n'
-        ,'</div>\n'
-        ].join('')
+        //, tpl: 
     };
     /**
      * 捕获用户更改年份 
@@ -851,9 +849,13 @@
      * @private
      */
     $(document).delegate( 'body > div.UXCCalendar select.UYear', 'change', function( $evt ){
+        /*
         var box = $(this).parents( 'div.UXCCalendar' );
         box.length && box.data('updateYearMethod') && box.data('updateYearMethod')( $(this).val()  );
         Calendar._triggerLayoutChange();
+        */
+        var _ins = Calendar.getInstance( Calendar.lastIpt );
+        _ins && _ins.update();
     });
     /**
      * 捕获用户更改年份 
@@ -970,7 +972,7 @@
      * @private
      */
     $(document).delegate( 'input.UXCCalendar_btn', 'click', function($evt){
-        if( this.forCalendar ) Calendar.pickDate( this.forCalendar );
+        $(this).data( Calendar.INPUT ) && Calendar.pickDate( $(this).data( Calendar.INPUT ) );
     });
     /**
      * 日历组件文本框获得焦点
@@ -1025,7 +1027,7 @@
          */
         setTimeout( function( $evt ){
             if( !Calendar.autoInit ) return;
-            Calendar.init( $('input[type=text]') );
+            Calendar.initTrigger( $('input[type=text]') );
         }, 200 );
         /**
          * 监听窗口滚动和改变大小, 实时变更日历组件显示位置
@@ -1035,7 +1037,7 @@
         $(window).on('scroll resize', function($evt){
             var _layout = $('body > div.UXCCalendar:visible');
             if( !( _layout.length && Calendar.lastIpt ) ) return;
-            Calendar.setPosition( Calendar.lastIpt, _layout );
+            Calendar.position( Calendar.lastIpt, _layout );
         });
         /**
          * dom 点击时, 检查事件源是否为日历组件对象, 如果不是则会隐藏日历组件
