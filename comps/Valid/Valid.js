@@ -88,7 +88,7 @@
      *          <dl>
      *              <dd>html attr <b>fromDateEl:</b> 指定开始的 control</dd>
      *              <dd>html attr <b>toDateEl:</b> 指定结束的 control</dd>
-     *              <dd>如果不指定 fromDateEl, toDateEl, 默认是从父节点下面找到 nrange, 按顺序定为 fromDateEl, toDateEl</dd>
+     *              <dd>如果不指定 fromDateEl, toDateEl, 默认是从父节点下面找到 daterange, 按顺序定为 fromDateEl, toDateEl</dd>
      *          </dl>
      *      </dd>
      *      <dd><b>time:</b> 是否为正确的时间, hh:mm:ss</dd>
