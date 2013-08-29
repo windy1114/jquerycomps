@@ -178,6 +178,23 @@
          * @return  CalendarInstance
          */
         , trigger: function( _evtName, _data ){ $(this).trigger( _evtName, _data ); return this;}
+        , updateLayout:
+            function(){
+                this._view.updateLayout();
+            }
+        , updateSelector:
+            function( _selector ){
+                Calendar.lastIpt = _selector;
+                this._model && this._model.selector( _selector );
+            }
+        , updateYear:
+            function( _offset ){
+                this._view && this._view.updateYear( _offset );
+            }
+        , updateMonth:
+            function( _offset ){
+                this._view && this._view.updateMonth( _offset );
+            }
     }
     /**
      * 获取或设置 Calendar 的实例
@@ -188,14 +205,15 @@
      */
     Calendar.getInstance =
         function( _selector, _setter ){
-            if( typeof _selector == 'string' && !/</.test( _selector ) ) 
-                    _selector = $(_selector);
+            typeof _selector == 'string' && !/</.test( _selector ) && ( _selector = $(_selector) );
             if( !(_selector && _selector.length ) || ( typeof _selector == 'string' ) ) return;
-            var _type = Calendar.type( _selector ), _insName = 'CalendarIns_' + _type;
-            typeof _setter != 'undefined' && _selector.data( _insName, _setter );
-
-            return _selector.data( _insName );
+            var _type = Calendar.type( _selector );
+            typeof _setter != 'undefined' && ( Calendar._ins[ _type ] = _setter );
+            Calendar._ins[ _type ] && Calendar._ins[ _type ].updateSelector( _selector );
+            return Calendar._ins[ _type ];
         };
+    Calendar._ins = {};
+
     Calendar.type =
         function( _selector ){
             _selector = $(_selector);
@@ -497,7 +515,11 @@
                 return this;
             }
 
-        , selector: function(){ return this._selector; }
+        , selector: 
+            function( _setter ){ 
+                typeof _setter != 'undefined' && ( this._selector = _setter );
+                return this._selector; 
+            }
         , layout: 
             function(){
                 var _r = $('#UXCCalendar');
@@ -545,6 +567,34 @@
                 this._model.selector().is('[currentcanselect]') 
                     && ( currentcanselect = parseBool( this._model.selector().attr('currentcanselect') ) );
                 return _r;
+            }
+        , year: 
+            function(){
+                return parseInt( this.layout().find('select.UYear').val(), 10 ) || 1;
+            }
+        , month:
+            function(){
+                return parseInt( this.layout().find('select.UMonth').val(), 10 ) || 0;
+            }
+        , day:
+            function(){
+                var _tmp, _date = new Date();
+                _tmp = this.layout().find('td.cur > a[date]');
+                if( _tmp.length ){
+                    _date.setTime( _tmp.attr('date') );
+                }
+                return _date.getDate();
+            }
+        , layoutDate:
+            function(){
+                var _dateo = Calendar.getDate( this.selector() ), _day = this.day(), _max;
+                _dateo.date.setDate( 1 );
+                _dateo.date.setFullYear( this.year() );
+                _dateo.date.setMonth( this.month() );
+                _max = maxDayOfMonth( _dateo.date );
+                _day > _max && ( _day = _max );
+                _dateo.date.setDate( _day );
+                return _dateo;
             }
         , tpl:
             [
@@ -614,6 +664,42 @@
 
                 this._buildLayout( _dateo );
                 this._buildDone();
+            }
+        , updateLayout:
+            function( _dateo ){
+                typeof _dateo == 'undefined' && ( _dateo = this._model.layoutDate() );
+                this._buildLayout( _dateo );
+                this._buildDone();
+            }
+        , updateYear:
+            function( _offset ){
+                if( typeof _offset == 'undefined' || _offset == 0 ) return;
+                var _dateo = this._model.layoutDate(), _day = _dateo.date.getDate(), _max;
+                _dateo.date.setDate( 1 );
+                _dateo.date.setFullYear( _dateo.date.getFullYear() + _offset );
+                _max = maxDayOfMonth( _dateo.date );
+                _day > _max && ( _day = _max );
+                _dateo.date.setDate( _day );
+                this._buildLayout( _dateo );
+                this._buildDone();
+            }
+        , updateMonth:
+            function( _offset ){
+                if( typeof _offset == 'undefined' || _offset == 0 ) return;
+                var _dateo = this._model.layoutDate(), _day = _dateo.date.getDate(), _max;
+                _dateo.date.setDate( 1 );
+                _dateo.date.setMonth( _dateo.date.getMonth() + _offset );
+                _max = maxDayOfMonth( _dateo.date );
+                _day > _max && ( _day = _max );
+                _dateo.date.setDate( _day );
+                this._buildLayout( _dateo );
+                this._buildDone();
+                //JC.log( 'updateMonth:', _offset, formatISODate( _dateo.date ) );
+            }
+        , _buildDone:
+            function(){
+               Calendar.setPosition( this._model.selector(), this._model.layout() );
+                this._model.selector().blur();
             }
         , _buildLayout:
             function( _dateo ){
@@ -685,11 +771,6 @@
             }
         , _buildFooter:
             function( _dateo ){
-            }
-        , _buildDone:
-            function(){
-               Calendar.setPosition( this._model.selector(), this._model.layout() );
-                this._model.selector().blur();
             }
     };
 
@@ -848,14 +929,9 @@
      * @event year change
      * @private
      */
-    $(document).delegate( 'body > div.UXCCalendar select.UYear', 'change', function( $evt ){
-        /*
-        var box = $(this).parents( 'div.UXCCalendar' );
-        box.length && box.data('updateYearMethod') && box.data('updateYearMethod')( $(this).val()  );
-        Calendar._triggerLayoutChange();
-        */
+    $(document).delegate( 'body > div.UXCCalendar select.UYear, #UXCCalendar select.UMonth', 'change', function( $evt ){
         var _ins = Calendar.getInstance( Calendar.lastIpt );
-        _ins && _ins.update();
+        _ins && _ins.updateLayout();
     });
     /**
      * 捕获用户更改年份 
@@ -864,9 +940,8 @@
      * @private
      */
     $(document).delegate( 'body > div.UXCCalendar button.UNextYear', 'click', function( $evt ){
-        var box = $(this).parents( 'div.UXCCalendar' );
-        box.length && box.data('nextYearMethod') && box.data('nextYearMethod')();
-        Calendar._triggerLayoutChange();
+        var _ins = Calendar.getInstance( Calendar.lastIpt );
+        _ins && _ins.updateYear( 1 );
     });
     /**
      * 捕获用户更改年份 
@@ -875,19 +950,41 @@
      * @private
      */
     $(document).delegate( 'body > div.UXCCalendar button.UPreYear', 'click', function( $evt ){
-        var box = $(this).parents( 'div.UXCCalendar' );
-        box.length && box.data('preYearMethod') && box.data('preYearMethod')();
-        Calendar._triggerLayoutChange();
+        var _ins = Calendar.getInstance( Calendar.lastIpt );
+        _ins && _ins.updateYear( -1 );
     });
     /**
-     * 捕获用户更改月份
-     * <p>监听 月份下拉框</p>
-     * @event   month change
+     * 增加或者减少一年
+     * <p>监听 年份map</p>
+     * @event   year map click
      * @private
      */
-    $(document).delegate( '#UXCCalendar select.UMonth', 'change', function( $evt ){
-        _logic.setNewMonth( $(this).val() );
-        Calendar._triggerLayoutChange();
+    $(document).delegate( "map[name=UXCCalendar_Year] area" , 'click', function( $evt ){
+        $evt.preventDefault();
+        var _p = $(this), _ins = Calendar.getInstance( Calendar.lastIpt );
+        if( !( _p.attr("action") && _ins ) ) return;
+        if( _p.attr("action").toLowerCase() == 'up' ){
+            _ins && _ins.updateYear( 1 );
+        }else if( _p.attr("action").toLowerCase() == 'down' ){
+            _ins && _ins.updateYear( -1 );
+        }
+    });
+    /**
+     * 增加或者减少一个月
+     * <p>监听 月份map</p>
+     * @event   month map click
+     * @private
+     */
+    $(document).delegate( "map[name=UXCCalendar_Month] area" , 'click', function( $evt ){
+        $evt.preventDefault();
+        var _p = $(this), _ins = Calendar.getInstance( Calendar.lastIpt );
+        if( !( _p.attr("action") && _ins ) ) return;
+
+        if( _p.attr("action").toLowerCase() == 'up' ){
+            _ins && _ins.updateMonth( 1 );
+        }else if( _p.attr("action").toLowerCase() == 'down' ){
+            _ins && _ins.updateMonth( -1 );
+        }
     });
     /**
      * 选择当前日期
@@ -902,48 +999,6 @@
         }
         box.length && box.data('confirmMethod') && box.data('confirmMethod')( this );
         Calendar.hide();
-    });
-    /**
-     * 增加或者减少一年
-     * <p>监听 年份map</p>
-     * @event   year map click
-     * @private
-     */
-    $(document).delegate( "map[name=UXCCalendar_Year] area" , 'click', function( $evt ){
-        $evt.preventDefault();
-        var _p = $(this), _do = _logic.lastDateObj;
-        if( !(_do && _p.attr("action") ) ) return;
-        if( _p.attr("action").toLowerCase() == 'up' ){
-            _do.date.setFullYear( _do.date.getFullYear() + 1 );
-        }else if( _p.attr("action").toLowerCase() == 'down' ){
-            _do.date.setFullYear( _do.date.getFullYear() - 1 );
-        }
-        _logic.initDateLayout( _do );
-        JC.log( _p.attr("action") );
-        Calendar._triggerLayoutChange();
-    });
-    /**
-     * 增加或者减少一个月
-     * <p>监听 月份map</p>
-     * @event   month map click
-     * @private
-     */
-    $(document).delegate( "map[name=UXCCalendar_Month] area" , 'click', function( $evt ){
-        $evt.preventDefault();
-        var _p = $(this), _do = _logic.lastDateObj;
-        if( !(_do && _p.attr("action") ) ) return;
-        if( _p.attr("action").toLowerCase() == 'up' ){
-            _do.date.setMonth( _do.date.getMonth() + 1 );
-            _do.initMinvalue.setMonth( _do.initMinvalue.getMonth() + 1 );
-            _do.initMaxvalue.setMonth( _do.initMaxvalue.getMonth() + 1 );
-        }else if( _p.attr("action").toLowerCase() == 'down' ){
-            _do.date.setMonth( _do.date.getMonth() - 1 );
-            _do.initMinvalue.setMonth( _do.initMinvalue.getMonth() - 1 );
-            _do.initMaxvalue.setMonth( _do.initMaxvalue.getMonth() - 1 );
-        }
-        _logic.initDateLayout( _do );
-        JC.log( _p.attr("action") );
-        Calendar._triggerLayoutChange();
     });
     /**
      * 清除文本框内容
@@ -973,19 +1028,6 @@
      */
     $(document).delegate( 'input.UXCCalendar_btn', 'click', function($evt){
         $(this).data( Calendar.INPUT ) && Calendar.pickDate( $(this).data( Calendar.INPUT ) );
-    });
-    /**
-     * 日历组件文本框获得焦点
-     * @event input focus
-     * @private
-     */
-    $(document).delegate( [ 'input[datatype=season]', 'input[datatype=month]', 'input[datatype=week]'
-            , 'input[datatype=date]', 'input[datatype=daterange]', 'input[multidate]' ].join(), 'focus' , function($evt){
-            Calendar.pickDate( this );
-    });
-    $(document).delegate( [ 'button[datatype=season]', 'button[datatype=month]', 'button[datatype=week]'
-            , 'button[datatype=date]', 'button[datatype=daterange]', 'button[multidate]' ].join(), 'click' , function($evt){
-            Calendar.pickDate( this );
     });
     /**
      * 日历组件点击事件, 阻止冒泡, 防止被 document click事件隐藏
@@ -1060,6 +1102,19 @@
                 Calendar.hide();
             }, 100);
         });
+    });
+    /**
+     * 日历组件文本框获得焦点
+     * @event input focus
+     * @private
+     */
+    $(document).delegate( [ 'input[datatype=season]', 'input[datatype=month]', 'input[datatype=week]'
+            , 'input[datatype=date]', 'input[datatype=daterange]', 'input[multidate]' ].join(), 'focus' , function($evt){
+            Calendar.pickDate( this );
+    });
+    $(document).delegate( [ 'button[datatype=season]', 'button[datatype=month]', 'button[datatype=week]'
+            , 'button[datatype=date]', 'button[datatype=daterange]', 'button[multidate]' ].join(), 'click' , function($evt){
+            Calendar.pickDate( this );
     });
 }(jQuery));
 
