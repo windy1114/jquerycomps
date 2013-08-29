@@ -8,10 +8,11 @@
     body{ width: 600px; margin: 20px auto 20px; background:#ececec; }
     dl dd{ margin: 10px 0; }
 </style>
-<link href='../../../comps/Calendar/res/default/style.css' rel='stylesheet' />
+<link href='../../../comps/Calendar0.2/res/default/style.css' rel='stylesheet' />
+<link href='../../../comps/Valid/res/default/style.css' rel='stylesheet' />
 <script src="../../../lib.js"></script>
 <script>
-    JC.debug = true; JC.use( 'comps/Calendar0.2/Calendar.js' );
+    JC.debug = true; JC.use( 'comps/Calendar0.2/Calendar.js, Valid' );
     /**
      * 注意: 如果 input 已经声明了 datatype=date, 那就不需要执行下面的语法
      * 带 datatype=date 的 input 页面加载完毕后都会自动初始化
@@ -42,6 +43,9 @@
                 <input type="text" name="date5" datatype="date" value="20110201" /><input type="button" class="UXCCalendar_btn" />
             </dd>
             <dd>
+                <input type="text" >not date
+            </dd>
+            <dd>
                 <input type="text" name="date6" class="manualPickDate" value="20110201" />manual JC.Calendar.pickDate
             </dd>
             <dd>
@@ -60,6 +64,7 @@
                 date range:
                 <input type="text" name="date2" datatype="daterange" value="2013-06-03" maxvalue="2013-06-30" />
                 <input type="text" name="date2" datatype="daterange" value="2013-06-03" maxvalue="2013-06-30" />
+                <em class="error"></em>
             </dd>
         </dl>
     </form>

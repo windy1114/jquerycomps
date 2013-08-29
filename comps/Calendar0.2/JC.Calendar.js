@@ -140,7 +140,7 @@
                 Calendar.lastIpt = this._model.selector();
                 this._view.show(); 
 
-                Calendar.layoutInitedCallback && Calendar.layoutInitedCallback( $('body > div.UXCCalendar:visible'), _selector );
+                Calendar.layoutInitedCallback && Calendar.layoutInitedCallback( this._model.layout(), _selector );
                 Calendar._triggerShow();
 
                 return this; 
@@ -194,6 +194,34 @@
         , updateMonth:
             function( _offset ){
                 this._view && this._view.updateMonth( _offset );
+            }
+        , updateSelected:
+            function( _userSelectedItem ){
+                JC.log( 'JC.Calendar: updateSelector', new Date().getTime() );
+                this._view && this._view.updateSelected( _userSelectedItem );
+                /*
+                 */
+            }
+        , updatePosition:
+            function(){
+                this._view && this._view.updatePosition();
+            }
+        , clear:
+            function(){
+                this._model && this._model.selector().val('');
+            }
+        , cancel:
+            function(){
+                this._view && this._view.hide();
+            }
+        , visible:
+            function(){
+                var _r, _tmp;
+                this._model 
+                    && ( _tmp = this._model.layout() ) 
+                    && ( _r = _tmp.is(':visible') )
+                    ;
+                return _r;
             }
     }
     /**
@@ -254,10 +282,13 @@
                                 || _selector.attr('datatype').toLowerCase()=='month' 
                                 || _selector.attr('datatype').toLowerCase()=='season' 
                                 || _selector.attr('datatype').toLowerCase()=='year' 
+                                || _selector.attr('datatype').toLowerCase()=='daterange' 
                             )) _r = 1;
                 if( _selector.prop('nodeName') 
                         && _selector.attr('multidate')
-                        && _selector.prop('nodeName').toLowerCase()=='input') _r = 1;
+                        && ( _selector.prop('nodeName').toLowerCase()=='input' 
+                            || _selector.prop('nodeName').toLowerCase()=='input' )
+                        ) _r = 1;
             }
 
             return _r;
@@ -447,28 +478,9 @@
      * @param   {selector}  _ipt    需要显示日历组件的文本框
      */
     Calendar.position =
-        function( _ipt, _layout ){
-            if( !( _ipt && _layout ) ) return;
-            _layout.css( {'left': '-9999px', 'top': '-9999px', 'z-index': ZINDEX_COUNT++ } ).show();
-            var _lw = _layout.width(), _lh = _layout.height()
-                , _iw = _ipt.width(), _ih = _ipt.height(), _ioset = _ipt.offset()
-                , _x, _y, _winw = $(window).width(), _winh = $(window).height()
-                , _scrtop = $(document).scrollTop()
-                ;
-
-            _x = _ioset.left; _y = _ioset.top + _ih + 5;
-
-            if( ( _y + _lh - _scrtop ) > _winh ){
-                JC.log('y overflow');
-                _y = _ioset.top - _lh - 3;
-
-                if( _y < _scrtop ) _y = _scrtop;
-            }
-
-            _layout.css( {left: _x+'px', top: _y+'px'} );
-
-            JC.log( _lw, _lh, _iw, _ih, _ioset.left, _ioset.top, _winw, _winh );
-            JC.log( _scrtop, _x, _y );
+        function( _ipt ){
+            Calendar.getInstance( _ipt )
+                && Calendar.getInstance( _ipt ).updatePosition();
         };
     /**
      * 这个方法后续版本不再使用, 请使用 Calendar.position
@@ -564,8 +576,8 @@
         , currentcanselect:
             function(){
                 var _r = true;
-                this._model.selector().is('[currentcanselect]') 
-                    && ( currentcanselect = parseBool( this._model.selector().attr('currentcanselect') ) );
+                this.selector().is('[currentcanselect]') 
+                    && ( currentcanselect = parseBool( this.selector().attr('currentcanselect') ) );
                 return _r;
             }
         , year: 
@@ -595,6 +607,17 @@
                 _day > _max && ( _day = _max );
                 _dateo.date.setDate( _day );
                 return _dateo;
+            }
+        , selectedDate:
+            function(){
+                var _r, _tmp, _item;
+                _tmp = this.layout().find('td.cur');
+                _tmp.length 
+                    && !_tmp.hasClass( 'unable' )
+                    && ( _item = _tmp.find('a[date]') )
+                    && ( _r = new Date(), _r.setTime( _item.attr('date') ) )
+                    ;
+                return _r;
             }
         , tpl:
             [
@@ -655,6 +678,7 @@
 
         , hide:
             function(){
+                this._model.layout().hide();
             }
 
         , show:
@@ -696,9 +720,53 @@
                 this._buildDone();
                 //JC.log( 'updateMonth:', _offset, formatISODate( _dateo.date ) );
             }
+        , updateSelected:
+            function( _userSelectedItem ){
+                var _date, _tmp;
+                if( !_userSelectedItem ){
+                    _date = this._model.selectedDate();
+                }else{
+                    _userSelectedItem = $( _userSelectedItem );
+                    _tmp = getJqParent( _userSelectedItem, 'td' );
+                    if( _tmp && _tmp.hasClass('unable') ) return;
+                    _date = new Date();
+                    _date.setTime( _userSelectedItem.attr('date') );
+                }
+                if( !_date ) return;
+
+                this._model.selector().val( formatISODate( _date ) );
+                Calendar.hide();
+            }
+        , updatePosition:
+            function(){
+                var _p = this, _ipt = _p._model.selector(), _layout = _p._model.layout();
+                JC.log( 'updatePosition', 1 );
+                if( !( _ipt && _layout && _ipt.length && _layout.length ) ) return;
+                JC.log( 'updatePosition', 12 );
+                _layout.css( {'left': '-9999px', 'top': '-9999px', 'z-index': ZINDEX_COUNT++ } ).show();
+                var _lw = _layout.width(), _lh = _layout.height()
+                    , _iw = _ipt.width(), _ih = _ipt.height(), _ioset = _ipt.offset()
+                    , _x, _y, _winw = $(window).width(), _winh = $(window).height()
+                    , _scrtop = $(document).scrollTop()
+                    ;
+
+                _x = _ioset.left; _y = _ioset.top + _ih + 5;
+
+                if( ( _y + _lh - _scrtop ) > _winh ){
+                    JC.log('y overflow');
+                    _y = _ioset.top - _lh - 3;
+
+                    if( _y < _scrtop ) _y = _scrtop;
+                }
+
+                _layout.css( {left: _x+'px', top: _y+'px'} );
+
+                JC.log( _lw, _lh, _iw, _ih, _ioset.left, _ioset.top, _winw, _winh );
+                JC.log( _scrtop, _x, _y );
+            }
         , _buildDone:
             function(){
-               Calendar.setPosition( this._model.selector(), this._model.layout() );
+                this.updatePosition();
                 this._model.selector().blur();
             }
         , _buildLayout:
@@ -930,8 +998,8 @@
      * @private
      */
     $(document).delegate( 'body > div.UXCCalendar select.UYear, #UXCCalendar select.UMonth', 'change', function( $evt ){
-        var _ins = Calendar.getInstance( Calendar.lastIpt );
-        _ins && _ins.updateLayout();
+        Calendar.getInstance( Calendar.lastIpt )
+            && Calendar.getInstance( Calendar.lastIpt ).updateLayout();
     });
     /**
      * 捕获用户更改年份 
@@ -940,8 +1008,8 @@
      * @private
      */
     $(document).delegate( 'body > div.UXCCalendar button.UNextYear', 'click', function( $evt ){
-        var _ins = Calendar.getInstance( Calendar.lastIpt );
-        _ins && _ins.updateYear( 1 );
+        Calendar.getInstance( Calendar.lastIpt )
+            && Calendar.getInstance( Calendar.lastIpt ).updateYear( 1 );
     });
     /**
      * 捕获用户更改年份 
@@ -950,8 +1018,8 @@
      * @private
      */
     $(document).delegate( 'body > div.UXCCalendar button.UPreYear', 'click', function( $evt ){
-        var _ins = Calendar.getInstance( Calendar.lastIpt );
-        _ins && _ins.updateYear( -1 );
+        Calendar.getInstance( Calendar.lastIpt )
+            && Calendar.getInstance( Calendar.lastIpt ).updateYear( -1 );
     });
     /**
      * 增加或者减少一年
@@ -962,12 +1030,10 @@
     $(document).delegate( "map[name=UXCCalendar_Year] area" , 'click', function( $evt ){
         $evt.preventDefault();
         var _p = $(this), _ins = Calendar.getInstance( Calendar.lastIpt );
-        if( !( _p.attr("action") && _ins ) ) return;
-        if( _p.attr("action").toLowerCase() == 'up' ){
-            _ins && _ins.updateYear( 1 );
-        }else if( _p.attr("action").toLowerCase() == 'down' ){
-            _ins && _ins.updateYear( -1 );
-        }
+        _p.attr("action") && _ins
+            && ( _p.attr("action").toLowerCase() == 'up' && _ins.updateYear( 1 )
+                , _p.attr("action").toLowerCase() == 'down' && _ins.updateYear( -1 )
+               );
     });
     /**
      * 增加或者减少一个月
@@ -978,13 +1044,10 @@
     $(document).delegate( "map[name=UXCCalendar_Month] area" , 'click', function( $evt ){
         $evt.preventDefault();
         var _p = $(this), _ins = Calendar.getInstance( Calendar.lastIpt );
-        if( !( _p.attr("action") && _ins ) ) return;
-
-        if( _p.attr("action").toLowerCase() == 'up' ){
-            _ins && _ins.updateMonth( 1 );
-        }else if( _p.attr("action").toLowerCase() == 'down' ){
-            _ins && _ins.updateMonth( -1 );
-        }
+        _p.attr("action") && _ins
+            && ( _p.attr("action").toLowerCase() == 'up' && _ins.updateMonth( 1 )
+                , _p.attr("action").toLowerCase() == 'down' && _ins.updateMonth( -1 )
+               );
     });
     /**
      * 选择当前日期
@@ -993,12 +1056,8 @@
      * @private
      */
     $(document).delegate( 'body > div.UXCCalendar button.UConfirm', 'click', function( $evt ){
-        var box = $(this).parents( 'div.UXCCalendar' ), _tmp;
-        if( box.length && ( _tmp = box.find('td.cur') ).length ){
-            if( _tmp.hasClass( 'unable' ) ) return;
-        }
-        box.length && box.data('confirmMethod') && box.data('confirmMethod')( this );
-        Calendar.hide();
+        Calendar.getInstance( Calendar.lastIpt )
+            && Calendar.getInstance( Calendar.lastIpt ).updateSelected();
     });
     /**
      * 清除文本框内容
@@ -1007,10 +1066,8 @@
      * @private
      */
     $(document).delegate( 'body > div.UXCCalendar button.UClear', 'click', function( $evt ){
-        Calendar.lastIpt 
-            && Calendar.lastIpt.length 
-            && ( Calendar.lastIpt.val(''), Calendar._triggerClear() )
-            ;
+        Calendar.getInstance( Calendar.lastIpt )
+            && Calendar.getInstance( Calendar.lastIpt ).clear();
     });
     /**
      * 取消日历组件, 相当于隐藏
@@ -1019,7 +1076,8 @@
      * @private
      */
     $(document).delegate( 'body > div.UXCCalendar button.UCancel', 'click', function( $evt ){
-        Calendar.hide();
+        Calendar.getInstance( Calendar.lastIpt )
+            && Calendar.getInstance( Calendar.lastIpt ).cancel();
     });
     /**
      * 日历组件按钮点击事件
@@ -1042,19 +1100,13 @@
      * @event date click
      * @private
      */
-    $(document).delegate( '#UXCCalendar table a', 'click', function( $evt ){
+    $(document).delegate( '#UXCCalendar table a[date]', 'click', function( $evt ){
         $evt.preventDefault();
-        var _p = $(this), _tm = _p.attr('date')||'', _d = new Date(), _isMultiselect = Calendar.isMultiSelect();
-        if( !_tm ) return;
-        if( _p.parent('td').hasClass('unable') ) return;
-
-        JC.log( _tm );
-
-        _logic.setDate( _tm );
-        Calendar.hide();
-
-        _d.setTime( _tm );
+        Calendar.getInstance( Calendar.lastIpt )
+            && Calendar.getInstance( Calendar.lastIpt ).updateSelected( $( this ) );
+        /*
         Calendar._triggerUpdate( [ 'date', _d, _d ] );
+        */
     });
 
     /**
@@ -1077,15 +1129,15 @@
          * @private
          */
         $(window).on('scroll resize', function($evt){
-            var _layout = $('body > div.UXCCalendar:visible');
-            if( !( _layout.length && Calendar.lastIpt ) ) return;
-            Calendar.position( Calendar.lastIpt, _layout );
+            var _ins = Calendar.getInstance( Calendar.lastIpt );
+                _ins && _ins.visible() && _ins.updatePosition();
         });
         /**
          * dom 点击时, 检查事件源是否为日历组件对象, 如果不是则会隐藏日历组件
          * @event dom click
          * @private
          */
+        var CLICK_HIDE_TIMEOUT = null;
         $(document).on('click', function($evt){
             var _src = $evt.target || $evt.srcElement;
 
@@ -1097,10 +1149,13 @@
                 Calendar.hide(); return;
             }
 
-            setTimeout( function(){
-                if( Calendar.lastIpt && Calendar.lastIpt.length && _src == Calendar.lastIpt[0] ) return;
-                Calendar.hide();
-            }, 100);
+            CLICK_HIDE_TIMEOUT && clearTimeout( CLICK_HIDE_TIMEOUT );
+
+            CLICK_HIDE_TIMEOUT =
+                setTimeout( function(){
+                    if( Calendar.lastIpt && Calendar.lastIpt.length && _src == Calendar.lastIpt[0] ) return;
+                    Calendar.hide();
+                }, 100);
         });
     });
     /**
