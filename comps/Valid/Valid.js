@@ -86,9 +86,9 @@
      *      <dd>
      *          <b>daterange:</b> 检查两个control的日期范围
      *          <dl>
-     *              <dd>html attr <b>fromNEl:</b> 指定开始的 control</dd>
-     *              <dd>html attr <b>toNEl:</b> 指定结束的 control</dd>
-     *              <dd>如果不指定 fromNEl, toNEl, 默认是从父节点下面找到 nrange, 按顺序定为 fromNEl, toNEl</dd>
+     *              <dd>html attr <b>fromDateEl:</b> 指定开始的 control</dd>
+     *              <dd>html attr <b>toDateEl:</b> 指定结束的 control</dd>
+     *              <dd>如果不指定 fromDateEl, toDateEl, 默认是从父节点下面找到 nrange, 按顺序定为 fromDateEl, toDateEl</dd>
      *          </dl>
      *      </dd>
      *      <dd><b>time:</b> 是否为正确的时间, hh:mm:ss</dd>
@@ -844,12 +844,12 @@
 
                 if( _r ){
                     if( _item.is( '[fromNEl]' ) ) {
-                        _fromNEl = _p.getElement( _item.attr('fromNEl') );
+                        _fromNEl = _p.getElement( _item.attr('fromNEl'), _item );
                         _toNEl = _item;
                     }
                     if( _item.is( '[toNEl]' ) ){
                         _fromNEl = _item;
-                        _toNEl = _p.getElement( _item.attr('toNEl') );
+                        _toNEl = _p.getElement( _item.attr('toNEl'), _item );
                     }
 
                     if( !(_fromNEl && _fromNEl.length || _toNEl && _toNEl.length) ){
@@ -951,12 +951,12 @@
 
                 if( _r ){
                     if( _item.is( '[fromDateEl]' ) ) {
-                        _fromDateEl = _p.getElement( _item.attr('fromDateEl') );
+                        _fromDateEl = _p.getElement( _item.attr('fromDateEl'), _item );
                         _toDateEl = _item;
                     }
                     if( _item.is( '[toDateEl]' ) ){
                         _fromDateEl = _item;
-                        _toDateEl = _p.getElement( _item.attr('toDateEl') );
+                        _toDateEl = _p.getElement( _item.attr('toDateEl'), _item );
                     }
 
                     if( !(_fromDateEl && _fromDateEl.length && _toDateEl && _toDateEl.length) ){
