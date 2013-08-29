@@ -1820,7 +1820,7 @@
 
                 if( _p._model.isValidMsg( _item ) ){
                     if( _msg == 'true' || _msg == '1' ) _msg = '';
-                    !_msg && ( _msg = '&nbsp;' ); //chrome bug, 内容为空会换行
+                    !_msg.trim() && ( _msg = '&nbsp;' ); //chrome bug, 内容为空会换行
                     var _focusmsgem = _p._model.findFocusEle( _item )
                         , _validmsgem = _p._model.findValidEle( _item )
                         , _errorEm = _p._model.findErrorEle( _item )
@@ -1871,6 +1871,7 @@
                     if( !_errEm.length ){
                         ( _errEm = $( printf( '<em class="{0}"></em>', Model.CSS_ERROR ) ) ).insertAfter( _item );
                     }
+                    !_msg.trim() && ( _msg = "&nbsp;" );
                     _errEm.html( _msg ).css('display', _p._model.validemdisplaytype( _item ) );
 
                     JC.log( 'error:', _msg );
@@ -1889,6 +1890,7 @@
                         , _focusmsgem = _p._model.findFocusEle( _item )
                         , _validmsgem = _p._model.findValidEle( _item )
                         , _errorEm = _p._model.findErrorEle( _item )
+                        , _msg = _item.attr('focusmsg')
                         ;
 
                     if( _setHide && _focusmsgem && _focusmsgem.length ){
@@ -1911,11 +1913,12 @@
                         _r = Valid.getInstance().parse( _item );
                         _item.removeAttr('validnoerror');
                     }
+                    !_msg.trim() && ( _msg = "&nbsp;" );
 
                     if( _p._model.focusmsgeverytime( _item ) ){
-                        _focusmsgem.html( _item.attr('focusmsg') ).css('display', _p._model.validemdisplaytype( _item ) );
+                        _focusmsgem.html( _msg ).css('display', _p._model.validemdisplaytype( _item ) );
                     }else{
-                        _r && _focusmsgem.html( _item.attr('focusmsg') ).css('display', _p._model.validemdisplaytype( _item ) );
+                        _r && _focusmsgem.html( _msg ).css('display', _p._model.validemdisplaytype( _item ) );
                     }
 
                 }
