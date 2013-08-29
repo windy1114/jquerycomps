@@ -18,6 +18,11 @@
      *          <br />如果 = 0, false, 将不显示提示信息
      *          <br />如果 = 1, true, 将不显示提示文本
      *      </dd>
+     *
+     *      <dt>validemdisplaytype = string, default = inline</dt>
+     *      <dd>
+     *          设置 表单所有控件的 em  CSS display 显示类型
+     *      </dd>
      * </dl>
      * <h2>Form Control的可用 html attribute</h2>
      * <dl>
@@ -41,6 +46,11 @@
      *
      *      <dt>emel = selector</dt>
      *      <dd>显示错误的selector</dd>
+     *
+     *      <dt>validemdisplaytype = string, default = inline</dt>
+     *      <dd>
+     *          设置 em 的 CSS display 显示类型
+     *      </dd>
      *
      *      <dt>ignoreprocess = bool</dt>
      *      <dd>验证表单时, 是否忽略</dd>
@@ -154,6 +164,13 @@
     JC.Valid = window.Valid = Valid;
     
     function Valid(){
+        /**
+         * 兼容函数式使用
+         */
+        var _args = sliceArgs( arguments );
+        if( _args.length ){
+            return Valid.check.apply( null, _args );
+        }
 
         if( Valid._instance ) return Valid._instance;
         Valid._instance = this;
@@ -417,6 +434,15 @@
      * @static
      */
     Valid.focusmsgEverytime = true;
+    /**
+     * 设置 em 的 css display 属性
+     * @property    emDisplayType
+     * @type        string
+     * @default     inline
+     * @static
+     */
+    Valid.emDisplayType = 'inline';
+
     /**
      * 验证正确时, 是否显示正确的样式
      * @property    showValidStatus
@@ -1734,6 +1760,22 @@
                 _item.is( '[focusmsgeverytime]' ) && ( _r = parseBool( _item.attr('focusmsgeverytime') ) );
                 return _r;
             }
+        , validemdisplaytype:
+            function( _item ){
+                _item && ( _item = $( _item ) );
+                var _r = Valid.emDisplayType, _form = getJqParent( _item, 'form' ), _tmp;
+                _form &&_form.length 
+                    && _form.is( '[validemdisplaytype]' ) 
+                    && ( _tmp = _form.attr('validemdisplaytype') )
+                    && ( _r = _tmp )
+                    ;
+                _item.is( '[validemdisplaytype]' ) 
+                    && ( _tmp = _item.attr('validemdisplaytype') )
+                    && ( _r = _tmp )
+                    ;
+                JC.log( 'validemdisplaytype:', _r, Valid.emDisplayType );
+                return _r;
+            }
     };
     
     function View( _model ){
@@ -1761,7 +1803,7 @@
                 if( !_p._model.isValid( _item ) ) return false;
                 setTimeout(function(){
                     _item.removeClass( Model.CSS_ERROR );
-                    _item.find( printf( '~ em:not("em.focusmsg, em.validmsg, {0}")', Model.FILTER_ERROR ) ).show();
+                    _item.find( printf( '~ em:not("em.focusmsg, em.validmsg, {0}")', Model.FILTER_ERROR ) ).css('display', _p._model.validemdisplaytype( _item ) );
                     _item.find( Model.SELECTOR_ERROR ).hide();
                     _item.attr('emel') 
                         && ( _tmp = _p._model.getElement( _item.attr('emel'), _item ) )
@@ -1792,7 +1834,7 @@
                     _validmsgem.html( _msg );
                     _noStyle 
                         ? _validmsgem.hide() 
-                        : ( _validmsgem.show()
+                        : ( _validmsgem.css('display', _p._model.validemdisplaytype( _item ) )
                                 , _focusmsgem && _focusmsgem.hide()
                                 , _errorEm && _errorEm.hide()
                           )
@@ -1829,7 +1871,7 @@
                     if( !_errEm.length ){
                         ( _errEm = $( printf( '<em class="{0}"></em>', Model.CSS_ERROR ) ) ).insertAfter( _item );
                     }
-                    _errEm.html( _msg ).show() 
+                    _errEm.html( _msg ).css('display', _p._model.validemdisplaytype( _item ) );
 
                     JC.log( 'error:', _msg );
 
@@ -1871,9 +1913,9 @@
                     }
 
                     if( _p._model.focusmsgeverytime( _item ) ){
-                        _focusmsgem.html( _item.attr('focusmsg') ).show();
+                        _focusmsgem.html( _item.attr('focusmsg') ).css('display', _p._model.validemdisplaytype( _item ) );
                     }else{
-                        _r && _focusmsgem.html( _item.attr('focusmsg') ).show();
+                        _r && _focusmsgem.html( _item.attr('focusmsg') ).css('display', _p._model.validemdisplaytype( _item ) );
                     }
 
                 }
