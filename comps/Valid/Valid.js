@@ -258,7 +258,9 @@
                             case 'input':
                             case 'textarea':
                                 {
-                                    _sitem.attr('type') != 'file' && _p._model.isAutoTrim( _sitem ) && _sitem.val( $.trim( _sitem.val() ) );
+                                    ( _sitem.attr('type') || '' ).toLowerCase() != 'file' 
+                                        && _p._model.isAutoTrim( _sitem ) 
+                                        && _sitem.val( $.trim( _sitem.val() ) );
                                     break;
                                 }
                         }
