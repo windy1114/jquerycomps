@@ -115,12 +115,14 @@
             function(){
                 var _p = this;
 
+                _p._initHanlderEvent();
+
                 $( [ _p._view, _p._model ] ).on('BindEvent', function( _evt, _evtName, _cb ){
                     _p.on( _evtName, _cb );
                 });
 
                 $([ _p._view, _p._model ] ).on('TriggerEvent', function( _evt, _evtName ){
-                    var _data = sliceArgs( arguments ); _data.shift(); _data.shift();
+                    var _data = sliceArgs( arguments ).slice(2);
                     _p.trigger( _evtName, _data );
                 });
 
@@ -129,6 +131,47 @@
 
                 return _p;
             }    
+        , _initHanlderEvent:
+            function(){
+                var _p = this;
+
+                _p.on( Calendar.Model.INITED, function( _evt ){
+                    _p._model.calendarinited()
+                        && _p._model.calendarinited().call( _p._model.selector(), _p._model.layout(), _p );
+                });
+
+                _p.on( Calendar.Model.SHOW, function( _evt ){
+                    _p._model.calendarshow()
+                        && _p._model.calendarshow().call( _p._model.selector(), _p._model.selector(), _p );
+                });
+
+                _p.on( Calendar.Model.HIDE, function( _evt ){
+                    _p._model.calendarhide()
+                        && _p._model.calendarhide().call( _p._model.selector(), _p._model.selector(), _p );
+                });
+
+                _p.on( Calendar.Model.UPDATE, function( _evt ){
+                    _p._model.selector() && _p._model.selector().blur();
+                    var _args = sliceArgs( arguments ).slice( 2 );
+                    _p._model.calendarupdate()
+                        && _p._model.calendarupdate().apply( _p._model.selector(), _args );
+                });
+
+                _p.on( Calendar.Model.CLEAR, function( _evt ){
+                    _p._model.calendarclear()
+                        && _p._model.calendarclear().call( _p._model.selector(), _p._model.selector(), _p );
+                });
+
+                _p.on( Calendar.Model.LAYOUT_CHANGE, function( _evt ){
+                    _p._model.calendarlayoutchange()
+                        && _p._model.calendarlayoutchange().call( _p._model.selector(), _p._model.selector(), _p );
+                });
+
+                _p.on( Calendar.Model.UPDATE_MULTISELECT, function( _evt ){
+                    _p._model.calendarupdatemultiselect()
+                        && _p._model.calendarupdatemultiselect().call( _p._model.selector(), _p._model.selector(), _p );
+                });
+            }
         /**
          * 显示 Calendar
          * @method  show
@@ -139,10 +182,7 @@
                 Calendar.hide(); 
                 Calendar.lastIpt = this._model.selector();
                 this._view.show(); 
-
-                Calendar.layoutInitedCallback && Calendar.layoutInitedCallback( this._model.layout(), _selector );
-                Calendar._triggerShow();
-
+                this.trigger( Calendar.Model.SHOW );
                 return this; 
             }
         /**
@@ -150,7 +190,11 @@
          * @method  hide
          * @return  CalendarInstance
          */
-        , hide: function(){ this._view.hide(); return this; }
+        , hide: function(){ 
+            this._view.hide(); 
+                this.trigger( Calendar.Model.HIDE );
+            return this; 
+        }
         /**
          * 获取 显示 Calendar 的触发源选择器, 比如 a 标签
          * @method  selector
@@ -190,17 +234,17 @@
         , updateYear:
             function( _offset ){
                 this._view && this._view.updateYear( _offset );
+                this.trigger( Calendar.Model.LAYOUT_CHANGE );
             }
         , updateMonth:
             function( _offset ){
                 this._view && this._view.updateMonth( _offset );
+                this.trigger( Calendar.Model.LAYOUT_CHANGE );
             }
         , updateSelected:
             function( _userSelectedItem ){
                 JC.log( 'JC.Calendar: updateSelector', new Date().getTime() );
                 this._view && this._view.updateSelected( _userSelectedItem );
-                /*
-                 */
             }
         , updatePosition:
             function(){
@@ -209,9 +253,11 @@
         , clear:
             function(){
                 this._model && this._model.selector().val('');
+                this.trigger( Calendar.Model.CLEAR );
             }
         , cancel:
             function(){
+                this.trigger( Calendar.Model.CANCEL );
                 this._view && this._view.hide();
             }
         , visible:
@@ -385,6 +431,14 @@
      */
     Calendar.layoutInitedCallback = null;
     /**
+     * 显示为可见时的回调
+     * @property layoutShowCallback
+     * @type    function
+     * @static
+     * @default null
+     */
+    Calendar.layoutShowCallback = null;
+    /**
      * 日历隐藏后的回调函数
      * @property layoutHideCallback
      * @type    function
@@ -411,9 +465,13 @@
      */
     Calendar.hide =
         function(){
-            $('body > div.UXCCalendar').hide();
-            Calendar.layoutHideCallback && Calendar.layoutHideCallback( Calendar.lastIpt );
-            Calendar._triggerHide();
+
+            for( var k in Calendar._ins ){
+                Calendar._ins[ k] 
+                    && Calendar._ins[ k].visible()
+                    && Calendar._ins[ k].hide()
+                    ;
+            }
         };
     /**
      * 获取初始日期对象
@@ -510,16 +568,32 @@
                 if( !_btn.length ){
                     _p.after( _btn = $('<input type="button" class="UXCCalendar_btn"  />') );
                 }
-                _btn.data( Calendar.INPUT, _p );
+                _btn.data( Calendar.Model.INPUT, _p );
             });
         };
 
-    Calendar.INPUT = 'CalendarInput';
+    Calendar.clone =
+        function( _model, _view ){
+            var _k;
+            for( _k in Model.prototype ) _model.prototype[_k] = Model.prototype[_k];
+            for( _k in View.prototype ) _view.prototype[_k] = View.prototype[_k];
+        };
     
     function Model( _selector ){
         this._selector = _selector;
     }
+
     Calendar.Model = Model;
+    Calendar.Model.INPUT = 'CalendarInput';
+
+    Calendar.Model.INITED = 'CalendarInited';
+    Calendar.Model.SHOW = 'CalendarShow';
+    Calendar.Model.HIDE = 'CalendarHide';
+    Calendar.Model.UPDATE = 'CalendarUpdate';
+    Calendar.Model.CLEAR = 'CalendarClear';
+    Calendar.Model.CANCEL = 'CalendarCancel';
+    Calendar.Model.LAYOUT_CHANGE = 'CalendarLayoutChange';
+    Calendar.Model.UPDATE_MULTISELECT = 'CalendarUpdateMultiSelect';
     
     Model.prototype = {
         init:
@@ -553,9 +627,6 @@
                                 , '<option value="10">十一月</option>'
                                 , '<option value="11">十二月</option>'
                             ].join('') ).appendTo( _r.find('select.UMonth' ) );
-
-                    _r.data('confirmMethod', _logic.onConfirm );
-                    _r.data('updateYearMethod', _logic.updateYear );
                  }
                 return _r;
             }
@@ -591,15 +662,17 @@
         , day:
             function(){
                 var _tmp, _date = new Date();
-                _tmp = this.layout().find('td.cur > a[date]');
+                _tmp = this.layout().find('td.cur > a[date], td.cur > a[dstart]');
                 if( _tmp.length ){
-                    _date.setTime( _tmp.attr('date') );
+                    _date.setTime( _tmp.attr('date') || _tmp.attr('dstart') );
                 }
                 return _date.getDate();
             }
         , layoutDate:
             function(){
-                var _dateo = Calendar.getDate( this.selector() ), _day = this.day(), _max;
+                var _dateo = Calendar.getDate( this.selector() )
+                    , _day = this.day()
+                    , _max;
                 _dateo.date.setDate( 1 );
                 _dateo.date.setFullYear( this.year() );
                 _dateo.date.setMonth( this.month() );
@@ -619,6 +692,63 @@
                     ;
                 return _r;
             }
+        , calendarinited:
+            function(){
+                var _ipt = this.selector(), _cb = Calendar.layoutInitedCallback, _tmp;
+                _ipt && _ipt.attr('calendarinited') 
+                    && ( _tmp = window[ _ipt.attr('calendarinited') ] )
+                    && ( _cb = _tmp );
+                return _cb;
+            }
+        , calendarshow:
+            function(){
+                var _ipt = this.selector(), _cb = Calendar.layoutShowCallback, _tmp;
+                _ipt && _ipt.attr('calendarshow') 
+                    && ( _tmp = window[ _ipt.attr('calendarshow') ] )
+                    && ( _cb = _tmp );
+                return _cb;
+            }
+        , calendarhide:
+            function(){
+                var _ipt = this.selector(), _cb = Calendar.layoutHideCallback, _tmp;
+                _ipt && _ipt.attr('calendarhide') 
+                    && ( _tmp = window[ _ipt.attr('calendarhide') ] )
+                    && ( _cb = _tmp );
+                return _cb;
+            }
+        , calendarupdate:
+            function( _data ){
+                var _ipt = this.selector(), _cb, _tmp;
+                _ipt && _ipt.attr('calendarupdate') 
+                    && ( _tmp = window[ _ipt.attr('calendarupdate') ] )
+                    && ( _cb = _tmp );
+                return _cb;
+            }
+        , calendarclear:
+            function(){
+                var _ipt = this.selector(), _cb, _tmp;
+                _ipt && _ipt.attr('calendarclear') 
+                    && ( _tmp = window[ _ipt.attr('calendarclear') ] )
+                    && ( _cb = _tmp );
+                return _cb;
+            }
+        , calendarlayoutchange:
+            function(){
+                var _ipt = this.selector(), _cb, _tmp;
+                _ipt && _ipt.attr('calendarlayoutchange') 
+                    && ( _tmp = window[ _ipt.attr('calendarlayoutchange') ] )
+                    && ( _cb = _tmp );
+                return _cb;
+            }
+        , calendarupdatemultiselect:
+            function( _data ){
+                var _ipt = this.selector(), _cb, _tmp;
+                _ipt && _ipt.attr('calendarupdatemultiselect') 
+                    && ( _tmp = window[ _ipt.attr('calendarupdatemultiselect') ] )
+                    && ( _cb = _tmp );
+                return _cb;
+            }
+
         , tpl:
             [
             '<div id="UXCCalendar" class="UXCCalendar">'
@@ -722,9 +852,9 @@
             }
         , updateSelected:
             function( _userSelectedItem ){
-                var _date, _tmp;
+                var _p = this, _date, _tmp;
                 if( !_userSelectedItem ){
-                    _date = this._model.selectedDate();
+                    _date = this._model.selectedDate(); 
                 }else{
                     _userSelectedItem = $( _userSelectedItem );
                     _tmp = getJqParent( _userSelectedItem, 'td' );
@@ -734,15 +864,15 @@
                 }
                 if( !_date ) return;
 
-                this._model.selector().val( formatISODate( _date ) );
+                _p._model.selector().val( formatISODate( _date ) );
+
+                $(_p).trigger( 'TriggerEvent', [ JC.Calendar.Model.UPDATE, 'date', _date, _date ] );
                 Calendar.hide();
             }
         , updatePosition:
             function(){
                 var _p = this, _ipt = _p._model.selector(), _layout = _p._model.layout();
-                JC.log( 'updatePosition', 1 );
                 if( !( _ipt && _layout && _ipt.length && _layout.length ) ) return;
-                JC.log( 'updatePosition', 12 );
                 _layout.css( {'left': '-9999px', 'top': '-9999px', 'z-index': ZINDEX_COUNT++ } ).show();
                 var _lw = _layout.width(), _lh = _layout.height()
                     , _iw = _ipt.width(), _ih = _ipt.height(), _ioset = _ipt.offset()
@@ -767,7 +897,8 @@
         , _buildDone:
             function(){
                 this.updatePosition();
-                this._model.selector().blur();
+                //this._model.selector().blur();
+                $(this).trigger( 'TriggerEvent', [ Calendar.Model.INITED ] );
             }
         , _buildLayout:
             function( _dateo ){
@@ -843,153 +974,6 @@
     };
 
     var staticMethod = {
-        _triggerShow:
-            function(){
-                var _ipt = Calendar.lastIpt, _tmp;
-                _ipt && _ipt.attr('calendarshow') 
-                    && ( _tmp = window[ _ipt.attr('calendarshow') ] )
-                    && _tmp.call( _ipt );
-            }
-        , _triggerHide:
-            function(){
-                var _ipt = Calendar.lastIpt, _tmp;
-                _ipt && _ipt.attr('calendarhide') 
-                    && ( _tmp = window[ _ipt.attr('calendarhide') ] )
-                    && _tmp.call( _ipt );
-            }
-        , _triggerLayoutChange:
-            function(){
-                var _ipt = Calendar.lastIpt, _tmp;
-                _ipt && _ipt.attr('calendarlayoutchange') 
-                    && ( _tmp = window[ _ipt.attr('calendarlayoutchange') ] )
-                    && _tmp.call( _ipt );
-            }
-        , _triggerClear:
-            function(){
-                var _ipt = Calendar.lastIpt, _tmp;
-                _ipt && _ipt.attr('calendarclear') 
-                    && ( _tmp = window[ _ipt.attr('calendarclear') ] )
-                    && _tmp.call( _ipt );
-            }
-        , _triggerUpdate:
-            function( _data ){
-                var _ipt = Calendar.lastIpt, _tmp;
-                _ipt && _ipt.attr('calendarupdate') 
-                    && ( _tmp = window[ _ipt.attr('calendarupdate') ] )
-                    && _tmp.apply( _ipt, _data );
-            }
-        , _triggerUpdateMultiSelect:
-            function( _data ){
-                var _ipt = Calendar.lastIpt, _tmp;
-                _ipt && _ipt.attr('calendarupdatemultiselect') 
-                    && ( _tmp = window[ _ipt.attr('calendarupdatemultiselect') ] )
-                    && _tmp.apply( _ipt, _data );
-            }
-    };
-    for( var k in staticMethod ){
-        Calendar[k] = staticMethod[k];
-    }
-    /**
-     * 私有逻辑处理对象, 基本上所有逻辑方法都存放于此对象
-     * @property _logic
-     * @type {Object}
-     * @static
-     * @private
-     */
-    var _logic =
-    {
-         /**
-         * 按年份更改日期
-         * @method  _logic.updateYear
-         * @param   {int}   _year   新的年份, YYYY
-         * @private
-         */
-        updateYear:
-            function( _year ){
-                JC.log( _year );
-                if ( !_logic.lastDateObj ) return;
-                var _premaxday = maxDayOfMonth( _logic.lastDateObj.date )
-                    , _d = new Date( _year, _logic.lastDateObj.date.getMonth(), 1 )
-                    , _nextmaxday = maxDayOfMonth( _d );
-                if( _premaxday > _nextmaxday ) _d.setDate( _nextmaxday );
-                else _d.setDate( _logic.lastDateObj.date.getDate() );
-
-                _logic.lastDateObj.date = _d;
-
-                _logic.initDateLayout( _logic.lastDateObj );
-            }
-        /**
-         * 按月份更改日期
-         * @method  _logic.setNewMonth
-         * @param   {int}   _month  新的月份, mm
-         * @private
-         */
-        , setNewMonth:
-            function( _month ){
-                JC.log( _month );
-                if ( !_logic.lastDateObj ) return;
-                var _premaxday = maxDayOfMonth( _logic.lastDateObj.date )
-                    , _d = new Date( _logic.lastDateObj.date.getFullYear(), _month, 1 )
-                    , _nextmaxday = maxDayOfMonth( _d );
-                if( _premaxday > _nextmaxday ) _d.setDate( _nextmaxday );
-                else _d.setDate( _logic.lastDateObj.date.getDate() );
-
-                _logic.lastDateObj.date = _d;
-
-                _logic.initMonth( _logic.lastDateObj );
-                _logic.initMonthDate( _logic.lastDateObj );
-            }
-        /**
-         * 获取日历组件的外观
-         * @method  _logic.getLayout
-         * @return  {selector} 日历组件的selector
-         * @private
-         */
-        , getLayout:
-            function(){
-            }
-        /**
-         * 把日期赋值给文本框
-         * @method  _logic.setDate
-         * @param   {int}   _timestamp  日期对象的时间戳
-         * @private
-         */
-        , setDate:
-            function( _timestamp ){
-                if( !(_timestamp && Calendar.lastIpt && Calendar.lastIpt.length ) ) return;
-                var _d = new Date(), _symbol = '-'; _d.setTime( _timestamp );
-                var _df = Calendar.lastIpt.attr('dateFormat');
-                if( _df ){
-                    _df = _df.replace(/[\da-zA-Z]/g, '');
-                    if( _df.length ) _df = _df.slice(0, 1);
-                    _symbol = _df;
-                }
-                var _dStr = formatISODate( _d, _symbol );
-                Calendar.lastIpt.val( _dStr ).focus();
-            }
-        /**
-         * 给文本框赋值, 日期为控件的当前日期
-         * @method  _logic.onConfirm
-         * @return  {int}   0/1
-         * @private
-         */
-        , onConfirm:
-            function(){
-                var _cur = _logic.getLayout().find('td.cur');
-                if( !_cur.length ) _logic.getLayout().find('td.today');
-                if( _cur.length && _cur.hasClass('unable') ) return 0;
-                if( _cur.length ) _cur.find('a').trigger('click');
-
-                return 1;
-            }
-        /**
-         * 日历组件模板
-         * <p>这是默认模板, 用户可以给 JC.Calendar.tpl 赋值, 更改为自己的模板</p>
-         * @property    _logic.tpl
-         * @type    string
-         * @private
-         */
-        //, tpl: 
     };
     /**
      * 捕获用户更改年份 
@@ -1085,7 +1069,7 @@
      * @private
      */
     $(document).delegate( 'input.UXCCalendar_btn', 'click', function($evt){
-        $(this).data( Calendar.INPUT ) && Calendar.pickDate( $(this).data( Calendar.INPUT ) );
+        $(this).data( Calendar.Model.INPUT ) && Calendar.pickDate( $(this).data( Calendar.Model.INPUT ) );
     });
     /**
      * 日历组件点击事件, 阻止冒泡, 防止被 document click事件隐藏
@@ -1100,7 +1084,7 @@
      * @event date click
      * @private
      */
-    $(document).delegate( '#UXCCalendar table a[date]', 'click', function( $evt ){
+    $(document).delegate( 'div.UXCCalendar table a[date], div.UXCCalendar table a[dstart]', 'click', function( $evt ){
         $evt.preventDefault();
         Calendar.getInstance( Calendar.lastIpt )
             && Calendar.getInstance( Calendar.lastIpt ).updateSelected( $( this ) );

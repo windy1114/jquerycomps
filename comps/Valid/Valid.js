@@ -1775,7 +1775,7 @@
                     && ( _tmp = _item.attr('validemdisplaytype') )
                     && ( _r = _tmp )
                     ;
-                JC.log( 'validemdisplaytype:', _r, Valid.emDisplayType );
+                //JC.log( 'validemdisplaytype:', _r, Valid.emDisplayType );
                 return _r;
             }
     };
