@@ -410,18 +410,6 @@
      * @static
      */
     Calendar.tpl = '';
-    /** 
-     * 判断日历源控件是否为多选模式
-     * @method  isMultiSelect
-     * @static
-     * return   bool
-     */
-    Calendar.isMultiSelect =
-        function(){
-            var _r = false;
-            Calendar.lastIpt && ( _r = parseBool( Calendar.lastIpt.attr('multiselect') ) );
-            return _r;
-        };
     /**
      * 初始化外观后的回调函数
      * @property layoutInitedCallback
@@ -490,12 +478,15 @@
                     _r.date = parseISODate( _tmp.slice( 0, 8 ) );
                     _r.enddate = parseISODate( _tmp.slice( 8 ) );
                 }else{
-                    _r.date = new Date();
+                    _tmp = new Date();
+                    _r.date = new Date( _tmp.getFullYear(), _tmp.getMonth(), _tmp.getDate() );
                 }
             }
 
             _r.minvalue = parseISODate( _selector.attr('minvalue') );
             _r.maxvalue = parseISODate( _selector.attr('maxvalue') );
+
+            JC.log('xxxxxx', _r.date);
             
             return _r;
         };
@@ -666,6 +657,7 @@
                 if( _tmp.length ){
                     _date.setTime( _tmp.attr('date') || _tmp.attr('dstart') );
                 }
+                JC.log( 'dddddd', _date.getDate() );
                 return _date.getDate();
             }
         , layoutDate:
@@ -690,6 +682,11 @@
                     && ( _item = _tmp.find('a[date]') )
                     && ( _r = new Date(), _r.setTime( _item.attr('date') ) )
                     ;
+                return _r;
+            }
+        , multiselectDate:
+            function(){
+                var _r = [];
                 return _r;
             }
         , calendarinited:
@@ -739,6 +736,13 @@
                     && ( _tmp = window[ _ipt.attr('calendarlayoutchange') ] )
                     && ( _cb = _tmp );
                 return _cb;
+            }
+        , multiselect:
+            function(){
+                var _r;
+                this.selector().is('[multiselect]')
+                    && ( _r = parseBool( this.selector().attr('multiselect') ) );
+                return _r;
             }
         , calendarupdatemultiselect:
             function( _data ){
@@ -834,6 +838,7 @@
                 _max = maxDayOfMonth( _dateo.date );
                 _day > _max && ( _day = _max );
                 _dateo.date.setDate( _day );
+                JC.log('zzzz', _dateo.date );
                 this._buildLayout( _dateo );
                 this._buildDone();
             }
@@ -1034,6 +1039,19 @@
                );
     });
     /**
+     * 日期点击事件
+     * @event date click
+     * @private
+     */
+    $(document).delegate( 'div.UXCCalendar table a[date], div.UXCCalendar table a[dstart]', 'click', function( $evt ){
+        $evt.preventDefault();
+        Calendar.getInstance( Calendar.lastIpt )
+            && Calendar.getInstance( Calendar.lastIpt ).updateSelected( $( this ) );
+        /*
+        Calendar._triggerUpdate( [ 'date', _d, _d ] );
+        */
+    });
+    /**
      * 选择当前日期
      * <p>监听确定按钮</p>
      * @event   confirm click
@@ -1078,19 +1096,6 @@
      */
     $(document).delegate( 'body > div.UXCCalendar', 'click', function( $evt ){
         $evt.stopPropagation();
-    });
-    /**
-     * 日期点击事件
-     * @event date click
-     * @private
-     */
-    $(document).delegate( 'div.UXCCalendar table a[date], div.UXCCalendar table a[dstart]', 'click', function( $evt ){
-        $evt.preventDefault();
-        Calendar.getInstance( Calendar.lastIpt )
-            && Calendar.getInstance( Calendar.lastIpt ).updateSelected( $( this ) );
-        /*
-        Calendar._triggerUpdate( [ 'date', _d, _d ] );
-        */
     });
 
     /**

@@ -44,14 +44,15 @@
 
     WeekModel.prototype.month = 
         function(){
-            var _r = 0, _tmp, _date;
+            var _r = 0, _tmp, _date = new Date();
             ( _tmp = this.layout().find('td.cur a[dstart]') ).length
                 && ( _date = new Date() )
                 && (
                         _date.setTime( _tmp.attr('dstart') )
-                        , _r = _date.getMonth()
                    )
                 ;
+            _r = _date.getMonth();
+            JC.log( 'mmmmmmmmm', _r );
             return _r;
         };
 
@@ -68,7 +69,6 @@
                         , _r.end.setTime( _item.attr('dend') ) 
                     )
                 ;
-            alert( 1 );
             return _r;
         };
 
@@ -134,7 +134,7 @@
                 _sdate = new Date(); _edate = new Date();
                 _sdate.setTime( _data.start ); _edate.setTime( _data.end );
 
-                _title = printf( "{0}年 第{1}周<br/>开始日期: {2} (周{4})<br />结束日期: {3} (周{5})"
+                _title = printf( "{0}年 第{1}周\n开始日期: {2} (周{4})\n结束日期: {3} (周{5})"
                             , _year
                             , JC.Calendar.getCnNum( _data.week )
                             , formatISODate( _sdate )
@@ -155,12 +155,13 @@
                 if( today >= _sdate.getTime() && today <= _edate.getTime() ) _class.push( 'today' );
 
                 _ls.push( printf( '<td class="{0}"><a href="javascript:" title="{2}"'+
-                                ' dstart="{3}" dend="{4}" week="{1}" >{1}</a></td>'
+                                ' dstart="{3}" dend="{4}" week="{1}" date="{5}" >{1}</a></td>'
                             , _class.join(' ')
                             , _data.week 
                             , _title
                             , _sdate.getTime()
                             , _edate.getTime()
+                            , _dateo.date.getTime()
                         ));
                 if( i % 8 === 0 && i != j ) _ls.push( '</tr><tr>' );
             }

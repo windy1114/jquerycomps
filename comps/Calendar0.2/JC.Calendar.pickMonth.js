@@ -154,23 +154,58 @@
                 _layout.find('table.UTableBorder tbody' ).html( $( _ls.join('') ) );
         };
 
+    MonthModel.prototype.multiselectDate =
+        function(){
+            var _p = this, _r = [], _sp, _item, _dstart, _dend;
+            _p.layout().find('td.cur').each( function(){
+                _sp = $(this); _item = _sp.find( '> a[dstart]' );
+                if( _sp.hasClass( 'unable' ) ) return;
+                _dstart = new Date(); _dend = new Date();
+                _dstart.setTime( _item.attr('dstart') );
+                _dend.setTime( _item.attr('dend') );
+                _r.push( { 'start': _dstart, 'end': _dend } );
+            });
+            return _r;
+        };
+
     MonthView.prototype.updateSelected = 
         function( _userSelectedItem ){
-            var _p = this, _dstart, _dend, _tmp;
+            var _p = this, _dstart, _dend, _tmp, _text, _ar;
             if( !_userSelectedItem ){
-                _tmp = this._model.selectedDate();
-                _tmp && ( _dstart = _tmp.start, _dend = _tmp.end );
+                if( _p._model.multiselect() ){
+                    _tmp = this._model.multiselectDate();
+                    if( !_tmp.length ) return;
+                    _ar = [];
+                    $.each( _tmp, function( _ix, _item ){
+                        _ar.push( printf( '{0} 至 {1}', formatISODate( _item.start ), formatISODate( _item.end ) ) );
+                    });
+                    _text = _ar.join(',');
+                }else{
+                    _tmp = this._model.selectedDate();
+                    _tmp && ( _dstart = _tmp.start, _dend = _tmp.end );
+
+                    _dstart && _dend 
+                        && ( _text = printf( '{0} 至 {1}', formatISODate( _dstart ), formatISODate( _dend ) ) );
+                }
             }else{
                 _userSelectedItem = $( _userSelectedItem );
                 _tmp = getJqParent( _userSelectedItem, 'td' );
                 if( _tmp && _tmp.hasClass('unable') ) return;
+
+                if( _p._model.multiselect() ){
+                    _tmp.toggleClass('cur');
+                    return;
+                }
                 _dstart = new Date(); _dend = new Date();
                 _dstart.setTime( _userSelectedItem.attr('dstart') );
                 _dend.setTime( _userSelectedItem.attr('dend') );
-            }
-            if( !( _dstart && _dend ) ) return;
 
-            _p._model.selector().val( printf( '{0} 至 {1}', formatISODate( _dstart ), formatISODate( _dend ) ) );
+                _text = printf( '{0} 至 {1}', formatISODate( _dstart ), formatISODate( _dend ) );
+            }
+
+            if( !_text ) return;
+
+            _p._model.selector().val( _text );
             $(_p).trigger( 'TriggerEvent', [ JC.Calendar.Model.UPDATE, 'month', _dstart, _dend ] );
 
             Calendar.hide();

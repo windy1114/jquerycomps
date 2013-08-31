@@ -136,8 +136,9 @@
             function(){
                 var _p = this
                     , _updatecb = 'Bizs.MultiDate_' + ( Model._inscount)
-                    , _showcb= 'Bizs.MultiDate_show_' + ( Model._inscount)
-                    , _hidecb= 'Bizs.MultiDate_hide_' + ( Model._inscount)
+                    , _showcb = 'Bizs.MultiDate_show_' + ( Model._inscount)
+                    , _hidecb = 'Bizs.MultiDate_hide_' + ( Model._inscount)
+                    , _layoutchangecb = 'Bizs.MultiDate_layoutchange_' + ( Model._inscount)
                     ;
                 Model._inscount++;
 
@@ -161,6 +162,14 @@
                         _p.updateHiddenDate();
                     };
                 _p.mddate().attr('calendarhide', _hidecb );
+
+                window[ _layoutchangecb ] = 
+                    function(){
+                        JC.Tips && JC.Tips.hide();
+                        var _layout = $('body > div.UXCCalendar:visible');
+                        _layout.length && JC.Tips && JC.Tips.init( _layout.find('[title]') );
+                    };
+                _p.mddate().attr('calendarlayoutchange', _layoutchangecb );
 
                 return _p;
             }
