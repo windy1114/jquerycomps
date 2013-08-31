@@ -91,7 +91,97 @@
         ,'        <button type="button" class="UCancel">取消</button>'
         ,'    </div>'
         ,'</div>'
-        ].join('')
+        ].join('');
+
+    MonthModel.prototype.multiLayoutDate = 
+        function(){
+            var _p = this
+                , _dateo = _p.defaultDate()
+                , _year = this.year()
+                ;
+
+            _dateo.date.setFullYear( _year );
+            _dateo.enddate.setFullYear( _year );
+
+            $.each( _dateo.multidate, function( _ix, _item ){
+                _item.start.setFullYear( _year );
+                _item.end.setFullYear( _year );
+            });
+
+            return _dateo;
+        };
+
+    MonthModel.prototype.defaultMultiselectDate =
+        function( _r ){
+            var _p = this
+                , _selector = _p.selector()
+                , _tmp
+                , _multidatear
+                , _sdate, _edate
+                ;
+
+            if( _tmp = parseISODate( _selector.val() ) ) _r.date = _tmp;
+            else{
+                if( _selector.val() && (_tmp = _selector.val().replace( /[^\d,]/g, '' ) ).length ){
+                    _tmp = _tmp.split(',');
+                    _multidatear = [];
+
+                    $.each( _tmp, function( _ix, _item ){
+                        if( _item.length != 16 ) return;
+                        _sdate = parseISODate( _item.slice( 0, 8 ) );
+                        _edate = parseISODate( _item.slice( 8 ) );
+
+                        if( !_ix ){
+                            _r.date = _sdate;
+                            _r.enddate = _edate
+                        }
+                        _multidatear.push( { 'start': _sdate, 'end': _edate } );
+                    });
+
+                    _r.multidate = _multidatear;
+
+                }else{
+                    _tmp = new Date();
+                    _r.date = new Date( _tmp.getFullYear(), _tmp.getMonth(), _tmp.getDate() );
+                    _r.enddate = cloneDate( _r.date );
+                    _r.enddate.setDate( maxDayOfMonth( _r.enddate ) );
+                    _r.multidate = [];
+                    _r.multidate.push( {'start': cloneDate( _r.date ), 'end': cloneDate( _r.enddate ) } );
+                }
+            }
+            return _r;
+        };
+
+    MonthView.prototype.updateMultiYear =
+        function( _offset ){
+            var _dateo = this._model.layoutDate(), _day, _max;
+
+            //JC.log( 'xdfsadfasefasf', _dateo.multidate == null );
+
+            tmpUpdateMultiYear( _dateo.date, _offset );
+            tmpUpdateMultiYear( _dateo.enddate, _offset );
+
+            if( _dateo.multidate ){
+                //JC.log( _dateo.multidate.length );
+                $.each( _dateo.multidate, function( _ix, _item ){
+                    tmpUpdateMultiYear( _item.start, _offset );
+                    tmpUpdateMultiYear( _item.end, _offset );
+                    JC.log('xxxxxxxxxxxxxxxxxxxxxxx', _item.start, _item.end, _offset );
+                });
+            }
+
+            this._buildLayout( _dateo );
+            this._buildDone();
+        };
+    function tmpUpdateMultiYear( _date, _offset ){
+        var _day, _max;
+        _day = _date.getDate();
+        _date.setDate( 1 );
+        _date.setFullYear( _date.getFullYear() + _offset );
+        _max = maxDayOfMonth( _date );
+        _day > _max && ( _day = _max );
+        _date.setDate( _day );
+    }
 
     MonthView.prototype._buildBody =
         function( _dateo ){
@@ -104,6 +194,7 @@
                 , _rows = 4
                 , ipt = JC.Calendar.lastIpt
                 , currentcanselect = parseBool( ipt.attr('currentcanselect') )
+                , _tmpMultidate = _dateo.multidate ? _dateo.multidate.slice() : null
                 ;
 
                 if( _dateo.maxvalue && currentcanselect ){
@@ -132,7 +223,22 @@
                         _class.push( 'unable' );
                     }
 
-                    if( _date.getTime() >= _sdate.getTime() && _date.getTime() <= _edate.getTime() ) _class.push( 'cur' );
+                    if( _tmpMultidate ){
+                        //JC.log( '_tmpMultidate.length:', _tmpMultidate.length );
+                        $.each( _tmpMultidate, function( _ix, _item ){
+                            //JC.log( _sdate.getTime(), _item.start.getTime(), _item.end.getTime() );
+                            if( _sdate.getTime() >= _item.start.getTime() 
+                              && _sdate.getTime() <= _item.end.getTime() ){
+                                _class.push( 'cur' );
+                                _tmpMultidate.splice( _ix, 1 );
+                                //JC.log( _tmpMultidate.length );
+                                return false;
+                            }
+                        });
+                    }else{
+                        if( _date.getTime() >= _sdate.getTime() 
+                                && _date.getTime() <= _edate.getTime() ) _class.push( 'cur' );
+                    }
                     if( today >= _sdate.getTime() && today <= _edate.getTime() ) _class.push( 'today' );
 
                     _cnUnit = JC.Calendar.cnUnit.charAt( i % 10 );

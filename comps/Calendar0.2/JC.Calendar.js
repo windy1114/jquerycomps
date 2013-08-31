@@ -269,6 +269,10 @@
                     ;
                 return _r;
             }
+        , defaultDate:
+            function( _selector ){
+                return this._model.defaultDate( _selector );
+            }
     }
     /**
      * 获取或设置 Calendar 的实例
@@ -463,6 +467,7 @@
         };
     /**
      * 获取初始日期对象
+     * <p style="bold">这个方法将要废除, 请使用 instance.defaultDate()</p>
      * @method  getDate
      * @static
      * @param   {selector}  _selector   显示日历组件的input
@@ -470,25 +475,7 @@
      */
     Calendar.getDate =
         function( _selector ){
-            var _r = { date: null, minvalue: null, maxvalue: null, enddate: null }, _tmp;
-
-            if( _tmp = parseISODate( _selector.val() ) ) _r.date = _tmp;
-            else{
-                if( _selector.val() && (_tmp = _selector.val().replace( /[^\d]/g, '' ) ).length == 16 ){
-                    _r.date = parseISODate( _tmp.slice( 0, 8 ) );
-                    _r.enddate = parseISODate( _tmp.slice( 8 ) );
-                }else{
-                    _tmp = new Date();
-                    _r.date = new Date( _tmp.getFullYear(), _tmp.getMonth(), _tmp.getDate() );
-                }
-            }
-
-            _r.minvalue = parseISODate( _selector.attr('minvalue') );
-            _r.maxvalue = parseISODate( _selector.attr('maxvalue') );
-
-            JC.log('xxxxxx', _r.date);
-            
-            return _r;
+            return Calendar.getInstance( _selector ).defaultDate();
         };
     /**
      * 每周的中文对应数字
@@ -660,9 +647,60 @@
                 JC.log( 'dddddd', _date.getDate() );
                 return _date.getDate();
             }
+        , defaultDate:
+            function(){
+                var _p = this, _r = { 
+                        date: null
+                        , minvalue: null
+                        , maxvalue: null
+                        , enddate: null 
+                        , multidate: null
+                    }
+                    ;
+                _p.selector() &&
+                    (
+                        _r = _p.multiselect() 
+                            ? _p.defaultMultiselectDate( _r ) 
+                            : _p.defaultSingleSelectDate( _r )
+                    );
+
+                _r.minvalue = parseISODate( _p.selector().attr('minvalue') );
+                _r.maxvalue = parseISODate( _p.selector().attr('maxvalue') );
+
+                return _r;
+            }
+        , defaultSingleSelectDate:
+            function( _r ){
+                var _p = this
+                    , _selector = _p.selector()
+                    , _tmp
+                    ;
+
+                if( _tmp = parseISODate( _selector.val() ) ) _r.date = _tmp;
+                else{
+                    if( _selector.val() && (_tmp = _selector.val().replace( /[^\d]/g, '' ) ).length == 16 ){
+                        _r.date = parseISODate( _tmp.slice( 0, 8 ) );
+                        _r.enddate = parseISODate( _tmp.slice( 8 ) );
+                    }else{
+                        _tmp = new Date();
+                        _r.date = new Date( _tmp.getFullYear(), _tmp.getMonth(), _tmp.getDate() );
+                    }
+                }
+                return _r;
+            }
+        , defaultMultiselectDate:
+            function( _r ){
+                var _p = this;
+                return _r;
+            }
         , layoutDate:
             function(){
-                var _dateo = Calendar.getDate( this.selector() )
+                return this.multiselect() ? this.multiLayoutDate() : this.singleLayoutDate();
+            }
+        , singleLayoutDate:
+            function(){
+                var _p = this
+                    , _dateo = _p.defaultDate()
                     , _day = this.day()
                     , _max;
                 _dateo.date.setDate( 1 );
@@ -672,6 +710,9 @@
                 _day > _max && ( _day = _max );
                 _dateo.date.setDate( _day );
                 return _dateo;
+            }
+        , multiLayoutDate:
+            function(){
             }
         , selectedDate:
             function(){
@@ -817,7 +858,7 @@
 
         , show:
             function(){
-                var _dateo = Calendar.getDate( this._model.selector() );
+                var _dateo = this._model.defaultDate();
                 JC.log( 'Calendar.View: show', new Date().getTime(), formatISODate( _dateo.date ) );
 
                 this._buildLayout( _dateo );
@@ -832,15 +873,26 @@
         , updateYear:
             function( _offset ){
                 if( typeof _offset == 'undefined' || _offset == 0 ) return;
+
+                this._model.multiselect() 
+                    ? this.updateMultiYear( _offset )
+                    : this.updateSingleYear( _offset )
+                    ;
+
+            }
+        , updateSingleYear:
+            function( _offset ){
                 var _dateo = this._model.layoutDate(), _day = _dateo.date.getDate(), _max;
                 _dateo.date.setDate( 1 );
                 _dateo.date.setFullYear( _dateo.date.getFullYear() + _offset );
                 _max = maxDayOfMonth( _dateo.date );
                 _day > _max && ( _day = _max );
                 _dateo.date.setDate( _day );
-                JC.log('zzzz', _dateo.date );
                 this._buildLayout( _dateo );
                 this._buildDone();
+            }
+        , updateMultiYear:
+            function( _offset ){
             }
         , updateMonth:
             function( _offset ){
@@ -909,6 +961,7 @@
             function( _dateo ){
                 this._model.layout();
 
+                if( !( _dateo && _dateo.date ) ) return;
                 this._buildHeader( _dateo );
                 this._buildBody( _dateo );
                 this._buildFooter( _dateo );
