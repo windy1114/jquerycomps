@@ -418,7 +418,9 @@
                             case &#x27;input&#x27;:
                             case &#x27;textarea&#x27;:
                                 {
-                                    _p._model.isAutoTrim( _sitem ) &amp;&amp; _sitem.val( $.trim( _sitem.val() ) );
+                                    ( _sitem.attr(&#x27;type&#x27;) || &#x27;&#x27; ).toLowerCase() != &#x27;file&#x27; 
+                                        &amp;&amp; _p._model.isAutoTrim( _sitem ) 
+                                        &amp;&amp; _sitem.val( $.trim( _sitem.val() ) );
                                     break;
                                 }
                         }

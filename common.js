@@ -383,32 +383,6 @@ function parseBool( _input ){
     return !!_input;
 }
 /**
- * 获取 selector 的指定父级标签
- * @method  getJqParent
- * @param   {selector}  _selector
- * @param   {selector}  _filter
- * @return selector
- * @require jquery
- * @static
- */
-function getJqParent( _selector, _filter ){
-    _selector = $(_selector);
-    var _r;
-
-    if( _filter ){
-        while( (_selector = _selector.parent()).length ){
-            if( _selector.is( _filter ) ){
-                _r = _selector;
-                break;
-            }
-        }
-    }else{
-        _r = _selector.parent();
-    }
-
-    return _r;
-}
-/**
  * 判断是否支持 CSS position: fixed
  * @property    $.support.isFixed
  * @type        bool
@@ -460,6 +434,32 @@ function mousewheelEvent( _cb, _detach ){
     }
 }
 /**
+ * 获取 selector 的指定父级标签
+ * @method  getJqParent
+ * @param   {selector}  _selector
+ * @param   {selector}  _filter
+ * @return selector
+ * @require jquery
+ * @static
+ */
+function getJqParent( _selector, _filter ){
+    _selector = $(_selector);
+    var _r;
+
+    if( _filter ){
+        while( (_selector = _selector.parent()).length ){
+            if( _selector.is( _filter ) ){
+                _r = _selector;
+                break;
+            }
+        }
+    }else{
+        _r = _selector.parent();
+    }
+
+    return _r;
+}
+/**
  * 扩展 jquery 选择器
  * <br />扩展起始字符的 '/' 符号为 jquery 父节点选择器
  * <br />扩展起始字符的 '|' 符号为 jquery 子节点选择器
@@ -469,6 +469,7 @@ function mousewheelEvent( _cb, _detach ){
  * @param   {String}    _selector
  * @param   {selector}  _finder
  * @return  selector
+ * @require jquery
  * @static
  */
 function parentSelector( _item, _selector, _finder ){
