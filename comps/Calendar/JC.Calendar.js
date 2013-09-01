@@ -65,7 +65,7 @@
      * </dl>
      * @namespace JC
      * @class Calendar
-     * @version dev 0.2, 过程式转单例模式
+     * @version dev 0.2, 2013-09-01 过程式转单例模式
      * @version dev 0.1, 2013-06-04
      * @author  qiushaowei   <suches@btbtd.org> | 75 team
      */
