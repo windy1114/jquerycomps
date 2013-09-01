@@ -2,6 +2,13 @@
     window.Bizs = window.Bizs || {};
     window.Bizs.MultiDate = MultiDate;
 
+    /**
+     * 复合日历业务逻辑
+     * @class   MultiDate
+     * @namespace   Bizs
+     * @constructor
+     * @private
+     */
     function MultiDate( _selector ){
         if( MultiDate.getInstance( _selector ) ) return MultiDate.getInstance( _selector );
         MultiDate.getInstance( _selector, this );
