@@ -1,3 +1,9 @@
+/**
+ * 全局函数
+ * @namespace 
+ * @class   window
+ * @static
+ */
 !String.prototype.trim && ( String.prototype.trim = function(){ return $.trim( this ); } );
 /**
  * 全局 css z-index 控制属性
@@ -21,11 +27,6 @@ function sliceArgs( _arg ){
     }
     return _r;
 }
-/**
- * @namespace 
- * @class   window
- * @static
- */
  /**
  * 按格式输出字符串
  * @method printf

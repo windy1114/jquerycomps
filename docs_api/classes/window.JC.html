@@ -35,6 +35,7 @@
         <div id="api-tabview-panel">
             <ul id="api-classes" class="apis classes">
                 <li><a href="../classes/.window.html">.window</a></li>
+                <li><a href="../classes/Bizs.MultiDate.html">Bizs.MultiDate</a></li>
                 <li><a href="../classes/JC.alert.html">JC.alert</a></li>
                 <li><a href="../classes/JC.AutoSelect.html">JC.AutoSelect</a></li>
                 <li><a href="../classes/JC.Calendar.html">JC.Calendar</a></li>
@@ -58,6 +59,7 @@
                 <li><a href="../classes/JC.Tips.html">JC.Tips</a></li>
                 <li><a href="../classes/JC.Tree.html">JC.Tree</a></li>
                 <li><a href="../classes/JC.Valid.html">JC.Valid</a></li>
+                <li><a href="../classes/window.Bizs.html">window.Bizs</a></li>
                 <li><a href="../classes/window.JC.html">window.JC</a></li>
                 <li><a href="../classes/window.jQuery.html">window.jQuery</a></li>
                 <li><a href="../classes/window.UXC.html">window.UXC</a></li>
@@ -196,7 +198,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._JC.js.html#l96"><code>..&#x2F;JC.js:96</code></a>
+        <a href="../files/.._JC.js.html#l142"><code>..&#x2F;JC.js:142</code></a>
         </p>
     </div>
     <div class="description">
@@ -241,7 +243,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._JC.js.html#l192"><code>..&#x2F;JC.js:192</code></a>
+        <a href="../files/.._JC.js.html#l238"><code>..&#x2F;JC.js:238</code></a>
         </p>
     </div>
     <div class="description">
@@ -273,7 +275,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._JC.js.html#l220"><code>..&#x2F;JC.js:220</code></a>
+        <a href="../files/.._JC.js.html#l266"><code>..&#x2F;JC.js:266</code></a>
         </p>
     </div>
     <div class="description">
@@ -304,7 +306,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._JC.js.html#l118"><code>..&#x2F;JC.js:118</code></a>
+        <a href="../files/.._JC.js.html#l164"><code>..&#x2F;JC.js:164</code></a>
         </p>
     </div>
     <div class="description">
@@ -341,7 +343,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._JC.js.html#l34"><code>..&#x2F;JC.js:34</code></a>
+        <a href="../files/.._JC.js.html#l36"><code>..&#x2F;JC.js:36</code></a>
         </p>
     </div>
     <div class="description">
@@ -395,6 +397,22 @@
            JC.use( '/js/Test/Test1.js' );     //导入文件  /js/Test/Test1.js, 如果起始处为 "/", 将视为文件的绝对路径
            //
            /// 导入 URL 资源 // JC.use( 'http://test.com/file1.js', 'https://another.com/file2.js' ); 
+           //
+           /// in libpath/_demo/
+           //
+           JC.use(
+               [
+                   'Panel'                     //  ../comps/Panel/Panel.js
+                   , 'Tips'                    //  ../comps/Tips/Tips.js
+                   , 'Valid'                   //  ../comps/Valid/Valid.js
+                   , 'Bizs.KillISPCache'       //  ../bizs/KillISPCache/KillISPCache.js
+                   , 'bizs.TestBizFile'        //  ../bizs/TestBizFile.js
+                   , 'comps.TestCompFile'      //  ../comps/TestCompFile.js 
+                   , 'Plugins.rate'            //  ../plugins/rate/rate.js
+                   , 'plugins.json2'           //  ../plugins/json2.js
+                   , '/js/fullpathtest.js'     //  /js/fullpathtest.js
+               ].join()
+           );
 </code></pre>
             </div>
         </div>
@@ -410,7 +428,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._JC.js.html#l237"><code>..&#x2F;JC.js:237</code></a>
+        <a href="../files/.._JC.js.html#l283"><code>..&#x2F;JC.js:283</code></a>
         </p>
     </div>
     <div class="description">
@@ -425,7 +443,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._JC.js.html#l27"><code>..&#x2F;JC.js:27</code></a>
+        <a href="../files/.._JC.js.html#l29"><code>..&#x2F;JC.js:29</code></a>
         </p>
     </div>
     <div class="description">
@@ -439,7 +457,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._JC.js.html#l137"><code>..&#x2F;JC.js:137</code></a>
+        <a href="../files/.._JC.js.html#l183"><code>..&#x2F;JC.js:183</code></a>
         </p>
     </div>
     <div class="description">
@@ -454,7 +472,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._JC.js.html#l154"><code>..&#x2F;JC.js:154</code></a>
+        <a href="../files/.._JC.js.html#l200"><code>..&#x2F;JC.js:200</code></a>
         </p>
     </div>
     <div class="description">
@@ -501,7 +519,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._JC.js.html#l145"><code>..&#x2F;JC.js:145</code></a>
+        <a href="../files/.._JC.js.html#l191"><code>..&#x2F;JC.js:191</code></a>
         </p>
     </div>
     <div class="description">
@@ -531,7 +549,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._JC.js.html#l129"><code>..&#x2F;JC.js:129</code></a>
+        <a href="../files/.._JC.js.html#l175"><code>..&#x2F;JC.js:175</code></a>
         </p>
     </div>
     <div class="description">
