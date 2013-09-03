@@ -504,4 +504,19 @@ function parentSelector( _item, _selector, _finder ){
         return _finder ? _finder.find( _selector ) : jQuery( _selector );
     }
 }
+/**
+ * 获取脚本模板的内容
+ * @method  scriptContent
+ * @param   {selector}  _selector
+ * @static
+ * @return  string
+ */
+function scriptContent( _selector ){
+    var _r = '';
+    _selector 
+        && ( _selector = $( _selector ) ).length 
+        && ( _r = _selector.html().trim().replace( /[\r\n]/g, '') )
+        ;
+    return _r;
+}
 
