@@ -643,6 +643,23 @@ function getJqParent( _selector, _filter ){
  */
 function parentSelector( _item, _selector, _finder ){
     _item &amp;&amp; ( _item = $( _item ) );
+    if( /\,/.test( _selector ) ){
+        var _multiSelector, _tmp;
+        _selector = _selector.split(&#x27;,&#x27;);
+        $.each( _selector, function( _ix, _subSelector ){
+            _subSelector = _subSelector.trim();
+            _tmp = parentSelector( _item, _subSelector, _finder );
+            _tmp &amp;&amp; _tmp.length 
+                &amp;&amp;  ( 
+                        _multiSelector &amp;&amp; _multiSelector.length 
+                            ? ( _multiSelector = $( [_multiSelector, _tmp] ) )
+                            : ( _multiSelector = _tmp ) 
+                    );
+            window.JC &amp;&amp; JC.log 
+                &amp;&amp; JC.log( _multiSelector.length +&#x27;, &#x27; + _tmp.length + &#x27;, &#x27; + _subSelector );
+        });
+        return _multiSelector;
+    }
     var _pntChildRe = /^([\/]+)/, _childRe = /^([\|]+)/, _pntRe = /^([&lt;]+)/;
     if( _pntChildRe.test( _selector ) ){
         _selector = _selector.replace( _pntChildRe, function( $0, $1 ){
@@ -652,7 +669,8 @@ function parentSelector( _item, _selector, _finder ){
             _finder = _item;
             return &#x27;&#x27;;
         });
-        return _finder.find( $.trim( _selector ) );
+        _selector = _selector.trim();
+        return _selector ? _finder.find( _selector ) : _finder;
     }else if( _childRe.test( _selector ) ){
         _selector = _selector.replace( _childRe, function( $0, $1 ){
             for( var i = 1, j = $1.length; i &lt; j; i++ ){
@@ -661,11 +679,20 @@ function parentSelector( _item, _selector, _finder ){
             _finder = _item;
             return &#x27;&#x27;;
         });
-        return _finder.find( $.trim( _selector ) );
+        _selector = _selector.trim();
+        return _selector ? _finder.find( _selector ) : _finder;
     }else if( _pntRe.test( _selector ) ){
         _selector = _selector.replace( _pntRe, &#x27;&#x27; ).trim();
         if( _selector ){
-            return getJqParent( _item, _selector );
+            if( /[\s]/.test( _selector ) ){
+                var _r;
+                _selector.replace( /^([^\s]+)([\s\S]+)/, function( $0, $1, $2 ){
+                    _r = getJqParent( _item, $1 ).find( $2.trim() );
+                });
+                return _r || _selector;
+            }else{
+                return getJqParent( _item, _selector );
+            }
         }else{
             return _item.parent();
         }

@@ -43,7 +43,14 @@
      *      <dd>用户点击日历控件操作按钮后, 外观产生变化时触发的回调</dd>
      *
      *      <dt>calendarupdate</dt>
-     *      <dd>赋值后触发的回调, params: _CalendarType, _startDate, _endDate</dd>
+     *      <dd>
+     *          赋值后触发的回调
+     *          <dl>
+     *              <dt>参数:</dt>
+     *              <dd><b>_startDate:</b> 开始日期</dd>
+     *              <dd><b>_endDate:</b> 结束日期</dd>
+     *          </dl>
+     *      </dd>
      *
      *      <dt>calendarclear</dt>
      *      <dd>清空日期触发的回调</dd>
@@ -61,7 +68,15 @@
      *      <dd>是否为多选日历, bool, default=false</dd>
      *
      *      <dt>calendarupdatemultiselect</dt>
-     *      <dd>多选日历赋值后触发的回调, params: _CalendarType, _dateArray( [ {start, end}, ... ] )</dd>
+     *      <dd>
+     *          多选日历赋值后触发的回调
+     *          <dl>
+     *              <dt>参数: _data:</dt>
+     *              <dd>
+     *                  [{"start": Date,"end": Date}[, {"start": Date,"end": Date}... ] ]
+     *              </dd>
+     *          </dl>
+     *      </dd>
      * </dl>
      * @namespace JC
      * @class Calendar
