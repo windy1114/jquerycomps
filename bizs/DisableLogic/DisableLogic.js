@@ -357,7 +357,7 @@
 
     $(document).ready( function(){
         setTimeout( function(){
-            $('div.js_bizsDisableLogic').each( function(){
+            $('div.js_bizsDisableLogic, dl.js_bizsDisableLogic, table.js_bizsDisableLogic').each( function(){
                 new DisableLogic( $(this) );
             });
         }, 10);

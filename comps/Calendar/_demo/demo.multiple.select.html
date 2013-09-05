@@ -53,15 +53,24 @@
         UXC.log( 'calendarclear', _p.val() );
     }
 
-    function calendarupdate( _type, _start, _end ){
+    function calendarclear(){
         var _p = $(this);
-        UXC.log( 'calendarupdate', _p.val(), _type, _start, _end );
+        UXC.log( 'calendarclear', _p.val() );
     }
 
-    function calendarupdatemultiselect( _type, _data ){
-        UXC.log( 'calendarupdatemultiselect:', new Date().getTime() );
-        UXC.log( '_type:', _type );
-        UXC.log( '_data:', JSON.stringify( _data ) );
+    function calendarcancel(){
+        var _p = $(this);
+        UXC.log( 'calendarcancel', _p.val() );
+    }
+
+    function calendarupdate( _start, _end ){
+        var _p = $(this);
+        UXC.log( 'calendarupdate', printf( 'val:{0}, start:{1}, end:{2}', _p.val(), _start, _end ) );
+    }
+
+    function calendarupdatemultiselect( _data ){
+        var _p = $(this);
+        UXC.log( 'calendarupdatemultiselect:', printf( 'val:{0}, data:{1}', _p.val(), JSON.stringify( _data ) ) );
     }
 </script>
 </head>    
@@ -73,28 +82,52 @@
             <dd>
             <input type="text" name="date4" value="" size="60"
                 multidate="month" multiselect="true" 
+
+                calendarshow="calendarshow"
+                calendarhide="calendarhide"
+                calendarlayoutchange="calendarlayoutchange"
+                calendarclear="calendarclear"
+                calendarcancel="calendarcancel"
+                calendarupdate="calendarupdate"
                 calendarupdatemultiselect="calendarupdatemultiselect"
                 /> month, multiselect=true
             </dd>
             <dd>
                 <button type="button" value="" 
                     datatype="date" 
-
                     calendarshow="calendarshow"
                     calendarhide="calendarhide"
                     calendarlayoutchange="calendarlayoutchange"
                     calendarclear="calendarclear"
+                    calendarcancel="calendarcancel"
                     calendarupdate="calendarupdate"
-
                     >pick date button</button>
                 <button type="button" value="2013-01-11" 
                     datatype="week"
+                    calendarshow="calendarshow"
+                    calendarhide="calendarhide"
+                    calendarlayoutchange="calendarlayoutchange"
+                    calendarclear="calendarclear"
+                    calendarcancel="calendarcancel"
+                    calendarupdate="calendarupdate"
                     >pick week button</button>
                 <button type="button" value="2013-02-02" 
                     datatype="month"
+                    calendarshow="calendarshow"
+                    calendarhide="calendarhide"
+                    calendarlayoutchange="calendarlayoutchange"
+                    calendarclear="calendarclear"
+                    calendarcancel="calendarcancel"
+                    calendarupdate="calendarupdate"
                     >pick month button</button>
                 <button type="button" value="2013-03-03" 
                     datatype="season"
+                    calendarshow="calendarshow"
+                    calendarhide="calendarhide"
+                    calendarlayoutchange="calendarlayoutchange"
+                    calendarclear="calendarclear"
+                    calendarcancel="calendarcancel"
+                    calendarupdate="calendarupdate"
                     >pick season button</button>
             </dd>
         </dl>
