@@ -111,6 +111,10 @@
             
                 <li><a href="../classes/window.Bizs.html">window.Bizs</a></li>
             
+                <li><a href="../classes/window.Bizs.CommonModify.html">window.Bizs.CommonModify</a></li>
+            
+                <li><a href="../classes/window.Bizs.DisableLogic.html">window.Bizs.DisableLogic</a></li>
+            
                 <li><a href="../classes/window.Bizs.MultiDate.html">window.Bizs.MultiDate</a></li>
             
                 <li><a href="../classes/window.JC.html">window.JC</a></li>
@@ -324,6 +328,7 @@
 
                 _p.on( Calendar.Model.UPDATE, function( _evt ){
                     _p._model.selector() &amp;&amp; _p._model.selector().blur();
+                    _p._model.selector() &amp;&amp; _p._model.selector().trigger(&#x27;change&#x27;);
                     var _args = sliceArgs( arguments ).slice( 2 );
                     _p._model.calendarupdate()
                         &amp;&amp; _p._model.calendarupdate().apply( _p._model.selector(), _args );
@@ -466,8 +471,9 @@
          */
         , clear:
             function(){
+                var _isEmpty = !this._model.selector().val().trim();
                 this._model &amp;&amp; this._model.selector().val(&#x27;&#x27;);
-                this.trigger( Calendar.Model.CLEAR );
+                !_isEmpty &amp;&amp; this.trigger( Calendar.Model.CLEAR );
                 return this;
             }
         /**

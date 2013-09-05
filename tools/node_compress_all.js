@@ -72,7 +72,11 @@ function recursive_compress( $sourceRoot, $outputRoot, $fs ){
         var fstat = $fs.statSync( cspath )  
 
         if( fstat.isDirectory() ){
-            if( fl[i] == ".git" || fl[i] == 'docs_api' || fl[i] == 'tools' ) continue;
+            if( fl[i] == ".git" 
+                    || fl[i] == 'docs_api' 
+                    || fl[i] == 'tools' 
+                    || fl[i] == 'bizs' 
+            ) continue;
             /*console.log('directory');*/
         }else if( fstat.isFile ){
             /*console.log('file');*/

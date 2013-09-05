@@ -1,1 +1,305 @@
-(function(a){window.Bizs.MultiDate=d;function d(e){if(d.getInstance(e)){return d.getInstance(e)}d.getInstance(e,this);this._model=new c(e);this._view=new b(this._model);this._init()}d.prototype={_init:function(){var e=this;a([e._view,e._model]).on("BindEvent",function(f,h,g){e.on(h,g)});a([e._view,e._model]).on("TriggerEvent",function(f,h){var g=sliceArgs(arguments);g.shift();g.shift();e.trigger(h,g)});e._model.init();e._view.init();e._initDefaultValue();e._initHandlerEvent();return e},_initDefaultValue:function(){var e=this,f=e._model.qstartdate(),g=e._model.qenddate();e._model.selector(e._model.qtype());e._model.mdstartdate(f);e._model.mdenddate(g);if(!e._model.mddate().attr("name")){if(f&&g){if(f==g){e._model.mddate(formatISODate(parseISODate(f)))}else{e._model.mddate(printf("{0} 至 {1}",formatISODate(parseISODate(f)),formatISODate(parseISODate(g))))}}}else{e._model.mddate(e._model.qdate())}},_initHandlerEvent:function(){var e=this;e._model.selector().on("change",function(g){var f=a(this);JC.log("type:",f.val());e._model.settype(f.val());setTimeout(function(){JC.Calendar.pickDate(e._model.mddate()[0]);e._model.mdstartdate("");e._model.mdenddate("")},10)})},selector:function(){return this._model.selector()},on:function(f,e){a(this).on(f,e);return this},trigger:function(f,e){a(this).trigger(f,e);return this}};d.getInstance=function(e,f){if(typeof e=="string"&&!/</.test(e)){e=a(e)}if(!(e&&e.length)||(typeof e=="string")){return}typeof f!="undefined"&&e.data("MultiDateIns",f);return e.data("MultiDateIns")};d.isMultiDate=function(e){var f;e&&(e=a(e)).length&&(f=e.is("[MultiDatelayout]"));return f};function c(e){this._selector=e}c._inscount=1;c.prototype={init:function(){var e=this,h="Bizs.MultiDate_"+(c._inscount),f="Bizs.MultiDate_show_"+(c._inscount),g="Bizs.MultiDate_hide_"+(c._inscount),i="Bizs.MultiDate_layoutchange_"+(c._inscount);c._inscount++;window[h]=function(k,j,l){e.mdstartdate(formatISODate(j,""));e.mdenddate(formatISODate(l,""))};e.mddate().attr("calendarupdate",h);window[f]=function(){var j=a("body > div.UXCCalendar:visible");j.length&&JC.Tips&&JC.Tips.init(j.find("[title]"))};e.mddate().attr("calendarshow",f);window[g]=function(){JC.Tips&&JC.Tips.hide();e.updateHiddenDate()};e.mddate().attr("calendarhide",g);window[i]=function(){JC.Tips&&JC.Tips.hide();var j=a("body > div.UXCCalendar:visible");j.length&&JC.Tips&&JC.Tips.init(j.find("[title]"))};e.mddate().attr("calendarlayoutchange",i);return e},selector:function(e){typeof e!="undefined"&&this.hastype(this.qtype())&&this._selector.val(e)&&this.settype(e);return this._selector},mddate:function(e){var f=parentSelector(this.selector(),this.selector().attr("mddate"));typeof e!="undefined"&&f.val(e);return f},mdstartdate:function(e){var f=parentSelector(this.selector(),this.selector().attr("mdstartdate"));typeof e!="undefined"&&f.val(e.replace(/[^\d]/g,""));return f},mdenddate:function(e){var f=parentSelector(this.selector(),this.selector().attr("mdenddate"));typeof e!="undefined"&&f.val(e.replace(/[^\d]/g,""));return f},qtype:function(){return this.decodedata(get_url_param(this.selector().attr("name")||"")||"").toLowerCase()},qdate:function(){return this.decodedata(get_url_param(this.mddate().attr("name")||"")||"").toLowerCase()},qstartdate:function(){return this.decodedata(get_url_param(this.mdstartdate().attr("name")||"")||"").toLowerCase()},qenddate:function(){return this.decodedata(get_url_param(this.mdenddate().attr("name")||"")||"").toLowerCase()},hastype:function(e){var f=false;this.selector().find("> option").each(function(){if(a(this).val().trim()==e){f=true;return false}});return f},settype:function(e){this.mddate().val("").attr("multidate",e)},decodedata:function(e){e=e.replace(/[\+]/g," ");try{e=decodeURIComponent(e)}catch(f){}return e},updateHiddenDate:function(){var e=a.trim(this.mddate().val());if(!e){this.mdstartdate("");this.mdenddate("");return}e=e.replace(/[^\d]+/g,"");if(e.length==8){this.mdstartdate(e);this.mdenddate(e)}if(e.length==16){this.mdstartdate(e.slice(0,8));this.mdenddate(e.slice(8))}}};function b(e){this._model=e}b.prototype={init:function(){return this},hide:function(){},show:function(){}};a(document).ready(function(){a("select.js_autoMultidate").each(function(){new d(a(this))})})}(jQuery));
+;(function($){
+    window.Bizs.MultiDate = MultiDate;
+    /**
+     * MultiDate 复合日历业务逻辑
+     * <p>
+     *      <b>require</b>: <a href='JC.Calendar.html'>JC.Calendar</a>
+     *      <br /><b>require</b>: <a href='window.jQuery.html'>jQuery</a>
+     * </p>
+     * <p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>
+     * | <a href='http://jc.openjavascript.org/docs_api/classes/Bizs.MultiDate.html' target='_blank'>API docs</a>
+     * | <a href='../../bizs/MultiDate/_demo' target='_blank'>demo link</a></p>
+     * @class   MultiDate
+     * @namespace   window.Bizs
+     * @constructor
+     * @private
+     * @author  qiushaowei   <suches@btbtd.org> | 75 Team
+     * @date    2013-09-03
+     * @example
+     */
+    function MultiDate( _selector ){
+        if( MultiDate.getInstance( _selector ) ) return MultiDate.getInstance( _selector );
+        MultiDate.getInstance( _selector, this );
+
+        this._model = new Model( _selector );
+        this._view = new View( this._model );
+
+        this._init();
+    }
+    
+    MultiDate.prototype = {
+        _init:
+            function(){
+                var _p = this;
+
+                $( [ _p._view, _p._model ] ).on('BindEvent', function( _evt, _evtName, _cb ){
+                    _p.on( _evtName, _cb );
+                });
+
+                $([ _p._view, _p._model ] ).on('TriggerEvent', function( _evt, _evtName ){
+                    var _data = sliceArgs( arguments ); _data.shift(); _data.shift();
+                    _p.trigger( _evtName, _data );
+                });
+
+                _p._model.init();
+                _p._view.init();
+
+                _p._initDefaultValue();
+                _p._initHandlerEvent();
+
+                return _p;
+            }    
+        , _initDefaultValue:
+            function(){
+                var _p = this, _qs = _p._model.qstartdate(), _qe = _p._model.qenddate();
+
+                _p._model.selector( _p._model.qtype() );
+                _p._model.mdstartdate( _qs );
+                _p._model.mdenddate( _qe );
+
+                if( !_p._model.mddate().attr('name') ){
+                    if( _qs && _qe ){
+                        if( _qs == _qe ){
+                            _p._model.mddate( formatISODate(parseISODate(_qs)) );
+                        }else{
+                            _p._model.mddate( printf( '{0} 至 {1}'
+                                        , formatISODate(parseISODate(_qs))
+                                        , formatISODate(parseISODate(_qe))
+                                        ) );
+                        }
+                    }
+                }else{
+                    _p._model.mddate( _p._model.qdate() );
+                }
+            }
+        , _initHandlerEvent:
+            function(){
+                var _p = this;
+                _p._model.selector().on('change', function(_evt){
+                    var _sp = $(this);
+                    JC.log( 'type:', _sp.val() );
+                    _p._model.settype( _sp.val() );
+                    setTimeout(function(){
+                        JC.Calendar.pickDate( _p._model.mddate()[0] );
+                        _p._model.mdstartdate( '' );
+                        _p._model.mdenddate( '' );
+                    }, 10);
+                });
+            }
+        /**
+         * 获取 显示 MultiDate 的触发源选择器, 比如 a 标签
+         * @method  selector
+         * @return  selector
+         */ 
+        , selector: function(){ return this._model.selector(); }
+        /**
+         * 使用 jquery on 绑定事件
+         * @method  {string}    on
+         * @param   {string}    _evtName
+         * @param   {function}  _cb
+         * @return  MultiDateInstance
+         */
+        , on: function( _evtName, _cb ){ $(this).on(_evtName, _cb ); return this;}
+        /**
+         * 使用 jquery trigger 绑定事件
+         * @method  {string}    trigger
+         * @param   {string}    _evtName
+         * @return  MultiDateInstance
+         */
+        , trigger: function( _evtName, _data ){ $(this).trigger( _evtName, _data ); return this;}
+    }
+    /**
+     * 获取或设置 MultiDate 的实例
+     * @method getInstance
+     * @param   {selector}      _selector
+     * @static
+     * @return  {MultiDate instance}
+     */
+    MultiDate.getInstance =
+        function( _selector, _setter ){
+            if( typeof _selector == 'string' && !/</.test( _selector ) ) 
+                    _selector = $(_selector);
+            if( !(_selector && _selector.length ) || ( typeof _selector == 'string' ) ) return;
+            typeof _setter != 'undefined' && _selector.data( 'MultiDateIns', _setter );
+
+            return _selector.data('MultiDateIns');
+        };
+    /**
+     * 判断 selector 是否可以初始化 MultiDate
+     * @method  isMultiDate
+     * @param   {selector}      _selector
+     * @static
+     * @return  bool
+     */
+    MultiDate.isMultiDate =
+        function( _selector ){
+            var _r;
+            _selector 
+                && ( _selector = $(_selector) ).length 
+                && ( _r = _selector.is( '[MultiDatelayout]' ) );
+            return _r;
+        };
+    
+    function Model( _selector ){
+        this._selector = _selector;
+    }
+
+    Model._inscount = 1;
+    
+    Model.prototype = {
+        init:
+            function(){
+                var _p = this
+                    , _updatecb = 'Bizs.MultiDate_' + ( Model._inscount)
+                    , _showcb = 'Bizs.MultiDate_show_' + ( Model._inscount)
+                    , _hidecb = 'Bizs.MultiDate_hide_' + ( Model._inscount)
+                    , _layoutchangecb = 'Bizs.MultiDate_layoutchange_' + ( Model._inscount)
+                    ;
+                Model._inscount++;
+
+                window[ _updatecb ] = 
+                    function( _type, _startDate, _endDate ){
+                        _p.mdstartdate( formatISODate( _startDate, '' ) );
+                        _p.mdenddate( formatISODate( _endDate, '' ) );
+                    };
+                _p.mddate().attr('calendarupdate', _updatecb);
+
+                window[ _showcb ] = 
+                    function(){
+                        var _layout = $('body > div.UXCCalendar:visible');
+                        _layout.length && JC.Tips && JC.Tips.init( _layout.find('[title]') );
+                    };
+                _p.mddate().attr('calendarshow', _showcb );
+
+                window[ _hidecb ] = 
+                    function(){
+                        JC.Tips && JC.Tips.hide();
+                        _p.updateHiddenDate();
+                    };
+                _p.mddate().attr('calendarhide', _hidecb );
+
+                window[ _layoutchangecb ] = 
+                    function(){
+                        JC.Tips && JC.Tips.hide();
+                        var _layout = $('body > div.UXCCalendar:visible');
+                        _layout.length && JC.Tips && JC.Tips.init( _layout.find('[title]') );
+                    };
+                _p.mddate().attr('calendarlayoutchange', _layoutchangecb );
+
+                return _p;
+            }
+
+        , selector: 
+            function( _setter ){ 
+                typeof _setter != 'undefined' 
+                    && this.hastype( this.qtype() ) 
+                    && this._selector.val( _setter )
+                    && this.settype( _setter )
+                    ;
+                return this._selector; 
+            }
+
+        , mddate: 
+            function( _setter ){ 
+                var _r = parentSelector( this.selector(), this.selector().attr('mddate') );
+                typeof _setter != 'undefined' && _r.val( _setter );
+                return _r; 
+            }
+        , mdstartdate: 
+            function( _setter ){ 
+                var _r = parentSelector( this.selector(), this.selector().attr('mdstartdate') );
+                typeof _setter != 'undefined' && _r.val( _setter.replace(/[^\d]/g, '') );
+                return _r;
+            }
+        , mdenddate: 
+            function( _setter ){ 
+                var _r = parentSelector( this.selector(), this.selector().attr('mdenddate') );
+                typeof _setter != 'undefined' && _r.val( _setter.replace(/[^\d]/g, '') );
+                return _r;
+            }
+
+        , qtype: function(){
+            return this.decodedata( get_url_param( this.selector().attr('name') || '' ) || '' ).toLowerCase();
+        }
+
+        , qdate: function(){
+            return this.decodedata( get_url_param( this.mddate().attr('name') || '' ) || '' ).toLowerCase();
+        }
+
+        , qstartdate: function(){
+            return this.decodedata( get_url_param( this.mdstartdate().attr('name') || '' ) || '' ).toLowerCase();
+        }
+
+        , qenddate: function(){
+            return this.decodedata( get_url_param( this.mdenddate().attr('name') || '' ) || '' ).toLowerCase();
+        }
+
+        , hastype:
+            function( _type ){
+                var _r = false;
+                this.selector().find('> option').each( function(){
+                    if( $(this).val().trim() == _type ){
+                        _r = true;
+                        return false;
+                    }
+                });
+                return _r;
+            }
+
+        , settype:
+            function( _type ){
+                this.mddate().val('').attr( 'multidate', _type );
+            }
+        , decodedata:
+            function( _d ){
+                _d = _d.replace( /[\+]/g, ' ' );
+                try{ _d = decodeURIComponent( _d ); }catch(ex){}
+                return _d;
+            }
+        , updateHiddenDate: 
+            function (){
+                var _date = $.trim( this.mddate().val() );
+                if( !_date ){
+                    this.mdstartdate('');
+                    this.mdenddate('');
+                    return;
+                }
+                _date = _date.replace( /[^\d]+/g, '' );
+                if( _date.length == 8 ){
+                    this.mdstartdate( _date );
+                    this.mdenddate( _date );
+                }
+                if( _date.length == 16 ){
+                    this.mdstartdate( _date.slice(0, 8) );
+                    this.mdenddate( _date.slice(8) );
+                }
+            }
+
+    };
+    
+    function View( _model ){
+        this._model = _model;
+    }
+    
+    View.prototype = {
+        init:
+            function() {
+                return this;
+            }
+
+        , hide:
+            function(){
+            }
+
+        , show:
+            function(){
+            }
+    };
+
+    $(document).ready( function(){
+        $('select.js_autoMultidate').each( function(){
+            new MultiDate( $(this) );
+        });
+    });
+
+}(jQuery));
