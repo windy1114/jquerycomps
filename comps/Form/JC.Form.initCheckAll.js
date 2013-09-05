@@ -132,11 +132,14 @@
                     _p._view.inverseChange();
                 });
 
-                $( _p._model.delegateElement() ).delegate( _p._model.delegateSelector(), 'change', function( _evt ){
-                    if( AutoChecked.isAutoChecked( $(this) ) ) return;
-                    JC.log( 'AutoChecked change', new Date().getTime() );
-                    _p._view.itemChange();
-                });
+                if( !( _p._model.checktype() == 'inverse' && _p._model.hasCheckAll() ) ){
+                    $( _p._model.delegateElement() ).delegate( _p._model.delegateSelector(), 'click', function( _evt ){
+                        if( AutoChecked.isAutoChecked( $(this) ) ) return;
+                        JC.log( 'AutoChecked change', new Date().getTime() );
+                        _p._view.itemChange();
+                    });
+                }
+
             }
         /**
          * 获取 显示 AutoChecked 的触发源选择器, 比如 a 标签
@@ -220,6 +223,8 @@
                 return ( this.selector().attr('checkall') || '' );
             }
 
+        , hasCheckAll: function(){ return this.selector().is('[checkall]') && this.selector().attr('checkall'); }
+
         , selector: function(){ return this._selector; }
 
         , isParentSelector: function(){ return Model.isParentSelectorRe.test( this.selector().attr( 'checkfor' ) ); }
@@ -297,6 +302,7 @@
                 var _p = this, _checked = _p._model.checkedAll();
                 _p._model.items().each( function(){
                     if( AutoChecked.isAutoChecked( $(this) ) ) return;
+                    if( $(this).is('[disabled]') ) return;
                     $(this).prop( 'checked', _checked );
                 });
             }
@@ -306,6 +312,7 @@
                 _p._model.items().each( function(){
                     var _sp = $(this);
                     if( AutoChecked.isAutoChecked( _sp ) ) return;
+                    if( $(this).is('[disabled]') ) return;
                     _sp.prop( 'checked', !_sp.prop('checked') );
                 });
                 this._fixAll();
@@ -317,6 +324,7 @@
 
                 _p._model.items().each( function(){
                     if( AutoChecked.isAutoChecked( $(this) ) ) return;
+                    if( $(this).is('[disabled]') ) return;
                     if( !$(this).prop('checked') ) return _checkAll = false;
                 });
 

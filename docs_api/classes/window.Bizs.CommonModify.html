@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
+    <title>window.Bizs.CommonModify - jquery components</title>
     <link rel="stylesheet" href="http://yui.yahooapis.com/3.9.1/build/cssgrids/cssgrids-min.css">
     <link rel="stylesheet" href="../assets/vendor/prettify/prettify-min.css">
     <link rel="stylesheet" href="../assets/css/main.css" id="site_styles">
@@ -95,40 +96,92 @@
             <div class="apidocs">
                 <div id="docs-main">
                     <div class="content">
+                        <h1>window.Bizs.CommonModify Class</h1>
 <div class="box meta">
         <div class="foundat">
-            Defined in: <a href="../files/.._comps_LunarCalendar_JC.LunarCalendar.js.html#l498"><code>..&#x2F;comps&#x2F;LunarCalendar&#x2F;JC.LunarCalendar.js:498</code></a>
+            Defined in: <a href="../files/.._bizs_CommonModify_CommonModify.js.html#l1"><code>..&#x2F;bizs&#x2F;CommonModify&#x2F;CommonModify.js:1</code></a>
         </div>
 </div>
 <div class="box intro">
-    <p>LunarCalendar 视图类</p>
+    <p>通用 添加删除 逻辑
+应用场景
+     需要动态添加删除内容的地方可以使用这个类</p>
+<p>a|button 需要 添加 class="js_autoCommonModify"</p>
+<h2>可用的 HTML 属性</h2>
+<dl>
+     <dt>cmtemplate = script selector</dt>
+     <dd>指定保存模板的 script 标签</dd>
+     <dt>cmitem = selector</dt>
+     <dd>添加时, 当前的具体父节点</dd>
+     <dt>cmaction = string, [add, del], default = add</dt>
+     <dd>操作类型</dd>
+     <dt>cmdonecallback = function</dt>
+     <dd>添加或删除完后会触发的回调</dd>
+     <dt>cmtplfiltercallback = function</dt>
+     <dd>模板内容过滤回调</dd>
+     <dt>cmaddcallback = function</dt>
+     <dd>添加完成的回调</dd>
+     <dt>cmdelcallback = function</dt>
+     <dd>删除完成的回调</dd>
+</dl>
 </div>
     <div class="constructor">
         <h2>Constructor</h2>
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>_model</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
+        <div id="method_window.Bizs.CommonModify" class="method item">
+    <h3 class="name"><code>window.Bizs.CommonModify</code></h3>
+        <span class="paren">()</span>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._comps_LunarCalendar_JC.LunarCalendar.js.html#l498"><code>..&#x2F;comps&#x2F;LunarCalendar&#x2F;JC.LunarCalendar.js:498</code></a>
+        <a href="../files/.._bizs_CommonModify_CommonModify.js.html#l1"><code>..&#x2F;bizs&#x2F;CommonModify&#x2F;CommonModify.js:1</code></a>
         </p>
     </div>
     <div class="description">
     </div>
-        <div class="params">
-            <h4>Parameters:</h4>
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">_model</code>
-                    <div class="param-description">
-                    </div>
-                </li>
-            </ul>
+        <div class="example">
+            <h4>Example:</h4>
+            <div class="example-content">
+                <pre class="code prettyprint"><code>  &lt;table&gt;
+        &lt;tr&gt;
+           &lt;td&gt;
+               &lt;label class="gray"&gt;甲方主体：&lt;/label&gt;
+           &lt;/td&gt;
+           &lt;td&gt;
+               &lt;input type="text" name="" class="ipt ipt-w320" /&gt;&amp;nbsp;
+                   &lt;a href="javascript:" 
+                   class="green js_autoCommonModify" 
+                   cmtemplate="#addMainFirstPartyTpl"
+                   cmitem="&lt;tr"
+                   cmaction="add"
+               &gt;+ 添加&lt;/a&gt;
+               &lt;em class="error"&gt;&lt;/em&gt;
+           &lt;/td&gt;
+       &lt;/tr&gt;
+   &lt;/table&gt;
+   &lt;script type="text/template" id="addMainFirstPartyTpl" &gt;
+    &lt;tr&gt;
+       &lt;td&gt;
+           &lt;label class="gray"&gt;甲方主体：&lt;/label&gt;
+       &lt;/td&gt;
+       &lt;td&gt;
+           &lt;input type="text" name="" class="ipt ipt-w320" /&gt;
+           &lt;a href="javascript:" 
+               class="green js_autoCommonModify" 
+               cmtemplate="#addMainFirstPartyTpl"
+               cmitem="&lt;tr"
+               cmaction="add"
+           &gt;+ 添加&lt;/a&gt;
+           &lt;a href="javascript:" class="red js_autoCommonModify"
+               cmtemplate="#addMainFirstPartyTpl"
+               cmitem="&lt;tr"
+               cmaction="del"
+           &gt;+ 删除&lt;/a&gt;
+           &lt;em class="error"&gt;&lt;/em&gt;
+       &lt;/td&gt;
+   &lt;/tr&gt;
+   &lt;/script&gt;
+</code></pre>
+            </div>
         </div>
 </div>
     </div>
@@ -136,7 +189,6 @@
     <ul class="api-class-tabs">
         <li class="api-class-tab index"><a href="#index">Index</a></li>
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
-            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
     </ul>
     <div>
         <div id="index" class="api-class-tabpanel index">
@@ -144,249 +196,216 @@
                 <div class="index-section methods">
                     <h3>Methods</h3>
                     <ul class="index-list methods">
-                            <li class="index-item method private">
-                                <a href="#method__init">_init</a>
+                            <li class="index-item method">
+                                <a href="#method_getInstance">getInstance</a>
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
-                                <a href="#method__logic.initMonthDate">_logic.initMonthDate</a>
+                                <a href="#method_isCommonModify">isCommonModify</a>
+                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
-                                <a href="#method_addTitle">addTitle</a>
+                                <a href="#method_on">on</a>
                             </li>
                             <li class="index-item method">
-                                <a href="#method_hideControl">hideControl</a>
+                                <a href="#method_selector">selector</a>
                             </li>
                             <li class="index-item method">
-                                <a href="#method_initLayout">initLayout</a>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_initMonth">initMonth</a>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_initYear">initYear</a>
-                            </li>
-                    </ul>
-                </div>
-                <div class="index-section properties">
-                    <h3>Properties</h3>
-                    <ul class="index-list properties">
-                            <li class="index-item property private">
-                                <a href="#property__model">_model</a>
-                            </li>
-                            <li class="index-item property">
-                                <a href="#property_layout">layout</a>
+                                <a href="#method_trigger">trigger</a>
                             </li>
                     </ul>
                 </div>
         </div>
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
-                    <div id="method__init" class="method item private">
-    <h3 class="name"><code>_init</code></h3>
-        <span class="paren">()</span>
-        <span class="flag private">private</span>
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/.._comps_LunarCalendar_JC.LunarCalendar.js.html#l524"><code>..&#x2F;comps&#x2F;LunarCalendar&#x2F;JC.LunarCalendar.js:524</code></a>
-        </p>
-    </div>
-    <div class="description">
-        <p>初始化 View</p>
-    </div>
-</div>
-                    <div id="method__logic.initMonthDate" class="method item">
-    <h3 class="name"><code>_logic.initMonthDate</code></h3>
+                    <div id="method_getInstance" class="method item">
+    <h3 class="name"><code>getInstance</code></h3>
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>_dateObj</code>
+                        <code>_selector</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
+        <span class="returns-inline">
+            <span class="type">CommonModify instance</span>
+        </span>
+        <span class="flag static">static</span>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._comps_LunarCalendar_JC.LunarCalendar.js.html#l569"><code>..&#x2F;comps&#x2F;LunarCalendar&#x2F;JC.LunarCalendar.js:569</code></a>
+        <a href="../files/.._bizs_CommonModify_CommonModify.js.html#l180"><code>..&#x2F;bizs&#x2F;CommonModify&#x2F;CommonModify.js:180</code></a>
         </p>
     </div>
     <div class="description">
-        <p>初始化月份的所有日期</p>
+        <p>获取或设置 CommonModify 的实例</p>
     </div>
         <div class="params">
             <h4>Parameters:</h4>
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">_dateObj</code>
-                        <span class="type">DateObjects</span>
-                    <div class="param-description">
-                        <p>保存所有相关日期的对象</p>
-                    </div>
-                </li>
-            </ul>
-        </div>
-</div>
-                    <div id="method_addTitle" class="method item">
-    <h3 class="name"><code>addTitle</code></h3>
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>_td</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/.._comps_LunarCalendar_JC.LunarCalendar.js.html#l670"><code>..&#x2F;comps&#x2F;LunarCalendar&#x2F;JC.LunarCalendar.js:670</code></a>
-        </p>
-    </div>
-    <div class="description">
-        <p>把具体的公历和农历日期写进a标签的title里</p>
-    </div>
-        <div class="params">
-            <h4>Parameters:</h4>
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">_td</code>
+                        <code class="param-name">_selector</code>
                         <span class="type">Selector</span>
                     <div class="param-description">
                     </div>
                 </li>
             </ul>
         </div>
-</div>
-                    <div id="method_hideControl" class="method item">
-    <h3 class="name"><code>hideControl</code></h3>
-        <span class="paren">()</span>
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/.._comps_LunarCalendar_JC.LunarCalendar.js.html#l680"><code>..&#x2F;comps&#x2F;LunarCalendar&#x2F;JC.LunarCalendar.js:680</code></a>
-        </p>
-    </div>
-    <div class="description">
-        <p>检查是否要隐藏操作控件</p>
-    </div>
-</div>
-                    <div id="method_initLayout" class="method item">
-    <h3 class="name"><code>initLayout</code></h3>
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>_date</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/.._comps_LunarCalendar_JC.LunarCalendar.js.html#l536"><code>..&#x2F;comps&#x2F;LunarCalendar&#x2F;JC.LunarCalendar.js:536</code></a>
-        </p>
-    </div>
-    <div class="description">
-        <p>初始化日历外观</p>
-    </div>
-        <div class="params">
-            <h4>Parameters:</h4>
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">_date</code>
-                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Date" class="crosslink external" target="_blank">Date</a></span>
-                    <div class="param-description">
-                    </div>
-                </li>
-            </ul>
-        </div>
-</div>
-                    <div id="method_initMonth" class="method item">
-    <h3 class="name"><code>initMonth</code></h3>
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>_dateObj</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/.._comps_LunarCalendar_JC.LunarCalendar.js.html#l560"><code>..&#x2F;comps&#x2F;LunarCalendar&#x2F;JC.LunarCalendar.js:560</code></a>
-        </p>
-    </div>
-    <div class="description">
-        <p>初始化月份</p>
-    </div>
-        <div class="params">
-            <h4>Parameters:</h4>
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">_dateObj</code>
-                        <span class="type">DateObject</span>
-                    <div class="param-description">
-                    </div>
-                </li>
-            </ul>
-        </div>
-</div>
-                    <div id="method_initYear" class="method item">
-    <h3 class="name"><code>initYear</code></h3>
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>_dateObj</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/.._comps_LunarCalendar_JC.LunarCalendar.js.html#l551"><code>..&#x2F;comps&#x2F;LunarCalendar&#x2F;JC.LunarCalendar.js:551</code></a>
-        </p>
-    </div>
-    <div class="description">
-        <p>初始化年份</p>
-    </div>
-        <div class="params">
-            <h4>Parameters:</h4>
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">_dateObj</code>
-                        <span class="type">DateObject</span>
-                    <div class="param-description">
-                    </div>
-                </li>
-            </ul>
-        </div>
-</div>
+        <div class="returns">
+            <h4>Returns:</h4>
+            <div class="returns-description">
+                        <span class="type">CommonModify instance</span>:
             </div>
-            <div id="properties" class="api-class-tabpanel">
-                <h2 class="off-left">Properties</h2>
-                    <div id="property__model" class="property item private">
-    <h3 class="name"><code>_model</code></h3>
-        <span class="flag private">private</span>
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/.._comps_LunarCalendar_JC.LunarCalendar.js.html#l506"><code>..&#x2F;comps&#x2F;LunarCalendar&#x2F;JC.LunarCalendar.js:506</code></a>
-        </p>
-    </div>
-    <div class="description">
-        <p>LunarCalendar model 对象</p>
-    </div>
+        </div>
 </div>
-                    <div id="property_layout" class="property item">
-    <h3 class="name"><code>layout</code></h3>
-    <span class="type">Selector</span>
+                    <div id="method_isCommonModify" class="method item">
+    <h3 class="name"><code>isCommonModify</code></h3>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>_selector</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+        <span class="flag static">static</span>
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._comps_LunarCalendar_JC.LunarCalendar.js.html#l513"><code>..&#x2F;comps&#x2F;LunarCalendar&#x2F;JC.LunarCalendar.js:513</code></a>
+        <a href="../files/.._bizs_CommonModify_CommonModify.js.html#l194"><code>..&#x2F;bizs&#x2F;CommonModify&#x2F;CommonModify.js:194</code></a>
         </p>
     </div>
     <div class="description">
-        <p>LunarCalendar 的主容器</p>
+        <p>判断 selector 是否可以初始化 CommonModify</p>
     </div>
+        <div class="params">
+            <h4>Parameters:</h4>
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">_selector</code>
+                        <span class="type">Selector</span>
+                    <div class="param-description">
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="returns">
+            <h4>Returns:</h4>
+            <div class="returns-description">
+                    bool
+            </div>
+        </div>
+</div>
+                    <div id="method_on" class="method item">
+    <h3 class="name"><code>on</code></h3>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>_evtName</code>
+                </li>
+                <li class="arg">
+                        <code>_cb</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/.._bizs_CommonModify_CommonModify.js.html#l149"><code>..&#x2F;bizs&#x2F;CommonModify&#x2F;CommonModify.js:149</code></a>
+        </p>
+    </div>
+    <div class="description">
+        <p>使用 jquery on 绑定事件</p>
+    </div>
+        <div class="params">
+            <h4>Parameters:</h4>
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">_evtName</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    <div class="param-description">
+                    </div>
+                </li>
+                <li class="param">
+                        <code class="param-name">_cb</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Function" class="crosslink external" target="_blank">Function</a></span>
+                    <div class="param-description">
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="returns">
+            <h4>Returns:</h4>
+            <div class="returns-description">
+                    CommonModifyInstance
+            </div>
+        </div>
+</div>
+                    <div id="method_selector" class="method item">
+    <h3 class="name"><code>selector</code></h3>
+        <span class="paren">()</span>
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/.._bizs_CommonModify_CommonModify.js.html#l143"><code>..&#x2F;bizs&#x2F;CommonModify&#x2F;CommonModify.js:143</code></a>
+        </p>
+    </div>
+    <div class="description">
+        <p>获取 显示 CommonModify 的触发源选择器, 比如 a 标签</p>
+    </div>
+        <div class="returns">
+            <h4>Returns:</h4>
+            <div class="returns-description">
+                    selector
+            </div>
+        </div>
+</div>
+                    <div id="method_trigger" class="method item">
+    <h3 class="name"><code>trigger</code></h3>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>_evtName</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/.._bizs_CommonModify_CommonModify.js.html#l157"><code>..&#x2F;bizs&#x2F;CommonModify&#x2F;CommonModify.js:157</code></a>
+        </p>
+    </div>
+    <div class="description">
+        <p>使用 jquery trigger 绑定事件</p>
+    </div>
+        <div class="params">
+            <h4>Parameters:</h4>
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">_evtName</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    <div class="param-description">
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="returns">
+            <h4>Returns:</h4>
+            <div class="returns-description">
+                    CommonModifyInstance
+            </div>
+        </div>
 </div>
             </div>
     </div>

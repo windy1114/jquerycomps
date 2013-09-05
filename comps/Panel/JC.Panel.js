@@ -765,7 +765,7 @@
         , show:
             function(){
                 this.getPanel().css( { 'z-index': ZINDEX_COUNT++ } ).show();
-                this.focusButton();
+                //this.focusButton();
             }
         /**
          * focus button

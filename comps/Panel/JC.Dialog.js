@@ -22,7 +22,10 @@
             if( _logic.timeout ) clearTimeout( _logic.timeout );
 
             if( JC.Panel.getInstance( _selector ) ){
-                JC.Panel.getInstance( _selector ).center().show();
+                _logic.timeout = setTimeout( function(){
+                    JC.Panel.getInstance( _selector ).center().show();
+                }, _logic.showMs );
+
                 return JC.Panel.getInstance( _selector );
             }
 
@@ -43,7 +46,12 @@
             });
 
             _ins.on('show_default', function( _evt, _panel){
-                _logic.showMask();
+                _logic.showMask(); 
+
+                setTimeout( function(){  
+                    _logic.showMask(); 
+                    _ins.selector().css( { 'z-index': window.ZINDEX_COUNT++, 'display': 'block' } );
+                }, 1 );
             });
             
             _logic.timeout = setTimeout( function(){
