@@ -359,7 +359,8 @@
             }
     };
 
-    $(document).delegate( 'a.js_autoCommonModify, button.js_autoCommonModify', 'click', function( _evt ){
+    $(document).delegate( 'a.js_autoCommonModify, button.js_autoCommonModify'
+                          + ', a.js_bizsCommonModify, button.js_bizsCommonModify', 'click', function( _evt ){
         CommonModify.getInstance().process(  $(this) );
     });
 
