@@ -130,27 +130,27 @@
     BaseMVC.autoInit = true;
     /**
      * 复制 BaseMVC 的所有方法到 _outClass
-     * @method  power
+     * @method  build
      * @param   {Class} _outClass
      * @static
      */
-    BaseMVC.power =
+    BaseMVC.build =
         function( _outClass ){
-            !_outClass.Model && ( _outClass.Model = function( _selector ){ this._selector = _selector; } );
-            !_outClass.View && ( _outClass.View = function( _model ){ this._model = _model; } );
+            BaseMVC.buildModel( _outClass );
+            BaseMVC.buildView( _outClass );
 
-            BaseMVC.powerClass( BaseMVC, _outClass );
-            BaseMVC.powerClass( BaseMVC.Model, _outClass.Model );
-            BaseMVC.powerClass( BaseMVC.View, _outClass.View );
+            BaseMVC.buildClass( BaseMVC, _outClass );
+            BaseMVC.buildClass( BaseMVC.Model, _outClass.Model );
+            BaseMVC.buildClass( BaseMVC.View, _outClass.View );
         };
     /**
      * 复制 _inClass 的所有方法到 _outClass
-     * @method  powerClass
+     * @method  buildClass
      * @param   {Class} _inClass
      * @param   {Class} _outClass
      * @static
      */
-    BaseMVC.powerClass = 
+    BaseMVC.buildClass = 
         function( _inClass, _outClass ){
             if( !( _inClass && _outClass ) ) return;
             var _k;
@@ -162,16 +162,33 @@
                     !_outClass.prototype[_k] && ( _outClass.prototype[_k] = _inClass.prototype[_k] );
             }
         };
+    /**
+     * 为 _outClass 生成一个通用 Model 类
+     * @method  buildModel
+     * @param   {Class} _outClass
+     * @static
+     */
+    BaseMVC.buildModel =
+        function( _outClass ){
+            !_outClass.Model && ( 
+                        _outClass.Model = function( _selector ){ this._selector = _selector; }
+                        , _outClass.Model._instanceName = 'CommonIns'
+                    );
+        }
+    /**
+     * 为 _outClass 生成一个通用 View 类
+     * @method  buildView
+     * @param   {Class} _outClass
+     * @static
+     */
+    BaseMVC.buildView =
+        function( _outClass ){
+            !_outClass.View && ( _outClass.View = function( _model ){ this._model = _model; } );
+        }
     
-    function Model( _selector ){
-        this._name = 'BaseMVC.Model';
-        this._selector = _selector;
-    }
-    BaseMVC.Model = Model;
-
-    Model._instanceName = 'BaseMVCIns';
-    
-    Model.prototype = {
+    BaseMVC.buildModel( BaseMVC );
+    BaseMVC.Model._instanceName = 'BaseMVCIns';
+    BaseMVC.Model.prototype = {
         init:
             function(){
                 return this;
@@ -184,12 +201,8 @@
             }
     };
     
-    function View( _model ){
-        this._model = _model;
-    }
-    BaseMVC.View = View;
-    
-    View.prototype = {
+    BaseMVC.buildView( BaseMVC );
+    BaseMVC.View.prototype = {
         init:
             function() {
                 return this;

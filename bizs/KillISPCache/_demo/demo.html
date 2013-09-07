@@ -14,7 +14,21 @@
         <script src="../../../lib.js"></script>
         <script>
             JC.debug = true;
-            JC.use( 'Bizs.KillISPCache' );
+            JC.use( 'Bizs.KillISPCache, plugins.json2' );
+
+            $(document).ready( function(){
+                //Bizs.KillISPCache.ignoreSameLinkText = false;
+                //Bizs.KillISPCache.randName = 'rnd';
+            });
+
+            $(document).delegate( 'button.js_ajax', 'click', function(){
+                var _p = $(this), _data = { 'test': new Date().getTime() }, _method = 'get';
+                _p.is('[ajaxtype]') && _p.attr('ajaxtype').toLowerCase() == 'post' && ( _method = 'post' );
+                _data.type = _method;
+                $[_method]( 'data/handler.php', _data, function( _d ){
+                    JC.log( _d );
+                });
+            });
         </script>
         <base target="_blank" />
     </head>    
@@ -25,9 +39,9 @@
             <dt> Bizs.KillISPCache 示例 1, 链接</dt>
             <dd>
                 <dl>
-                    <dd><a href="http://baidu.com">baidu.com ex</a></dd>
                     <dd><a href="http://google.com">google.com ex</a></dd>
-                    <dd><a href="http://baidu.com">http://baidu.com</a></dd>
+                    <dd><a href="http://bing.com">bing.com ex</a></dd>
+                    <dd><a href="http://so.com">http://so.com</a></dd>
                     <dd><a href="?test=1">?test=1</a></dd>
                     <dd><a href="?test">?test</a></dd>
                 </dl>
@@ -35,7 +49,17 @@
         </dl>
 
         <dl class="defdl">
-            <dt> Bizs.KillISPCache 示例 2, 表单</dt>
+            <dt> Bizs.KillISPCache 示例 2, ajax</dt>
+            <dd>
+                <dl>
+                    <dd><button type="button" class="js_ajax" ajaxtype="get">$.get test</button></dd>
+                    <dd><button type="button" class="js_ajax" ajaxtype="post">$.post test</button></dd>
+                </dl>
+            </dd>
+        </dl>
+
+        <dl class="defdl">
+            <dt> Bizs.KillISPCache 示例 3, 表单</dt>
             <dd>
                 <form action="?" method="GET" target="_self">
                     <input type="hidden" name="getform" value="1" />
@@ -45,18 +69,9 @@
                     <input type="hidden" name="postform" value="2" />
                     <button type="submit">post form</button>
                 </form>
+                <iframe src="about:blank" name="postIframe"></iframe>
             </dd>
         </dl>
-
-        <dl class="defdl">
-            <dt> Bizs.KillISPCache 示例 3, ajax</dt>
-            <dd>
-                <a href="http://baidu.com">http://baidu.com</a>
-                <a href="?test=1">?test=1</a>
-                <a href="?test">?test</a>
-            </dd>
-        </dl>
-        <iframe src="about:blank" name="postIframe"></iframe>
 
     </body>
 </html>

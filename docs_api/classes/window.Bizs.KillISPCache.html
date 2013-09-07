@@ -104,19 +104,21 @@
             Extends <a href="../classes/JC.BaseMVC.html" class="crosslink">JC.BaseMVC</a>
         </div>
         <div class="foundat">
-            Defined in: <a href="../files/.._bizs_KillISPCache_KillISPCache.js.html#l1"><code>..&#x2F;bizs&#x2F;KillISPCache&#x2F;KillISPCache.js:1</code></a>
+            Defined in: <a href="../files/.._bizs_KillISPCache_KillISPCache.js.html#l2"><code>..&#x2F;bizs&#x2F;KillISPCache&#x2F;KillISPCache.js:2</code></a>
         </div>
 </div>
 <div class="box intro">
     <p>应用场景
-<br /><b>ISP 缓存问题 引起的用户串号</b></p>
+<br /><b>ISP 缓存问题 引起的用户串号</b>
+<br />ajax 或者动态添加的内容, 请显式调用  JC.KillISPCache.getInstance().process( newNodeContainer )
+<br /><b>这是个单例类</b></p>
 <p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>
 | <a href='http://jc.openjavascript.org/docs_api/classes/window.Bizs.KillISPCache.html' target='_blank'>API docs</a>
 | <a href='../../bizs/KillISPCache/_demo' target='_blank'>demo link</a></p>
 <h2>页面只要引用本文件, 默认会自动初始化 KillISPCache 逻辑</h2>
 <dl>
      <dt>影响到的地方: </dt>
-     <dd>每个 a node 会添加 isp 参数/dd>
+     <dd>每个 a node 会添加 isp 参数</dd>
      <dd>每个 form node 会添加 isp 参数</dd>
      <dd>每个 ajax get 请求会添加 isp 参数</dd>
 </dl>
@@ -129,17 +131,32 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._bizs_KillISPCache_KillISPCache.js.html#l1"><code>..&#x2F;bizs&#x2F;KillISPCache&#x2F;KillISPCache.js:1</code></a>
+        <a href="../files/.._bizs_KillISPCache_KillISPCache.js.html#l2"><code>..&#x2F;bizs&#x2F;KillISPCache&#x2F;KillISPCache.js:2</code></a>
         </p>
     </div>
     <div class="description">
     </div>
+        <div class="example">
+            <h4>Example:</h4>
+            <div class="example-content">
+                <pre class="code prettyprint"><code> &lt;script&gt;
+ //动态添加的内容需要显式调用 process 方法去处理相关逻辑
+ $.get( _url, function( _html ){
+     var _node = $(_html);
+     _node.appendTo( document.body );
+     JC.KillISPCache.getInstance().process( _node );
+ });
+ &lt;/script&gt;
+</code></pre>
+            </div>
+        </div>
 </div>
     </div>
 <div id="classdocs" class="tabview">
     <ul class="api-class-tabs">
         <li class="api-class-tab index"><a href="#index">Index</a></li>
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
     </ul>
     <div>
         <div id="index" class="api-class-tabpanel index">
@@ -171,6 +188,19 @@
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_trigger">trigger</a>
+                            </li>
+                    </ul>
+                </div>
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+                    <ul class="index-list properties extends">
+                            <li class="index-item property">
+                                <a href="#property_ignoreSameLinkText">ignoreSameLinkText</a>
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item property">
+                                <a href="#property_randName">randName</a>
+                                    <span class="flag static">static</span>
                             </li>
                     </ul>
                 </div>
@@ -266,7 +296,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._bizs_KillISPCache_KillISPCache.js.html#l53"><code>..&#x2F;bizs&#x2F;KillISPCache&#x2F;KillISPCache.js:53</code></a>
+        <a href="../files/.._bizs_KillISPCache_KillISPCache.js.html#l62"><code>..&#x2F;bizs&#x2F;KillISPCache&#x2F;KillISPCache.js:62</code></a>
         </p>
     </div>
     <div class="description">
@@ -398,6 +428,39 @@
                     BaseMVCInstance
             </div>
         </div>
+</div>
+            </div>
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+                    <div id="property_ignoreSameLinkText" class="property item">
+    <h3 class="name"><code>ignoreSameLinkText</code></h3>
+    <span class="type">Bool</span>
+        <span class="flag static">static</span>
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/.._bizs_KillISPCache_KillISPCache.js.html#l74"><code>..&#x2F;bizs&#x2F;KillISPCache&#x2F;KillISPCache.js:74</code></a>
+        </p>
+    </div>
+    <div class="description">
+        <p>是否忽略 url 跟 文本 相同的节点</p>
+    </div>
+        <p><strong>Default:</strong> true</p>
+</div>
+                    <div id="property_randName" class="property item">
+    <h3 class="name"><code>randName</code></h3>
+    <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+        <span class="flag static">static</span>
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/.._bizs_KillISPCache_KillISPCache.js.html#l82"><code>..&#x2F;bizs&#x2F;KillISPCache&#x2F;KillISPCache.js:82</code></a>
+        </p>
+    </div>
+    <div class="description">
+        <p>自定义随机数的参数名</p>
+    </div>
+        <p><strong>Default:</strong> empty</p>
 </div>
             </div>
     </div>

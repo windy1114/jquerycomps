@@ -170,30 +170,39 @@
 
 <div class="file">
     <pre class="code prettyprint linenums">
-/**
- * 应用场景
- * &lt;br /&gt;&lt;b&gt;ISP 缓存问题 引起的用户串号&lt;/b&gt;
- 
- * &lt;p&gt;&lt;a href=&#x27;https://github.com/openjavascript/jquerycomps&#x27; target=&#x27;_blank&#x27;&gt;JC Project Site&lt;/a&gt;
- * | &lt;a href=&#x27;http://jc.openjavascript.org/docs_api/classes/window.Bizs.KillISPCache.html&#x27; target=&#x27;_blank&#x27;&gt;API docs&lt;/a&gt;
- * | &lt;a href=&#x27;../../bizs/KillISPCache/_demo&#x27; target=&#x27;_blank&#x27;&gt;demo link&lt;/a&gt;&lt;/p&gt;
- *
- * &lt;h2&gt;页面只要引用本文件, 默认会自动初始化 KillISPCache 逻辑&lt;/h2&gt;
- * &lt;dl&gt;
- *
- *      &lt;dt&gt;影响到的地方: &lt;/dt&gt;
- *      &lt;dd&gt;每个 a node 会添加 isp 参数/dd&gt;
- *      &lt;dd&gt;每个 form node 会添加 isp 参数&lt;/dd&gt;
- *      &lt;dd&gt;每个 ajax get 请求会添加 isp 参数&lt;/dd&gt;
- * &lt;/dl&gt;
- *
- * @namespace       window.Bizs
- * @class           KillISPCache
- * @extends         JC.BaseMVC
- * @constructor 
- * @author  qiushaowei  .1  2013-09-07
- */
 ;(function($){
+    /**
+     * 应用场景
+     * &lt;br /&gt;&lt;b&gt;ISP 缓存问题 引起的用户串号&lt;/b&gt;
+     * &lt;br /&gt;ajax 或者动态添加的内容, 请显式调用  JC.KillISPCache.getInstance().process( newNodeContainer )
+     * &lt;br /&gt;&lt;b&gt;这是个单例类&lt;/b&gt;
+     
+     * &lt;p&gt;&lt;a href=&#x27;https://github.com/openjavascript/jquerycomps&#x27; target=&#x27;_blank&#x27;&gt;JC Project Site&lt;/a&gt;
+     * | &lt;a href=&#x27;http://jc.openjavascript.org/docs_api/classes/window.Bizs.KillISPCache.html&#x27; target=&#x27;_blank&#x27;&gt;API docs&lt;/a&gt;
+     * | &lt;a href=&#x27;../../bizs/KillISPCache/_demo&#x27; target=&#x27;_blank&#x27;&gt;demo link&lt;/a&gt;&lt;/p&gt;
+     *
+     * &lt;h2&gt;页面只要引用本文件, 默认会自动初始化 KillISPCache 逻辑&lt;/h2&gt;
+     * &lt;dl&gt;
+     *      &lt;dt&gt;影响到的地方: &lt;/dt&gt;
+     *      &lt;dd&gt;每个 a node 会添加 isp 参数&lt;/dd&gt;
+     *      &lt;dd&gt;每个 form node 会添加 isp 参数&lt;/dd&gt;
+     *      &lt;dd&gt;每个 ajax get 请求会添加 isp 参数&lt;/dd&gt;
+     * &lt;/dl&gt;
+     * @namespace       window.Bizs
+     * @class           KillISPCache
+     * @extends         JC.BaseMVC
+     * @constructor 
+     * @author  qiushaowei  .1  2013-09-07
+     * @example
+     *      &lt;script&gt;
+     *      //动态添加的内容需要显式调用 process 方法去处理相关逻辑
+     *      $.get( _url, function( _html ){
+     *          var _node = $(_html);
+     *          _node.appendTo( document.body );
+     *          JC.KillISPCache.getInstance().process( _node );
+     *      });
+     *      &lt;/script&gt;
+     */
     window.Bizs.KillISPCache = KillISPCache;
 
     function KillISPCache( _selector ){
@@ -234,75 +243,96 @@
             !KillISPCache._instance &amp;&amp; ( KillISPCache._instance = new KillISPCache() );
             return KillISPCache._instance;
         }
-
+    /**
+     * 是否忽略 url 跟 文本 相同的节点
+     * @property    ignoreSameLinkText
+     * @type        bool
+     * @default     true
+     * @static
+     */
     KillISPCache.ignoreSameLinkText = true;
+    /**
+     * 自定义随机数的参数名
+     * @property    randName
+     * @type        string
+     * @default     empty
+     * @static
+     */
+    KillISPCache.randName = &quot;&quot;;
 
-    KillISPCache.Model =
-        function( _selector ){
-            this._selector = _selector;
-        };
+    JC.BaseMVC.buildModel( KillISPCache );
 
     KillISPCache.Model.prototype = {
         init:
             function(){
-                this._postfix = printf( &#x27;{0}_{1}&#x27;
+                this._postfix = printf( &#x27;{0}_{1}_&#x27;
                                         , new Date().getTime().toString()
-                                        , Math.round( Math.random() * 10000000 )
+                                        , Math.round( Math.random() * 100000 )
                                     );
+                this._count = 1;
                 this._ignoreSameLinkText = true;
+                this._randName = &#x27;isp&#x27;;
             }
         , processLink:
             function(){
                 var _p = this;
                 this.selector().find(&#x27;a[href]&#x27;).each(function(){
-                    var _sp = $(this), _url = _sp.attr(&#x27;href&#x27;);
+                    var _sp = $(this), _url = (_sp.attr(&#x27;href&#x27;)||&#x27;&#x27;).trim(), _text = _sp.html().trim();
                     if( /javascript\:/.test( _url ) || /^[\s]*\#/.test( _url ) ) return;
-                    //if( _p.ignoreSameLinkText &amp;&amp; _url.trim() == _sp.html().trim() ) return;
+                    
+                    if( _p.ignoreSameLinkText() &amp;&amp; _url.trim() == _sp.html().trim() ) return;
 
-                    _url = add_url_params( _url, { &#x27;isp&#x27;: _p.postfix() } );
+                    _url = addUrlParams( _url, _p.keyVal() );
                     _sp.attr( &#x27;href&#x27;, _url );
+                    _sp.html( _text );
                 });
 
             }
         , processForm:
             function(){
+                var _p = this;
+                this.selector().find(&#x27;form&#x27;).each(function(){
+                    var _sp = $( this ), _method = ( _sp.prop(&#x27;method&#x27;) || &#x27;&#x27; ).toLowerCase();
+                    if( _method == &#x27;post&#x27; ) return;
+                    if( !_sp.find(&#x27;input[name=&#x27; + _p.randName() + &#x27;]&#x27;).length ){
+                        $( &#x27;&lt;input type=&quot;hidden&quot; name=&quot;&#x27; + _p.randName() + &#x27;&quot; value=&quot;&#x27;+ _p.postfix() +&#x27;&quot; &gt;&#x27; ).appendTo( _sp );
+                    }
+                });
             }
         , processAjax:
             function(){
+                var _p = this;
+                $(document).ajaxSend(function( _event, _jqxhr, _settings) {
+                    _settings.type != &#x27;POST&#x27;
+                        &amp;&amp; ( _settings.url = addUrlParams( _settings.url, _p.keyVal() ) );
+                });
             }
         , ignoreSameLinkText:
             function( _setter ){
                 typeof _setter != &#x27;undefined&#x27; &amp;&amp; ( KillISPCache.ignoreSameLinkText = _setter );
                 return KillISPCache.ignoreSameLinkText;
             }
-        , postfix: function(){ return this._postfix; }
+        , postfix: function(){ return this._postfix + ( this._count++ ); }
+        , randName:
+            function(){
+                return KillISPCache.randName || this._randName;
+            }
+        , keyVal:
+            function(){
+                var _o = {}; _o[ this.randName() ] = this.postfix();
+                return _o;
+            }
+
     };
 
-    JC.BaseMVC.power( KillISPCache );
+    JC.BaseMVC.build( KillISPCache );
 
     $(document).ready( function(){
         setTimeout( function(){
             KillISPCache.autoInit 
                 &amp;&amp; KillISPCache.getInstance().process( $(document) );
-        }, 1 );
+        }, 100 );
     });
-
-    /**
-     * 对链接添加 随机参数, 防止 ISP 缓存
-     */
-    function killISPCache( _selector, _ignoreSameLinkText ){
-        var _tm = new Date().getTime().toString() + &#x27;_&#x27; + Math.round( Math.random() * 10000000 );
-
-        _selector = _selector || $(document.body);
-        typeof _ignoreSameLinkText == &#x27;undefined&#x27; &amp;&amp; ( _ignoreSameLinkText = true );
-
-        _selector.find(&#x27;form&#x27;).each(function(){
-            _p = $( this );
-            if( !_p.find(&#x27;input[name=isp]&#x27;).length ){
-                $( &#x27;&lt;input type=&quot;hidden&quot; name=&quot;isp&quot; value=&quot;&#x27;+_tm+&#x27;&quot; &gt;&#x27; ).appendTo( _p );
-            }
-        });
-    }
 
 }(jQuery));
 

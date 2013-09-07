@@ -447,11 +447,14 @@
             "extension_for": [],
             "namespace": "window.Bizs",
             "file": "../bizs/KillISPCache/KillISPCache.js",
-            "line": 1,
-            "description": "应用场景\n<br /><b>ISP 缓存问题 引起的用户串号</b>\n\n<p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>\n| <a href='http://jc.openjavascript.org/docs_api/classes/window.Bizs.KillISPCache.html' target='_blank'>API docs</a>\n| <a href='../../bizs/KillISPCache/_demo' target='_blank'>demo link</a></p>\n\n<h2>页面只要引用本文件, 默认会自动初始化 KillISPCache 逻辑</h2>\n<dl>\n\n     <dt>影响到的地方: </dt>\n     <dd>每个 a node 会添加 isp 参数/dd>\n     <dd>每个 form node 会添加 isp 参数</dd>\n     <dd>每个 ajax get 请求会添加 isp 参数</dd>\n</dl>",
+            "line": 2,
+            "description": "应用场景\n<br /><b>ISP 缓存问题 引起的用户串号</b>\n<br />ajax 或者动态添加的内容, 请显式调用  JC.KillISPCache.getInstance().process( newNodeContainer )\n<br /><b>这是个单例类</b>\n    \n<p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>\n| <a href='http://jc.openjavascript.org/docs_api/classes/window.Bizs.KillISPCache.html' target='_blank'>API docs</a>\n| <a href='../../bizs/KillISPCache/_demo' target='_blank'>demo link</a></p>\n\n<h2>页面只要引用本文件, 默认会自动初始化 KillISPCache 逻辑</h2>\n<dl>\n     <dt>影响到的地方: </dt>\n     <dd>每个 a node 会添加 isp 参数</dd>\n     <dd>每个 form node 会添加 isp 参数</dd>\n     <dd>每个 ajax get 请求会添加 isp 参数</dd>\n</dl>",
             "extends": "JC.BaseMVC",
             "is_constructor": 1,
-            "author": "qiushaowei  .1  2013-09-07"
+            "author": "qiushaowei  .1  2013-09-07",
+            "example": [
+                "\n     <script>\n     //动态添加的内容需要显式调用 process 方法去处理相关逻辑\n     $.get( _url, function( _html ){\n         var _node = $(_html);\n         _node.appendTo( document.body );\n         JC.KillISPCache.getInstance().process( _node );\n     });\n     </script>"
+            ]
         },
         "window.Bizs.MultiDate": {
             "name": "window.Bizs.MultiDate",
@@ -1672,7 +1675,7 @@
         },
         {
             "file": "../bizs/KillISPCache/KillISPCache.js",
-            "line": 53,
+            "line": 62,
             "description": "获取 KillISPCache 实例 ( 单例模式 )",
             "itemtype": "method",
             "name": "getInstance",
@@ -1693,8 +1696,25 @@
         },
         {
             "file": "../bizs/KillISPCache/KillISPCache.js",
-            "line": 118,
-            "description": "对链接添加 随机参数, 防止 ISP 缓存",
+            "line": 74,
+            "description": "是否忽略 url 跟 文本 相同的节点",
+            "itemtype": "property",
+            "name": "ignoreSameLinkText",
+            "type": "bool",
+            "default": "true",
+            "static": 1,
+            "class": "window.Bizs.KillISPCache",
+            "namespace": "window.Bizs"
+        },
+        {
+            "file": "../bizs/KillISPCache/KillISPCache.js",
+            "line": 82,
+            "description": "自定义随机数的参数名",
+            "itemtype": "property",
+            "name": "randName",
+            "type": "string",
+            "default": "empty",
+            "static": 1,
             "class": "window.Bizs.KillISPCache",
             "namespace": "window.Bizs"
         },
@@ -2338,7 +2358,7 @@
             "line": 131,
             "description": "复制 BaseMVC 的所有方法到 _outClass",
             "itemtype": "method",
-            "name": "power",
+            "name": "build",
             "params": [
                 {
                     "name": "_outClass",
@@ -2355,13 +2375,47 @@
             "line": 146,
             "description": "复制 _inClass 的所有方法到 _outClass",
             "itemtype": "method",
-            "name": "powerClass",
+            "name": "buildClass",
             "params": [
                 {
                     "name": "_inClass",
                     "description": "",
                     "type": "Class"
                 },
+                {
+                    "name": "_outClass",
+                    "description": "",
+                    "type": "Class"
+                }
+            ],
+            "static": 1,
+            "class": "JC.BaseMVC",
+            "namespace": "JC"
+        },
+        {
+            "file": "../comps/BaseMVC/BaseMVC.js",
+            "line": 165,
+            "description": "为 _outClass 生成一个通用 Model 类",
+            "itemtype": "method",
+            "name": "buildModel",
+            "params": [
+                {
+                    "name": "_outClass",
+                    "description": "",
+                    "type": "Class"
+                }
+            ],
+            "static": 1,
+            "class": "JC.BaseMVC",
+            "namespace": "JC"
+        },
+        {
+            "file": "../comps/BaseMVC/BaseMVC.js",
+            "line": 178,
+            "description": "为 _outClass 生成一个通用 View 类",
+            "itemtype": "method",
+            "name": "buildView",
+            "params": [
                 {
                     "name": "_outClass",
                     "description": "",
@@ -12809,10 +12863,6 @@
         {
             "message": "Missing item type\nupdate current selector",
             "line": " ../bizs/CommonModify/CommonModify.js:172"
-        },
-        {
-            "message": "Missing item type\n对链接添加 随机参数, 防止 ISP 缓存",
-            "line": " ../bizs/KillISPCache/KillISPCache.js:118"
         },
         {
             "message": "Missing item type\n判断下拉框的option里是否有给定的值",
