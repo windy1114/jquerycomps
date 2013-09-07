@@ -47,6 +47,13 @@
                 JC.log( 'KillISPCache._beforeInit', new Date().getTime() );
                 this._model.processAjax();
             }
+        /**
+         * 处理 _selector 的所有 child
+         * @method  process
+         * @param   {selector}  _selector
+         * @param   {bool}      _ignoreSameLinkText
+         * @return  {KillISPCacheInstance}
+         */
         , process:
             function( _selector, _ignoreSameLinkText ){
                 _selector && ( _selector = $( _selector ) );
