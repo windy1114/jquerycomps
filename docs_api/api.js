@@ -3,6 +3,7 @@ YUI.add("yuidoc-meta", function(Y) {
     "classes": [
         ".window",
         "JC.AutoSelect",
+        "JC.BaseMVC",
         "JC.Calendar",
         "JC.Dialog",
         "JC.Dialog.alert",
@@ -28,6 +29,7 @@ YUI.add("yuidoc-meta", function(Y) {
         "window.Bizs",
         "window.Bizs.CommonModify",
         "window.Bizs.DisableLogic",
+        "window.Bizs.KillISPCache",
         "window.Bizs.MultiDate",
         "window.JC",
         "window.UXC",

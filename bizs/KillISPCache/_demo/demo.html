@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset=utf-8 />
+        <title>Open JQuery Components Library - suches</title>
+        <style>
+            body{
+                margin: 20px 40px;
+            }
+
+            dt { font-weight: bold; margin: 10px auto; }
+            dd { line-height: 24px; }
+        </style>
+        <script src="../../../lib.js"></script>
+        <script>
+            JC.debug = true;
+            JC.use( 'Bizs.KillISPCache' );
+        </script>
+        <base target="_blank" />
+    </head>    
+    <body>
+        <h2>注意: 默认忽略 url与文本相同的节点, JC.KillISPCache.ignoreSameLinkText 可以设置是否要忽略</h2>
+
+        <dl class="defdl">
+            <dt> Bizs.KillISPCache 示例 1, 链接</dt>
+            <dd>
+                <dl>
+                    <dd><a href="http://baidu.com">baidu.com ex</a></dd>
+                    <dd><a href="http://google.com">google.com ex</a></dd>
+                    <dd><a href="http://baidu.com">http://baidu.com</a></dd>
+                    <dd><a href="?test=1">?test=1</a></dd>
+                    <dd><a href="?test">?test</a></dd>
+                </dl>
+            </dd>
+        </dl>
+
+        <dl class="defdl">
+            <dt> Bizs.KillISPCache 示例 2, 表单</dt>
+            <dd>
+                <form action="?" method="GET" target="_self">
+                    <input type="hidden" name="getform" value="1" />
+                    <button type="submit">get form</button>
+                </form>
+                <form action="data/handler.php" method="POST" target="postIframe" >
+                    <input type="hidden" name="postform" value="2" />
+                    <button type="submit">post form</button>
+                </form>
+            </dd>
+        </dl>
+
+        <dl class="defdl">
+            <dt> Bizs.KillISPCache 示例 3, ajax</dt>
+            <dd>
+                <a href="http://baidu.com">http://baidu.com</a>
+                <a href="?test=1">?test=1</a>
+                <a href="?test">?test</a>
+            </dd>
+        </dl>
+        <iframe src="about:blank" name="postIframe"></iframe>
+
+    </body>
+</html>
+

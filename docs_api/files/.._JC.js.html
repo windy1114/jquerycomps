@@ -47,6 +47,8 @@
             
                 <li><a href="../classes/JC.AutoSelect.html">JC.AutoSelect</a></li>
             
+                <li><a href="../classes/JC.BaseMVC.html">JC.BaseMVC</a></li>
+            
                 <li><a href="../classes/JC.Calendar.html">JC.Calendar</a></li>
             
                 <li><a href="../classes/JC.confirm.html">JC.confirm</a></li>
@@ -115,6 +117,8 @@
             
                 <li><a href="../classes/window.Bizs.DisableLogic.html">window.Bizs.DisableLogic</a></li>
             
+                <li><a href="../classes/window.Bizs.KillISPCache.html">window.Bizs.KillISPCache</a></li>
+            
                 <li><a href="../classes/window.Bizs.MultiDate.html">window.Bizs.MultiDate</a></li>
             
                 <li><a href="../classes/window.JC.html">window.JC</a></li>
@@ -167,7 +171,7 @@
 <div class="file">
     <pre class="code prettyprint linenums">
 ;(function( $ ){
-    if( window.JC &amp;&amp; window.JC.PATH != &#x27;undefined&#x27; ) return;
+    if( window.JC &amp;&amp; typeof JC.PATH != &#x27;undefined&#x27; ) return;
     /**
      * JC jquery 组件库 资源调用控制类
      * &lt;br /&gt;这是一个单例模式, 全局访问使用 JC 或 window.JC
@@ -335,11 +339,7 @@
         * @method log
         * @static
         */
-       , log: 
-           function(){
-                if( !this.debug ) return;
-                console.log( [].slice.apply( arguments ).join(&#x27; &#x27;) );
-            }
+       , log: function(){ JC.debug &amp;&amp; window.console &amp;&amp; console.log( sliceArgs( arguments ).join(&#x27; &#x27;) ); }
        /**
         * 定义输出路径的 v 参数, 以便控制缓存
         * @property     pathPostfix
@@ -470,15 +470,11 @@
      */
     window.UXC = window.JC;
     /**
-     * 如果 console 不可用, 则生成一个模拟的 console 对象
-     */
-    if( !window.console ) window.console = { log:function(){
-        window.status = [].slice.apply( arguments ).join(&#x27; &#x27;);
-    }};
-    /**
      * 自动识别组件库所在路径
      */
     JC.PATH = script_path_f();
+    //dev开发时因为脚本没合并, IE找不到库的正确路径, 这个判断仅针对dev开发分支
+    /\/JQueryComps_dev/i.test( location.href ) &amp;&amp; ( JC.PATH = &#x27;/ignore/JQueryComps_dev/&#x27; );
     /**
      * &lt;h2&gt;业务逻辑命名空间&lt;/h2&gt;
      * &lt;br /&gt;这个命名空间的组件主要为满足业务需求, 不是通用组件~

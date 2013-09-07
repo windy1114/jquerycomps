@@ -14,4 +14,5 @@
     document.write( '<script src="'+_path+'jquery.js" ><\/script>' );
     document.write( '<script src="'+_path+'common.js" ><\/script>' );
     document.write( '<script src="'+_path+'JC.js" ><\/script>' );
+    document.write( '<script src="'+_path+'comps/BaseMVC/BaseMVC.js" ><\/script>' );
 }();

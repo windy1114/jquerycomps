@@ -47,6 +47,8 @@
             
                 <li><a href="../classes/JC.AutoSelect.html">JC.AutoSelect</a></li>
             
+                <li><a href="../classes/JC.BaseMVC.html">JC.BaseMVC</a></li>
+            
                 <li><a href="../classes/JC.Calendar.html">JC.Calendar</a></li>
             
                 <li><a href="../classes/JC.confirm.html">JC.confirm</a></li>
@@ -114,6 +116,8 @@
                 <li><a href="../classes/window.Bizs.CommonModify.html">window.Bizs.CommonModify</a></li>
             
                 <li><a href="../classes/window.Bizs.DisableLogic.html">window.Bizs.DisableLogic</a></li>
+            
+                <li><a href="../classes/window.Bizs.KillISPCache.html">window.Bizs.KillISPCache</a></li>
             
                 <li><a href="../classes/window.Bizs.MultiDate.html">window.Bizs.MultiDate</a></li>
             
@@ -527,7 +531,8 @@
             }
     };
 
-    $(document).delegate( &#x27;a.js_autoCommonModify, button.js_autoCommonModify&#x27;, &#x27;click&#x27;, function( _evt ){
+    $(document).delegate( &#x27;a.js_autoCommonModify, button.js_autoCommonModify&#x27;
+                          + &#x27;, a.js_bizsCommonModify, button.js_bizsCommonModify&#x27;, &#x27;click&#x27;, function( _evt ){
         CommonModify.getInstance().process(  $(this) );
     });
 

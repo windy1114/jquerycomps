@@ -37,6 +37,7 @@
                 <li><a href="../classes/.window.html">.window</a></li>
                 <li><a href="../classes/JC.alert.html">JC.alert</a></li>
                 <li><a href="../classes/JC.AutoSelect.html">JC.AutoSelect</a></li>
+                <li><a href="../classes/JC.BaseMVC.html">JC.BaseMVC</a></li>
                 <li><a href="../classes/JC.Calendar.html">JC.Calendar</a></li>
                 <li><a href="../classes/JC.confirm.html">JC.confirm</a></li>
                 <li><a href="../classes/JC.Dialog.html">JC.Dialog</a></li>
@@ -61,6 +62,7 @@
                 <li><a href="../classes/window.Bizs.html">window.Bizs</a></li>
                 <li><a href="../classes/window.Bizs.CommonModify.html">window.Bizs.CommonModify</a></li>
                 <li><a href="../classes/window.Bizs.DisableLogic.html">window.Bizs.DisableLogic</a></li>
+                <li><a href="../classes/window.Bizs.KillISPCache.html">window.Bizs.KillISPCache</a></li>
                 <li><a href="../classes/window.Bizs.MultiDate.html">window.Bizs.MultiDate</a></li>
                 <li><a href="../classes/window.JC.html">window.JC</a></li>
                 <li><a href="../classes/window.jQuery.html">window.jQuery</a></li>
@@ -118,7 +120,7 @@
                     <h3>Methods</h3>
                     <ul class="index-list methods">
                             <li class="index-item method">
-                                <a href="#method_add_url_params">add_url_params</a>
+                                <a href="#method_addUrlParams">addUrlParams</a>
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
@@ -126,7 +128,7 @@
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
-                                <a href="#method_del_url_param">del_url_param</a>
+                                <a href="#method_delUrlParam">delUrlParam</a>
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
@@ -138,15 +140,15 @@
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
-                                <a href="#method_get_url_param">get_url_param</a>
-                                    <span class="flag static">static</span>
-                            </li>
-                            <li class="index-item method">
                                 <a href="#method_getJqParent">getJqParent</a>
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
-                                <a href="#method_has_url_param">has_url_param</a>
+                                <a href="#method_getUrlParam">getUrlParam</a>
+                                    <span class="flag static">static</span>
+                            </li>
+                            <li class="index-item method">
+                                <a href="#method_hasUrlParam">hasUrlParam</a>
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
@@ -170,7 +172,7 @@
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
-                                <a href="#method_pad_char_f">pad_char_f</a>
+                                <a href="#method_padChar">padChar</a>
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
@@ -178,11 +180,11 @@
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
-                                <a href="#method_parse_finance_num">parse_finance_num</a>
+                                <a href="#method_parseBool">parseBool</a>
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
-                                <a href="#method_parseBool">parseBool</a>
+                                <a href="#method_parseFinance">parseFinance</a>
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
@@ -194,7 +196,7 @@
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
-                                <a href="#method_reload_page">reload_page</a>
+                                <a href="#method_reloadPage">reloadPage</a>
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
@@ -202,11 +204,11 @@
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
-                                <a href="#method_script_path_f">script_path_f</a>
+                                <a href="#method_scriptContent">scriptContent</a>
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
-                                <a href="#method_scriptContent">scriptContent</a>
+                                <a href="#method_scriptPath">scriptPath</a>
                                     <span class="flag static">static</span>
                             </li>
                             <li class="index-item method">
@@ -231,15 +233,15 @@
         </div>
             <div id="methods" class="api-class-tabpanel">
                 <h2 class="off-left">Methods</h2>
-                    <div id="method_add_url_params" class="method item">
-    <h3 class="name"><code>add_url_params</code></h3>
+                    <div id="method_addUrlParams" class="method item">
+    <h3 class="name"><code>addUrlParams</code></h3>
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
                         <code>_url</code>
                 </li>
                 <li class="arg">
-                        <code>$params</code>
+                        <code>_params</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -247,12 +249,12 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l66"><code>..&#x2F;common.js:66</code></a>
+        <a href="../files/.._common.js.html#l81"><code>..&#x2F;common.js:81</code></a>
         </p>
     </div>
     <div class="description">
         <p>添加URL参数
-<br /><b>require:</b> del_url_param</p>
+<br /><b>require:</b> delUrlParam</p>
     </div>
         <div class="params">
             <h4>Parameters:</h4>
@@ -264,7 +266,7 @@
                     </div>
                 </li>
                 <li class="param">
-                        <code class="param-name">$params</code>
+                        <code class="param-name">_params</code>
                         <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Object" class="crosslink external" target="_blank">Object</a></span>
                     <div class="param-description">
                     </div>
@@ -274,7 +276,7 @@
         <div class="example">
             <h4>Example:</h4>
             <div class="example-content">
-                <pre class="code prettyprint"><code>   var url = add_url_params( location.href, {'key1': 'key1value', 'key2': 'key2value' } );
+                <pre class="code prettyprint"><code>   var url = addUrlParams( location.href, {'key1': 'key1value', 'key2': 'key2value' } );
 </code></pre>
             </div>
         </div>
@@ -295,7 +297,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l257"><code>..&#x2F;common.js:257</code></a>
+        <a href="../files/.._common.js.html#l282"><code>..&#x2F;common.js:282</code></a>
         </p>
     </div>
     <div class="description">
@@ -321,15 +323,15 @@
             </div>
         </div>
 </div>
-                    <div id="method_del_url_param" class="method item">
-    <h3 class="name"><code>del_url_param</code></h3>
+                    <div id="method_delUrlParam" class="method item">
+    <h3 class="name"><code>delUrlParam</code></h3>
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
-                        <code>$url</code>
+                        <code>_url</code>
                 </li>
                 <li class="arg">
-                        <code>$key</code>
+                        <code>_key</code>
                 </li>
             </ul><span class="paren">)</span>
         </div>
@@ -337,7 +339,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l119"><code>..&#x2F;common.js:119</code></a>
+        <a href="../files/.._common.js.html#l136"><code>..&#x2F;common.js:136</code></a>
         </p>
     </div>
     <div class="description">
@@ -347,13 +349,13 @@
             <h4>Parameters:</h4>
             <ul class="params-list">
                 <li class="param">
-                        <code class="param-name">$url</code>
+                        <code class="param-name">_url</code>
                         <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
                     <div class="param-description">
                     </div>
                 </li>
                 <li class="param">
-                        <code class="param-name">$key</code>
+                        <code class="param-name">_key</code>
                         <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
                     <div class="param-description">
                     </div>
@@ -363,7 +365,7 @@
         <div class="example">
             <h4>Example:</h4>
             <div class="example-content">
-                <pre class="code prettyprint"><code>   var url = del_url_param( location.href, 'tag' );
+                <pre class="code prettyprint"><code>   var url = delUrlParam( location.href, 'tag' );
 </code></pre>
             </div>
         </div>
@@ -396,7 +398,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l314"><code>..&#x2F;common.js:314</code></a>
+        <a href="../files/.._common.js.html#l341"><code>..&#x2F;common.js:341</code></a>
         </p>
     </div>
     <div class="description">
@@ -486,7 +488,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l225"><code>..&#x2F;common.js:225</code></a>
+        <a href="../files/.._common.js.html#l250"><code>..&#x2F;common.js:250</code></a>
         </p>
     </div>
     <div class="description">
@@ -519,54 +521,6 @@
             </div>
         </div>
 </div>
-                    <div id="method_get_url_param" class="method item">
-    <h3 class="name"><code>get_url_param</code></h3>
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>$url</code>
-                </li>
-                <li class="arg">
-                        <code>$key</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-        <span class="flag static">static</span>
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/.._common.js.html#l91"><code>..&#x2F;common.js:91</code></a>
-        </p>
-    </div>
-    <div class="description">
-        <p>取URL参数的值
-<br /><b>require:</b> del_url_param</p>
-    </div>
-        <div class="params">
-            <h4>Parameters:</h4>
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">$url</code>
-                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
-                    <div class="param-description">
-                    </div>
-                </li>
-                <li class="param">
-                        <code class="param-name">$key</code>
-                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
-                    <div class="param-description">
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div class="example">
-            <h4>Example:</h4>
-            <div class="example-content">
-                <pre class="code prettyprint"><code>   var defaultTag = get_url_param(location.href, 'tag');  
-</code></pre>
-            </div>
-        </div>
-</div>
                     <div id="method_getJqParent" class="method item">
     <h3 class="name"><code>getJqParent</code></h3>
         <div class="args">
@@ -586,7 +540,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l437"><code>..&#x2F;common.js:437</code></a>
+        <a href="../files/.._common.js.html#l464"><code>..&#x2F;common.js:464</code></a>
         </p>
     </div>
     <div class="description">
@@ -616,8 +570,8 @@
             </div>
         </div>
 </div>
-                    <div id="method_has_url_param" class="method item">
-    <h3 class="name"><code>has_url_param</code></h3>
+                    <div id="method_getUrlParam" class="method item">
+    <h3 class="name"><code>getUrlParam</code></h3>
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
@@ -632,7 +586,54 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l45"><code>..&#x2F;common.js:45</code></a>
+        <a href="../files/.._common.js.html#l108"><code>..&#x2F;common.js:108</code></a>
+        </p>
+    </div>
+    <div class="description">
+        <p>取URL参数的值</p>
+    </div>
+        <div class="params">
+            <h4>Parameters:</h4>
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">_url</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    <div class="param-description">
+                    </div>
+                </li>
+                <li class="param">
+                        <code class="param-name">_key</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    <div class="param-description">
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="example">
+            <h4>Example:</h4>
+            <div class="example-content">
+                <pre class="code prettyprint"><code>   var defaultTag = getUrlParam(location.href, 'tag');  
+</code></pre>
+            </div>
+        </div>
+</div>
+                    <div id="method_hasUrlParam" class="method item">
+    <h3 class="name"><code>hasUrlParam</code></h3>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>_url</code>
+                </li>
+                <li class="arg">
+                        <code>_key</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+        <span class="flag static">static</span>
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/.._common.js.html#l58"><code>..&#x2F;common.js:58</code></a>
         </p>
     </div>
     <div class="description">
@@ -658,7 +659,7 @@
         <div class="example">
             <h4>Example:</h4>
             <div class="example-content">
-                <pre class="code prettyprint"><code> var bool = has_url_param( 'getkey' );
+                <pre class="code prettyprint"><code> var bool = hasUrlParam( 'getkey' );
 </code></pre>
             </div>
         </div>
@@ -679,7 +680,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l146"><code>..&#x2F;common.js:146</code></a>
+        <a href="../files/.._common.js.html#l165"><code>..&#x2F;common.js:165</code></a>
         </p>
     </div>
     <div class="description">
@@ -723,7 +724,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l265"><code>..&#x2F;common.js:265</code></a>
+        <a href="../files/.._common.js.html#l290"><code>..&#x2F;common.js:290</code></a>
         </p>
     </div>
     <div class="description">
@@ -774,7 +775,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l277"><code>..&#x2F;common.js:277</code></a>
+        <a href="../files/.._common.js.html#l302"><code>..&#x2F;common.js:302</code></a>
         </p>
     </div>
     <div class="description">
@@ -822,7 +823,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l289"><code>..&#x2F;common.js:289</code></a>
+        <a href="../files/.._common.js.html#l314"><code>..&#x2F;common.js:314</code></a>
         </p>
     </div>
     <div class="description">
@@ -863,7 +864,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l415"><code>..&#x2F;common.js:415</code></a>
+        <a href="../files/.._common.js.html#l442"><code>..&#x2F;common.js:442</code></a>
         </p>
     </div>
     <div class="description">
@@ -887,8 +888,8 @@
             </ul>
         </div>
 </div>
-                    <div id="method_pad_char_f" class="method item">
-    <h3 class="name"><code>pad_char_f</code></h3>
+                    <div id="method_padChar" class="method item">
+    <h3 class="name"><code>padChar</code></h3>
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
@@ -909,11 +910,11 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l209"><code>..&#x2F;common.js:209</code></a>
+        <a href="../files/.._common.js.html#l232"><code>..&#x2F;common.js:232</code></a>
         </p>
     </div>
     <div class="description">
-        <p>js 附加字串函数 pad<em>char</em>f</p>
+        <p>js 附加字串函数</p>
     </div>
         <div class="params">
             <h4>Parameters:</h4>
@@ -967,7 +968,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l463"><code>..&#x2F;common.js:463</code></a>
+        <a href="../files/.._common.js.html#l490"><code>..&#x2F;common.js:490</code></a>
         </p>
     </div>
     <div class="description">
@@ -1006,56 +1007,6 @@
             </div>
         </div>
 </div>
-                    <div id="method_parse_finance_num" class="method item">
-    <h3 class="name"><code>parse_finance_num</code></h3>
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>$i</code>
-                </li>
-                <li class="arg">
-                        <code>$dot</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-        <span class="returns-inline">
-            <span class="type"></span>
-        </span>
-        <span class="flag static">static</span>
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/.._common.js.html#l193"><code>..&#x2F;common.js:193</code></a>
-        </p>
-    </div>
-    <div class="description">
-        <p>取小数点的N位，
-<br />JS 解析 浮点数的时候，经常出现各种不可预知情况，这个函数就是为了解决这个问题</p>
-    </div>
-        <div class="params">
-            <h4>Parameters:</h4>
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">$i</code>
-                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
-                    <div class="param-description">
-                    </div>
-                </li>
-                <li class="param">
-                        <code class="param-name">$dot</code>
-                        <span class="type">Int</span>
-                    <div class="param-description">
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div class="returns">
-            <h4>Returns:</h4>
-            <div class="returns-description">
-                    number
-            </div>
-        </div>
-</div>
                     <div id="method_parseBool" class="method item">
     <h3 class="name"><code>parseBool</code></h3>
         <div class="args">
@@ -1072,7 +1023,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l367"><code>..&#x2F;common.js:367</code></a>
+        <a href="../files/.._common.js.html#l394"><code>..&#x2F;common.js:394</code></a>
         </p>
     </div>
     <div class="description">
@@ -1096,6 +1047,56 @@
             </div>
         </div>
 </div>
+                    <div id="method_parseFinance" class="method item">
+    <h3 class="name"><code>parseFinance</code></h3>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>_i</code>
+                </li>
+                <li class="arg">
+                        <code>_dot</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+        <span class="returns-inline">
+            <span class="type"></span>
+        </span>
+        <span class="flag static">static</span>
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/.._common.js.html#l214"><code>..&#x2F;common.js:214</code></a>
+        </p>
+    </div>
+    <div class="description">
+        <p>取小数点的N位，
+<br />JS 解析 浮点数的时候，经常出现各种不可预知情况，这个函数就是为了解决这个问题</p>
+    </div>
+        <div class="params">
+            <h4>Parameters:</h4>
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">_i</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Number" class="crosslink external" target="_blank">Number</a></span>
+                    <div class="param-description">
+                    </div>
+                </li>
+                <li class="param">
+                        <code class="param-name">_dot</code>
+                        <span class="type">Int</span>
+                    <div class="param-description">
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="returns">
+            <h4>Returns:</h4>
+            <div class="returns-description">
+                    number
+            </div>
+        </div>
+</div>
                     <div id="method_parseISODate" class="method item">
     <h3 class="name"><code>parseISODate</code></h3>
         <div class="args">
@@ -1112,7 +1113,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l239"><code>..&#x2F;common.js:239</code></a>
+        <a href="../files/.._common.js.html#l264"><code>..&#x2F;common.js:264</code></a>
         </p>
     </div>
     <div class="description">
@@ -1149,7 +1150,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l30"><code>..&#x2F;common.js:30</code></a>
+        <a href="../files/.._common.js.html#l43"><code>..&#x2F;common.js:43</code></a>
         </p>
     </div>
     <div class="description">
@@ -1175,8 +1176,8 @@
             </div>
         </div>
 </div>
-                    <div id="method_reload_page" class="method item">
-    <h3 class="name"><code>reload_page</code></h3>
+                    <div id="method_reloadPage" class="method item">
+    <h3 class="name"><code>reloadPage</code></h3>
         <div class="args">
             <span class="paren">(</span><ul class="args-list inline commas">
                 <li class="arg">
@@ -1194,13 +1195,13 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l175"><code>..&#x2F;common.js:175</code></a>
+        <a href="../files/.._common.js.html#l194"><code>..&#x2F;common.js:194</code></a>
         </p>
     </div>
     <div class="description">
         <p>重载页面
 <br /><b>require:</b> removeUrlSharp
-<br /><b>require:</b> add_url_params</p>
+<br /><b>require:</b> addUrlParams</p>
     </div>
         <div class="params">
             <h4>Parameters:</h4>
@@ -1245,12 +1246,12 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l161"><code>..&#x2F;common.js:161</code></a>
+        <a href="../files/.._common.js.html#l180"><code>..&#x2F;common.js:180</code></a>
         </p>
     </div>
     <div class="description">
         <p>删除 URL 的锚点
-<br /><b>require:</b> add_url_params</p>
+<br /><b>require:</b> addUrlParams</p>
     </div>
         <div class="params">
             <h4>Parameters:</h4>
@@ -1277,30 +1278,6 @@
             </div>
         </div>
 </div>
-                    <div id="method_script_path_f" class="method item">
-    <h3 class="name"><code>script_path_f</code></h3>
-        <span class="paren">()</span>
-        <span class="returns-inline">
-            <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
-        </span>
-        <span class="flag static">static</span>
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/.._common.js.html#l302"><code>..&#x2F;common.js:302</code></a>
-        </p>
-    </div>
-    <div class="description">
-        <p>取当前脚本标签的 src路径</p>
-    </div>
-        <div class="returns">
-            <h4>Returns:</h4>
-            <div class="returns-description">
-                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>:
-                    脚本所在目录的完整路径
-            </div>
-        </div>
-</div>
                     <div id="method_scriptContent" class="method item">
     <h3 class="name"><code>scriptContent</code></h3>
         <div class="args">
@@ -1317,7 +1294,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l535"><code>..&#x2F;common.js:535</code></a>
+        <a href="../files/.._common.js.html#l558"><code>..&#x2F;common.js:558</code></a>
         </p>
     </div>
     <div class="description">
@@ -1341,6 +1318,30 @@
             </div>
         </div>
 </div>
+                    <div id="method_scriptPath" class="method item">
+    <h3 class="name"><code>scriptPath</code></h3>
+        <span class="paren">()</span>
+        <span class="returns-inline">
+            <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+        </span>
+        <span class="flag static">static</span>
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/.._common.js.html#l327"><code>..&#x2F;common.js:327</code></a>
+        </p>
+    </div>
+    <div class="description">
+        <p>取当前脚本标签的 src路径</p>
+    </div>
+        <div class="returns">
+            <h4>Returns:</h4>
+            <div class="returns-description">
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>:
+                    脚本所在目录的完整路径
+            </div>
+        </div>
+</div>
                     <div id="method_sliceArgs" class="method item">
     <h3 class="name"><code>sliceArgs</code></h3>
         <div class="args">
@@ -1357,7 +1358,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l16"><code>..&#x2F;common.js:16</code></a>
+        <a href="../files/.._common.js.html#l29"><code>..&#x2F;common.js:29</code></a>
         </p>
     </div>
     <div class="description">
@@ -1391,7 +1392,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l386"><code>..&#x2F;common.js:386</code></a>
+        <a href="../files/.._common.js.html#l413"><code>..&#x2F;common.js:413</code></a>
         </p>
     </div>
     <div class="description">
@@ -1405,7 +1406,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._common.js.html#l8"><code>..&#x2F;common.js:8</code></a>
+        <a href="../files/.._common.js.html#l21"><code>..&#x2F;common.js:21</code></a>
         </p>
     </div>
     <div class="description">
