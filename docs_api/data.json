@@ -459,7 +459,7 @@
             "namespace": "window.Bizs",
             "file": "../bizs/FormLogic/FormLogic.js",
             "line": 2,
-            "description": "应用场景\n<br />get 查询表单\n<br />post 提交表单\n<br />ajax 提交表单\n<br />iframe 提交表单\n<p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>\n| <a href='http://jc.openjavascript.org/docs_api/classes/window.Bizs.FormLogic.html' target='_blank'>API docs</a>\n| <a href='../../bizs/FormLogic/_demo' target='_blank'>demo link</a></p>\nrequire: <a href='../classes/window.jQuery.html'>jQuery</a>\n<br/>require: <a href='../classes/JC.Valid.html'>JC.Valid</a>\n<br/>require: <a href='../classes/JC.Form.html'>JC.Form</a>\n<p>extend: <a href='../classes/JC.BaseMVC.html'>JC.BaseMVC</a></p>\n\n<h2>页面只要引用本文件, 默认会自动初始化 from class=\"js_autoFormLogic\" 的表单</h2>\n<h2>可用的 HTML 属性</h2>\n<dl>\n     <dt></dt>\n     <dd></dd>\n</dl>",
+            "description": "应用场景\n<br />get 查询表单\n<br />post 提交表单\n<br />ajax 提交表单\n<p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>\n| <a href='http://jc.openjavascript.org/docs_api/classes/window.Bizs.FormLogic.html' target='_blank'>API docs</a>\n| <a href='../../bizs/FormLogic/_demo' target='_blank'>demo link</a></p>\nrequire: <a href='../classes/window.jQuery.html'>jQuery</a>\n<br/>require: <a href='../classes/JC.Valid.html'>JC.Valid</a>\n<br/>require: <a href='../classes/JC.Form.html'>JC.Form</a>\n<br/>require: <a href='../classes/JC.Panel.html'>JC.Panel</a>\n<p>extend: <a href='../classes/JC.BaseMVC.html'>JC.BaseMVC</a></p>\n\n<h2>页面只要引用本文件, 默认会自动初始化 from class=\"js_autoFormLogic\" 的表单</h2>\n<h2>Form 可用的 HTML 属性</h2>\n<dl>\n     <dt>formType = string, default = get</dt>\n     <dd>\n         form 的提交类型, 如果没有显式声明, 将视为 form 的 method 属性\n         <br/> 类型有: get, post, ajax \n     </dd>\n\n     <dt>formBeforeProcess = function</dt>\n     <dd>表单开始提交时且没开始验证时, 触发的回调</dd>\n\n     <dt>formAfterProcess = function</dt>\n     <dd>表单开始提交时且验证通过后, 触发的回调</dd>\n\n     <dt>formConfirmPopupType = string, default = dialog</dt>\n     <dd>定义提示框的类型: dialog, popup</dd>\n\n     <dt>formResetUrl = url</dt>\n     <dd>表单重置时, 返回的URL</dd>\n\n     <dt>formSubmitConfirm = string</dt>\n     <dd>提交表单时进行二次确认的提示信息</dt>\n\n     <dt>formResetConfirm = string</dt>\n     <dd>重置表单时进行二次确认的提示信息</dt>\n\n     <dt>formPopupCloseMs = int, default = 2000</dt>\n     <dd>msgbox 弹框的显示时间</dd>\n\n     <dt>formAjaxMethod = string, default = get</dt>\n     <dd>\n         ajax 的提交类型, 如果没有显式声明, 将视为 form 的 method 属性\n         <br/> 类型有: get, post\n     </dd>\n\n     <dt>formAjaxAction = url</dt>\n     <dd>ajax 的提交URL, 如果没有显式声明, 将视为 form 的 action 属性</dd>\n\n     <dt>formAjaxDone = function, default = system defined</dt>\n     <dd>\n         AJAX 提交完成后的回调\n         <br />如果没有显式声明, FormLogic将自行处理\n     </dd>\n\n     <dt>formAjaxDoneAction = url</dt>\n     <dd>声明 ajax 提交完成后的返回路径, 如果没有, 提交完成后将不继续跳转操作</dd>\n</dl>\n\n<h2>submit button 可用的 html 属性</h2>\n<dl>\n     <dd>\n         基本上 form 可用的 html 属性, submit 就可用, 区别在于 submit 优化级更高\n         <br/> formResetConfirm 属性除外\n     </dd>\n</dl>\n\n<h2>reset button 可用的 html 属性</h2>\n<dl>\n     <dd>\n         如果 form 和 reset 定义了相同属性, reset 优先级更高\n     </dd>\n     <dt>formConfirmPopupType = string, default = dialog</dt>\n     <dd>定义提示框的类型: dialog, popup</dd>\n\n     <dt>formResetUrl = url</dt>\n     <dd>表单重置时, 返回的URL</dd>\n\n     <dt>formResetConfirm = string</dt>\n     <dd>重置表单时进行二次确认的提示信息</dt>\n\n     <dt>formPopupCloseMs = int, default = 2000</dt>\n     <dd>msgbox 弹框的显示时间</dd>\n</dl>",
             "extends": "JC.BaseMVC",
             "is_constructor": 1,
             "author": "qiushaowei  .1  2013-09-08",
@@ -946,7 +946,7 @@
             "extension_for": [],
             "namespace": "JC.Panel",
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 542,
+            "line": 546,
             "description": "存储 Panel 的基础数据类\n<br /><b>这个类为 Panel 的私有类</b>",
             "is_constructor": 1,
             "params": [
@@ -992,7 +992,7 @@
             "extension_for": [],
             "namespace": "JC",
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 911,
+            "line": 915,
             "description": "隐藏或者清除所有 Panel\n<h2>使用这个方法应当谨慎, 容易为DOM造成垃圾Panel</h2>\n<br /><b>注意</b>: 这是个方法, 写成class是为了方便生成文档",
             "is_constructor": 1,
             "static": 1,
@@ -1017,7 +1017,7 @@
             "extension_for": [],
             "namespace": "JC",
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 934,
+            "line": 938,
             "description": "隐藏 或 从DOM清除所有 JC.alert/JC.confirm\n<br /><b>注意, 这是个方法, 写 @class 属性是为了生成文档</b>",
             "static": 1,
             "is_constructor": 1,
@@ -1705,10 +1705,10 @@
         },
         {
             "file": "../bizs/FormLogic/FormLogic.js",
-            "line": 44,
+            "line": 113,
             "description": "处理 form 或者 _selector 的所有form",
             "itemtype": "method",
-            "name": "process",
+            "name": "init",
             "params": [
                 {
                     "name": "_selector",
@@ -1720,6 +1720,18 @@
                 "description": "Array of FormLogicInstance",
                 "type": "Array"
             },
+            "static": 1,
+            "class": "window.Bizs.FormLogic",
+            "namespace": "window.Bizs"
+        },
+        {
+            "file": "../bizs/FormLogic/FormLogic.js",
+            "line": 134,
+            "description": "msgbox 提示框的自动关闭时间",
+            "itemtype": "property",
+            "name": "popupCloseMs",
+            "type": "int",
+            "default": "2000",
             "static": 1,
             "class": "window.Bizs.FormLogic",
             "namespace": "window.Bizs"
@@ -3663,7 +3675,7 @@
         },
         {
             "file": "../comps/Form/JC.Form.initAutoFill.js",
-            "line": 52,
+            "line": 57,
             "description": "自定义 URI decode 函数",
             "itemtype": "property",
             "name": "initAutoFill.decodeFunc",
@@ -3675,7 +3687,7 @@
         },
         {
             "file": "../comps/Form/JC.Form.initAutoFill.js",
-            "line": 68,
+            "line": 73,
             "description": "判断下拉框的option里是否有给定的值",
             "itemtype": "method",
             "name": "initAutoFill.selectHasVal",
@@ -5240,7 +5252,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 313,
+            "line": 317,
             "description": "focus 到 button\n<br />优先查找 input[eventtype=confirm], input[type=submit], button[eventtype=confirm], button[type=submit]\n<br />input[eventtype=cancel], input[type=buton], button[eventtype=cancel], button[type=button]",
             "itemtype": "method",
             "name": "focusButton",
@@ -5249,7 +5261,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 320,
+            "line": 324,
             "description": "从DOM清除Panel\n<br /> <b>close 方法清除 Panel可以被用户阻止, 该方法不会被用户阻止</b>",
             "itemtype": "method",
             "name": "dispose",
@@ -5258,7 +5270,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 331,
+            "line": 335,
             "description": "把 Panel 位置设为屏幕居中",
             "itemtype": "method",
             "name": "center",
@@ -5267,7 +5279,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 342,
+            "line": 346,
             "description": "返回 Panel 的 jquery dom选择器对象\n<br />这个方法以后将会清除, 请使用 layout 方法",
             "itemtype": "method",
             "name": "selector",
@@ -5280,7 +5292,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 349,
+            "line": 353,
             "description": "返回 Panel 的 jquery dom选择器对象",
             "itemtype": "method",
             "name": "layout",
@@ -5293,7 +5305,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 355,
+            "line": 359,
             "description": "从 Panel 选择器中查找内容\n<br />添加这个方法是为了方便jquery 使用者的习惯",
             "itemtype": "method",
             "name": "find",
@@ -5312,7 +5324,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 363,
+            "line": 367,
             "description": "触发 Panel 已绑定的事件\n<br />用户可以使用该方法主动触发绑定的事件",
             "itemtype": "method",
             "name": "trigger",
@@ -5336,7 +5348,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 399,
+            "line": 403,
             "description": "获取或者设置 Panel Header 的HTML内容\n<br />如果 Panel默认没有 Header的话, 使用该方法 _html 非空可动态创建一个Header",
             "itemtype": "method",
             "name": "header",
@@ -5356,7 +5368,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 413,
+            "line": 417,
             "description": "获取或者设置 Panel body 的HTML内容",
             "itemtype": "method",
             "name": "body",
@@ -5376,7 +5388,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 426,
+            "line": 430,
             "description": "获取或者设置 Panel footer 的HTML内容\n<br />如果 Panel默认没有 footer的话, 使用该方法 _html 非空可动态创建一个footer",
             "itemtype": "method",
             "name": "footer",
@@ -5396,7 +5408,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 440,
+            "line": 444,
             "description": "获取或者设置 Panel 的HTML内容",
             "itemtype": "method",
             "name": "panel",
@@ -5416,7 +5428,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 454,
+            "line": 458,
             "description": "Panel 显示前会触发的事件<br/>\n这个事件在用户调用 _panelInstance.show() 时触发",
             "itemtype": "event",
             "name": "beforeshow",
@@ -5429,7 +5441,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 462,
+            "line": 466,
             "description": "显示Panel时会触发的事件",
             "itemtype": "event",
             "name": "show",
@@ -5442,7 +5454,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 469,
+            "line": 473,
             "description": "Panel 隐藏前会触发的事件<br/>\n<br />这个事件在用户调用 _panelInstance.hide() 时触发",
             "itemtype": "event",
             "name": "beforehide",
@@ -5455,7 +5467,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 477,
+            "line": 481,
             "description": "Panel 隐藏时会触发的事件<br/>\n<br />这个事件在用户调用 _panelInstance.hide() 时触发",
             "itemtype": "event",
             "name": "hide",
@@ -5468,7 +5480,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 485,
+            "line": 489,
             "description": "Panel 关闭前会触发的事件<br/>\n这个事件在用户调用 _panelInstance.close() 时触发",
             "itemtype": "event",
             "name": "beforeclose",
@@ -5481,7 +5493,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 496,
+            "line": 500,
             "description": "关闭事件",
             "itemtype": "event",
             "name": "close",
@@ -5494,7 +5506,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 506,
+            "line": 510,
             "description": "Panel 居中显示前会触发的事件<br/>\n这个事件在用户调用 _panelInstance.center() 时触发",
             "itemtype": "event",
             "name": "beforecenter",
@@ -5507,7 +5519,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 514,
+            "line": 518,
             "description": "Panel 居中后会触发的事件",
             "itemtype": "event",
             "name": "center",
@@ -5520,7 +5532,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 521,
+            "line": 525,
             "description": "Panel 点击确认按钮触发的事件",
             "itemtype": "event",
             "name": "confirm",
@@ -5533,7 +5545,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 531,
+            "line": 535,
             "description": "Panel 点击确取消按钮触发的事件",
             "itemtype": "event",
             "name": "cancel",
@@ -5546,7 +5558,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 554,
+            "line": 558,
             "description": "panel 的 HTML 对象或者字符串\n<br /> 这是初始化时的原始数据",
             "itemtype": "property",
             "name": "selector",
@@ -5556,7 +5568,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 561,
+            "line": 565,
             "description": "header 内容 \n<br /> 这是初始化时的原始数据",
             "itemtype": "property",
             "name": "headers",
@@ -5566,7 +5578,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 568,
+            "line": 572,
             "description": "body 内容\n<br /> 这是初始化时的原始数据",
             "itemtype": "property",
             "name": "bodys",
@@ -5576,7 +5588,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 575,
+            "line": 579,
             "description": "footers 内容\n<br /> 这是初始化时的原始数据",
             "itemtype": "property",
             "name": "footers",
@@ -5586,7 +5598,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 582,
+            "line": 586,
             "description": "panel 初始化后的 selector 对象",
             "itemtype": "property",
             "name": "panel",
@@ -5596,7 +5608,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 588,
+            "line": 592,
             "description": "存储用户事件和默认事件的对象",
             "itemtype": "property",
             "name": "_events",
@@ -5608,7 +5620,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 599,
+            "line": 603,
             "description": "Model 初始化方法",
             "itemtype": "method",
             "name": "_init",
@@ -5623,7 +5635,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 624,
+            "line": 628,
             "description": "添加事件方法",
             "itemtype": "method",
             "name": "addEvent",
@@ -5644,7 +5656,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 640,
+            "line": 644,
             "description": "获取事件方法",
             "itemtype": "method",
             "name": "getEvent",
@@ -5664,7 +5676,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 693,
+            "line": 697,
             "description": "Panel的基础数据类, see <a href='JC.Panel.Model.html'>Panel.Model</a>",
             "itemtype": "property",
             "name": "_model",
@@ -5676,7 +5688,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 700,
+            "line": 704,
             "description": "默认模板",
             "prototype": "_tpl",
             "type": "string",
@@ -5687,7 +5699,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 712,
+            "line": 716,
             "description": "View 的初始方法",
             "itemtype": "method",
             "name": "_init",
@@ -5697,7 +5709,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 735,
+            "line": 739,
             "description": "设置Panel的显示位置基于 _src 的左右上下",
             "itemtype": "method",
             "name": "positionWith",
@@ -5712,7 +5724,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 761,
+            "line": 765,
             "description": "显示 Panel",
             "itemtype": "method",
             "name": "show",
@@ -5720,7 +5732,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 770,
+            "line": 774,
             "description": "focus button",
             "itemtype": "method",
             "name": "focus button",
@@ -5728,7 +5740,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 781,
+            "line": 785,
             "description": "隐藏 Panel",
             "itemtype": "method",
             "name": "hide",
@@ -5736,7 +5748,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 789,
+            "line": 793,
             "description": "关闭 Panel",
             "itemtype": "method",
             "name": "close",
@@ -5744,7 +5756,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 798,
+            "line": 802,
             "description": "获取 Panel 的 selector 对象",
             "itemtype": "method",
             "name": "getPanel",
@@ -5755,7 +5767,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 810,
+            "line": 814,
             "description": "获取或设置Panel的 header 内容, see <a href='JC.Panel.html#method_header'>Panel.header</a>",
             "itemtype": "method",
             "name": "getHeader",
@@ -5773,7 +5785,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 830,
+            "line": 834,
             "description": "获取或设置Panel的 body 内容, see <a href='JC.Panel.html#method_body'>Panel.body</a>",
             "itemtype": "method",
             "name": "getBody",
@@ -5791,7 +5803,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 846,
+            "line": 850,
             "description": "获取或设置Panel的 footer 内容, see <a href='JC.Panel.html#method_footer'>Panel.footer</a>",
             "itemtype": "method",
             "name": "getFooter",
@@ -5809,7 +5821,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 866,
+            "line": 870,
             "description": "居中显示 Panel",
             "itemtype": "method",
             "name": "center",
@@ -5817,7 +5829,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 898,
+            "line": 902,
             "description": "Panel 的默认模板",
             "access": "private",
             "tagname": "",
@@ -5825,7 +5837,7 @@
         },
         {
             "file": "../comps/Panel/JC.Panel.js",
-            "line": 956,
+            "line": 960,
             "description": "监听Panel的所有点击事件\n<br />如果事件源有 eventtype 属性, 则会触发eventtype的事件类型",
             "itemtype": "event",
             "name": "Panel click",
@@ -12690,7 +12702,7 @@
         },
         {
             "message": "unknown tag: prototype",
-            "line": " ../comps/Panel/JC.Panel.js:700"
+            "line": " ../comps/Panel/JC.Panel.js:704"
         },
         {
             "message": "unknown tag: attr",
@@ -13058,11 +13070,11 @@
         },
         {
             "message": "Missing item type\n默认模板",
-            "line": " ../comps/Panel/JC.Panel.js:700"
+            "line": " ../comps/Panel/JC.Panel.js:704"
         },
         {
             "message": "Missing item type\nPanel 的默认模板",
-            "line": " ../comps/Panel/JC.Panel.js:898"
+            "line": " ../comps/Panel/JC.Panel.js:902"
         },
         {
             "message": "Missing item type\n从 HTML 属性 自动执行 JC.alert / JC.confirm",

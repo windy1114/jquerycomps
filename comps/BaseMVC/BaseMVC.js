@@ -219,6 +219,36 @@
                 return this._selector; 
             }
 
+        , intProp:
+            function( _selector, _key ){
+                if( typeof _key == 'undefined' ){
+                    _key = _selector;
+                    _selector = this.selector();
+                }else{
+                    _selector && ( _selector = $( _selector ) );
+                }
+                var _r = 0;
+                _selector 
+                    && _selector.is( '[' + _key + ']' ) 
+                    && ( _r = parseInt( _selector.attr( _key ).trim(), 10 ) || _r );
+                return _r;
+            }
+
+        , floatProp:
+            function( _selector, _key ){
+                if( typeof _key == 'undefined' ){
+                    _key = _selector;
+                    _selector = this.selector();
+                }else{
+                    _selector && ( _selector = $( _selector ) );
+                }
+                var _r = 0;
+                _selector 
+                    && _selector.is( '[' + _key + ']' ) 
+                    && ( _r = parseFloat( _selector.attr( _key ).trim() ) || _r );
+                return _r;
+            }
+
         , stringProp:
             function( _selector, _key ){
                 if( typeof _key == 'undefined' ){
@@ -228,7 +258,8 @@
                     _selector && ( _selector = $( _selector ) );
                 }
                 var _r = '';
-                _selector.is( '[' + _key + ']' ) 
+                _selector
+                    && _selector.is( '[' + _key + ']' ) 
                     && ( _r = _selector.attr( _key ).trim().toLowerCase() );
                 return _r;
             }
@@ -242,7 +273,8 @@
                     _selector && ( _selector = $( _selector ) );
                 }
                 var _r, _tmp;
-                _selector.is( '[' + _key + ']' )
+                _selector 
+                    && _selector.is( '[' + _key + ']' )
                     && ( _tmp = window[ _selector.attr( _key ) ] )
                     && ( _r = _tmp )
                     ;

@@ -112,20 +112,72 @@
     <p>应用场景
 <br />get 查询表单
 <br />post 提交表单
-<br />ajax 提交表单
-<br />iframe 提交表单</p>
+<br />ajax 提交表单</p>
 <p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>
 | <a href='http://jc.openjavascript.org/docs_api/classes/window.Bizs.FormLogic.html' target='_blank'>API docs</a>
 | <a href='../../bizs/FormLogic/_demo' target='_blank'>demo link</a></p>
 <p>require: <a href='../classes/window.jQuery.html'>jQuery</a>
 <br/>require: <a href='../classes/JC.Valid.html'>JC.Valid</a>
-<br/>require: <a href='../classes/JC.Form.html'>JC.Form</a></p>
+<br/>require: <a href='../classes/JC.Form.html'>JC.Form</a>
+<br/>require: <a href='../classes/JC.Panel.html'>JC.Panel</a></p>
 <p>extend: <a href='../classes/JC.BaseMVC.html'>JC.BaseMVC</a></p>
 <h2>页面只要引用本文件, 默认会自动初始化 from class="js_autoFormLogic" 的表单</h2>
-<h2>可用的 HTML 属性</h2>
+<h2>Form 可用的 HTML 属性</h2>
 <dl>
-     <dt></dt>
-     <dd></dd>
+     <dt>formType = string, default = get</dt>
+     <dd>
+         form 的提交类型, 如果没有显式声明, 将视为 form 的 method 属性
+         <br/> 类型有: get, post, ajax 
+     </dd>
+     <dt>formBeforeProcess = function</dt>
+     <dd>表单开始提交时且没开始验证时, 触发的回调</dd>
+     <dt>formAfterProcess = function</dt>
+     <dd>表单开始提交时且验证通过后, 触发的回调</dd>
+     <dt>formConfirmPopupType = string, default = dialog</dt>
+     <dd>定义提示框的类型: dialog, popup</dd>
+     <dt>formResetUrl = url</dt>
+     <dd>表单重置时, 返回的URL</dd>
+     <dt>formSubmitConfirm = string</dt>
+     <dd>提交表单时进行二次确认的提示信息</dt>
+     <dt>formResetConfirm = string</dt>
+     <dd>重置表单时进行二次确认的提示信息</dt>
+     <dt>formPopupCloseMs = int, default = 2000</dt>
+     <dd>msgbox 弹框的显示时间</dd>
+     <dt>formAjaxMethod = string, default = get</dt>
+     <dd>
+         ajax 的提交类型, 如果没有显式声明, 将视为 form 的 method 属性
+         <br/> 类型有: get, post
+     </dd>
+     <dt>formAjaxAction = url</dt>
+     <dd>ajax 的提交URL, 如果没有显式声明, 将视为 form 的 action 属性</dd>
+     <dt>formAjaxDone = function, default = system defined</dt>
+     <dd>
+         AJAX 提交完成后的回调
+         <br />如果没有显式声明, FormLogic将自行处理
+     </dd>
+     <dt>formAjaxDoneAction = url</dt>
+     <dd>声明 ajax 提交完成后的返回路径, 如果没有, 提交完成后将不继续跳转操作</dd>
+</dl>
+<h2>submit button 可用的 html 属性</h2>
+<dl>
+     <dd>
+         基本上 form 可用的 html 属性, submit 就可用, 区别在于 submit 优化级更高
+         <br/> formResetConfirm 属性除外
+     </dd>
+</dl>
+<h2>reset button 可用的 html 属性</h2>
+<dl>
+     <dd>
+         如果 form 和 reset 定义了相同属性, reset 优先级更高
+     </dd>
+     <dt>formConfirmPopupType = string, default = dialog</dt>
+     <dd>定义提示框的类型: dialog, popup</dd>
+     <dt>formResetUrl = url</dt>
+     <dd>表单重置时, 返回的URL</dd>
+     <dt>formResetConfirm = string</dt>
+     <dd>重置表单时进行二次确认的提示信息</dt>
+     <dt>formPopupCloseMs = int, default = 2000</dt>
+     <dd>msgbox 弹框的显示时间</dd>
 </dl>
 </div>
     <div class="constructor">
@@ -152,6 +204,7 @@
     <ul class="api-class-tabs">
         <li class="api-class-tab index"><a href="#index">Index</a></li>
             <li class="api-class-tab methods"><a href="#methods">Methods</a></li>
+            <li class="api-class-tab properties"><a href="#properties">Properties</a></li>
     </ul>
     <div>
         <div id="index" class="api-class-tabpanel index">
@@ -171,18 +224,27 @@
                             <li class="index-item method private inherited">
                                 <a href="#method__initHanlderEvent">_initHanlderEvent</a>
                             </li>
+                            <li class="index-item method">
+                                <a href="#method_init">init</a>
+                                    <span class="flag static">static</span>
+                            </li>
                             <li class="index-item method inherited">
                                 <a href="#method_on">on</a>
-                            </li>
-                            <li class="index-item method">
-                                <a href="#method_process">process</a>
-                                    <span class="flag static">static</span>
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_selector">selector</a>
                             </li>
                             <li class="index-item method inherited">
                                 <a href="#method_trigger">trigger</a>
+                            </li>
+                    </ul>
+                </div>
+                <div class="index-section properties">
+                    <h3>Properties</h3>
+                    <ul class="index-list properties extends">
+                            <li class="index-item property">
+                                <a href="#property_popupCloseMs">popupCloseMs</a>
+                                    <span class="flag static">static</span>
                             </li>
                     </ul>
                 </div>
@@ -262,6 +324,47 @@
         <p>内部事件初始化方法</p>
     </div>
 </div>
+                    <div id="method_init" class="method item">
+    <h3 class="name"><code>init</code></h3>
+        <div class="args">
+            <span class="paren">(</span><ul class="args-list inline commas">
+                <li class="arg">
+                        <code>_selector</code>
+                </li>
+            </ul><span class="paren">)</span>
+        </div>
+        <span class="returns-inline">
+            <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
+        </span>
+        <span class="flag static">static</span>
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/.._bizs_FormLogic_FormLogic.js.html#l113"><code>..&#x2F;bizs&#x2F;FormLogic&#x2F;FormLogic.js:113</code></a>
+        </p>
+    </div>
+    <div class="description">
+        <p>处理 form 或者 _selector 的所有form</p>
+    </div>
+        <div class="params">
+            <h4>Parameters:</h4>
+            <ul class="params-list">
+                <li class="param">
+                        <code class="param-name">_selector</code>
+                        <span class="type">Selector</span>
+                    <div class="param-description">
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="returns">
+            <h4>Returns:</h4>
+            <div class="returns-description">
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
+                    Array of FormLogicInstance
+            </div>
+        </div>
+</div>
                     <div id="method_on" class="method item inherited">
     <h3 class="name"><code>on</code></h3>
         <div class="args">
@@ -307,47 +410,6 @@
             <h4>Returns:</h4>
             <div class="returns-description">
                     BaseMVCInstance
-            </div>
-        </div>
-</div>
-                    <div id="method_process" class="method item">
-    <h3 class="name"><code>process</code></h3>
-        <div class="args">
-            <span class="paren">(</span><ul class="args-list inline commas">
-                <li class="arg">
-                        <code>_selector</code>
-                </li>
-            </ul><span class="paren">)</span>
-        </div>
-        <span class="returns-inline">
-            <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>
-        </span>
-        <span class="flag static">static</span>
-    <div class="meta">
-                <p>
-                Defined in
-        <a href="../files/.._bizs_FormLogic_FormLogic.js.html#l44"><code>..&#x2F;bizs&#x2F;FormLogic&#x2F;FormLogic.js:44</code></a>
-        </p>
-    </div>
-    <div class="description">
-        <p>处理 form 或者 _selector 的所有form</p>
-    </div>
-        <div class="params">
-            <h4>Parameters:</h4>
-            <ul class="params-list">
-                <li class="param">
-                        <code class="param-name">_selector</code>
-                        <span class="type">Selector</span>
-                    <div class="param-description">
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div class="returns">
-            <h4>Returns:</h4>
-            <div class="returns-description">
-                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array" class="crosslink external" target="_blank">Array</a></span>:
-                    Array of FormLogicInstance
             </div>
         </div>
 </div>
@@ -411,6 +473,24 @@
                     BaseMVCInstance
             </div>
         </div>
+</div>
+            </div>
+            <div id="properties" class="api-class-tabpanel">
+                <h2 class="off-left">Properties</h2>
+                    <div id="property_popupCloseMs" class="property item">
+    <h3 class="name"><code>popupCloseMs</code></h3>
+    <span class="type">Int</span>
+        <span class="flag static">static</span>
+    <div class="meta">
+                <p>
+                Defined in
+        <a href="../files/.._bizs_FormLogic_FormLogic.js.html#l134"><code>..&#x2F;bizs&#x2F;FormLogic&#x2F;FormLogic.js:134</code></a>
+        </p>
+    </div>
+    <div class="description">
+        <p>msgbox 提示框的自动关闭时间</p>
+    </div>
+        <p><strong>Default:</strong> 2000</p>
 </div>
             </div>
     </div>

@@ -31,16 +31,31 @@
                 //return false;
             }
 
+            function formAjaxDone( _json, _submitButton, _ins ){
+                var _form = $(this);
+                JC.log( 'custom formAjaxDone', new Date().getTime() );
+
+                if( _json.errorno ){
+                    _panel = JC.Dialog.alert( _json.errmsg || '操作失败, 请重新尝试!', 1 );
+                }else{
+                    _panel = JC.msgbox( _json.errmsg || '操作成功', _submitButton, 0, function(){
+                        reloadPage( "?donetype=custom" );
+                    });
+                }
+            };
+
         </script>
     </head>    
     <body>
 
         <dl class="defdl">
-            <dt>Bizs.FormLogic, get form example 1</dt>
+            <dt>Bizs.FormLogic, ajax get form example 1, system done</dt>
             <dd>
                 <dl>
-                    <form action="?" method="GET"
+                    <form action="./data/handler.php" method="GET"
                             class="js_autoFormLogic"
+                            formType="ajax"
+                            formAjaxDoneAction="?donetype=system"
                         >
                         <dl>
                             <dd>
@@ -72,21 +87,23 @@
         </dl>
 
         <dl class="defdl">
-            <dt>Bizs.FormLogic, get form example 2</dt>
+            <dt>Bizs.FormLogic, get form example 2, custom done</dt>
             <dd>
                 <dl>
-                    <form action="?" method="GET"
+                    <form action="./data/handler.php" method="GET"
                             class="js_autoFormLogic"
-                            formType="get"
+                            formType="ajax"
+                            formAjaxMethod="POST"
                             formBeforeProcess="formBeforeProcess"
                             formAfterProcess="formAfterProcess"
+                            formAjaxDone="formAjaxDone"
                         >
                         <dl>
                             <dd>
                                 文件框: <input type="text" name="text" reqmsg="文本框" value="test2" />
                             </dd>
                             <dd>
-                                日期: <input type="text" name="date" datatype="date" reqmsg="日期" value="2014-05-20" />
+                                日期: <input type="text" name="date" datatype="date" reqmsg="日期" value="20140520" />
                                 <em class="error"></em>
                             </dd>
                             <dd>
@@ -115,22 +132,21 @@
         </dl>
 
         <dl class="defdl">
-            <dt>Bizs.FormLogic, get form example 3</dt>
+            <dt>Bizs.FormLogic, get form example 3, nothing at done</dt>
             <dd>
                 <dl>
-                    <form action="?" method="GET"
+                    <form action="./data/handler.php" method="POST"
                             class="js_autoFormLogic"
-                            formType="get"
+                            formType="ajax"
                             formBeforeProcess="formBeforeProcess"
                             formAfterProcess="formAfterProcess"
-                            formConfirmPopupType="popup"
                         >
                         <dl>
                             <dd>
                                 文件框: <input type="text" name="text" reqmsg="文本框" value="test3" />
                             </dd>
                             <dd>
-                                日期: <input type="text" name="date" datatype="date" reqmsg="日期" value="2015-05-20" />
+                                日期: <input type="text" name="date" datatype="date" reqmsg="日期" value="2015-02-20" />
                                 <em class="error"></em>
                             </dd>
                             <dd>

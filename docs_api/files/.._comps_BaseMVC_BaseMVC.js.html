@@ -392,6 +392,68 @@
                 typeof _setter != &#x27;undefined&#x27; &amp;&amp; ( this._selector = _setter );
                 return this._selector; 
             }
+
+        , intProp:
+            function( _selector, _key ){
+                if( typeof _key == &#x27;undefined&#x27; ){
+                    _key = _selector;
+                    _selector = this.selector();
+                }else{
+                    _selector &amp;&amp; ( _selector = $( _selector ) );
+                }
+                var _r = 0;
+                _selector 
+                    &amp;&amp; _selector.is( &#x27;[&#x27; + _key + &#x27;]&#x27; ) 
+                    &amp;&amp; ( _r = parseInt( _selector.attr( _key ).trim(), 10 ) || _r );
+                return _r;
+            }
+
+        , floatProp:
+            function( _selector, _key ){
+                if( typeof _key == &#x27;undefined&#x27; ){
+                    _key = _selector;
+                    _selector = this.selector();
+                }else{
+                    _selector &amp;&amp; ( _selector = $( _selector ) );
+                }
+                var _r = 0;
+                _selector 
+                    &amp;&amp; _selector.is( &#x27;[&#x27; + _key + &#x27;]&#x27; ) 
+                    &amp;&amp; ( _r = parseFloat( _selector.attr( _key ).trim() ) || _r );
+                return _r;
+            }
+
+        , stringProp:
+            function( _selector, _key ){
+                if( typeof _key == &#x27;undefined&#x27; ){
+                    _key = _selector;
+                    _selector = this.selector();
+                }else{
+                    _selector &amp;&amp; ( _selector = $( _selector ) );
+                }
+                var _r = &#x27;&#x27;;
+                _selector
+                    &amp;&amp; _selector.is( &#x27;[&#x27; + _key + &#x27;]&#x27; ) 
+                    &amp;&amp; ( _r = _selector.attr( _key ).trim().toLowerCase() );
+                return _r;
+            }
+
+        , callbackProp:
+            function( _selector, _key ){
+                if( typeof _key == &#x27;undefined&#x27; ){
+                    _key = _selector;
+                    _selector = this.selector();
+                }else{
+                    _selector &amp;&amp; ( _selector = $( _selector ) );
+                }
+                var _r, _tmp;
+                _selector 
+                    &amp;&amp; _selector.is( &#x27;[&#x27; + _key + &#x27;]&#x27; )
+                    &amp;&amp; ( _tmp = window[ _selector.attr( _key ) ] )
+                    &amp;&amp; ( _r = _tmp )
+                    ;
+                return _r;
+            }
     };
     
     BaseMVC.buildView( BaseMVC );

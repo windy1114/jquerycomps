@@ -295,6 +295,10 @@
          */
         , autoClose:
             function( _callback, _ms ){
+                if( typeof _callback == 'number' ){
+                    _ms = _callback;
+                    _callback = null;
+                }
                 var _p = this, _tm;
                 _ms = _p._model.panelautoclosems( _ms );
 

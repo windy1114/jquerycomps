@@ -39,7 +39,7 @@
             <dt>Bizs.FormLogic, get form example 1</dt>
             <dd>
                 <dl>
-                    <form action="?" method="GET"
+                    <form action="./data/handler.php" method="POST" target="postIframe"
                             class="js_autoFormLogic"
                         >
                         <dl>
@@ -75,9 +75,8 @@
             <dt>Bizs.FormLogic, get form example 2</dt>
             <dd>
                 <dl>
-                    <form action="?" method="GET"
+                    <form action="./data/handler.php" method="POST" target="postIframe"
                             class="js_autoFormLogic"
-                            formType="get"
                             formBeforeProcess="formBeforeProcess"
                             formAfterProcess="formAfterProcess"
                         >
@@ -118,9 +117,8 @@
             <dt>Bizs.FormLogic, get form example 3</dt>
             <dd>
                 <dl>
-                    <form action="?" method="GET"
+                    <form action="./data/handler.php" method="POST" target="postIframe"
                             class="js_autoFormLogic"
-                            formType="get"
                             formBeforeProcess="formBeforeProcess"
                             formAfterProcess="formAfterProcess"
                             formConfirmPopupType="popup"
@@ -158,6 +156,6 @@
             </dd>
         </dl>
 
+        <iframe src="about:blank" name="postIframe" width="500" height="400" ></iframe>
     </body>
 </html>
-
