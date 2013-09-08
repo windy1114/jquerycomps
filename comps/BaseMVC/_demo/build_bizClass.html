@@ -33,10 +33,12 @@
     BizExample.Model._instanceName = 'BizExample';
 
     $(document).ready( function(){
-        var _count = 1;
         $('div.js_autoBizExample').each( function(){
-            new BizExample( $(this) );
-            $( printf( '<p>done: {0}</p>', _count++ ) ).appendTo( document.body );
+            BizExample.autoInit
+                && new BizExample( $(this) )
+                && $( printf( '<p>done: {0}, {1}</p>', BizExample.Model._instanceName, new Date().getTime() ) )
+                    .appendTo( document.body )
+                ;
         });
     });
 

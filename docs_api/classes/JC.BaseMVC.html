@@ -62,6 +62,7 @@
                 <li><a href="../classes/window.Bizs.html">window.Bizs</a></li>
                 <li><a href="../classes/window.Bizs.CommonModify.html">window.Bizs.CommonModify</a></li>
                 <li><a href="../classes/window.Bizs.DisableLogic.html">window.Bizs.DisableLogic</a></li>
+                <li><a href="../classes/window.Bizs.FormLogic.html">window.Bizs.FormLogic</a></li>
                 <li><a href="../classes/window.Bizs.KillISPCache.html">window.Bizs.KillISPCache</a></li>
                 <li><a href="../classes/window.Bizs.MultiDate.html">window.Bizs.MultiDate</a></li>
                 <li><a href="../classes/window.JC.html">window.JC</a></li>
@@ -330,6 +331,9 @@
                 <li class="arg">
                         <code>_outClass</code>
                 </li>
+                <li class="arg">
+                        <code>_namespace</code>
+                </li>
             </ul><span class="paren">)</span>
         </div>
         <span class="flag static">static</span>
@@ -357,6 +361,13 @@
                     <div class="param-description">
                     </div>
                 </li>
+                <li class="param">
+                        <code class="param-name">_namespace</code>
+                        <span class="type"><a href="https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String" class="crosslink external" target="_blank">String</a></span>
+                    <div class="param-description">
+                        <p>default='JC', 如果是业务组件, 请显式指明为 'Bizs'</p>
+                    </div>
+                </li>
             </ul>
         </div>
 </div>
@@ -373,7 +384,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._comps_BaseMVC_BaseMVC.js.html#l165"><code>..&#x2F;comps&#x2F;BaseMVC&#x2F;BaseMVC.js:165</code></a>
+        <a href="../files/.._comps_BaseMVC_BaseMVC.js.html#l184"><code>..&#x2F;comps&#x2F;BaseMVC&#x2F;BaseMVC.js:184</code></a>
         </p>
     </div>
     <div class="description">
@@ -404,7 +415,7 @@
     <div class="meta">
                 <p>
                 Defined in
-        <a href="../files/.._comps_BaseMVC_BaseMVC.js.html#l178"><code>..&#x2F;comps&#x2F;BaseMVC&#x2F;BaseMVC.js:178</code></a>
+        <a href="../files/.._comps_BaseMVC_BaseMVC.js.html#l197"><code>..&#x2F;comps&#x2F;BaseMVC&#x2F;BaseMVC.js:197</code></a>
         </p>
     </div>
     <div class="description">
@@ -432,7 +443,7 @@
             </ul><span class="paren">)</span>
         </div>
         <span class="returns-inline">
-            <span class="type">BaseMVC instance</span>
+            <span class="type">BaseMVCInstance</span>
         </span>
         <span class="flag static">static</span>
     <div class="meta">
@@ -458,7 +469,7 @@
         <div class="returns">
             <h4>Returns:</h4>
             <div class="returns-description">
-                        <span class="type">BaseMVC instance</span>:
+                        <span class="type">BaseMVCInstance</span>:
             </div>
         </div>
 </div>

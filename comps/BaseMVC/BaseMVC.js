@@ -218,6 +218,36 @@
                 typeof _setter != 'undefined' && ( this._selector = _setter );
                 return this._selector; 
             }
+
+        , stringProp:
+            function( _selector, _key ){
+                if( typeof _key == 'undefined' ){
+                    _key = _selector;
+                    _selector = this.selector();
+                }else{
+                    _selector && ( _selector = $( _selector ) );
+                }
+                var _r = '';
+                _selector.is( '[' + _key + ']' ) 
+                    && ( _r = _selector.attr( _key ).trim().toLowerCase() );
+                return _r;
+            }
+
+        , callbackProp:
+            function( _selector, _key ){
+                if( typeof _key == 'undefined' ){
+                    _key = _selector;
+                    _selector = this.selector();
+                }else{
+                    _selector && ( _selector = $( _selector ) );
+                }
+                var _r, _tmp;
+                _selector.is( '[' + _key + ']' )
+                    && ( _tmp = window[ _selector.attr( _key ) ] )
+                    && ( _r = _tmp )
+                    ;
+                return _r;
+            }
     };
     
     BaseMVC.buildView( BaseMVC );

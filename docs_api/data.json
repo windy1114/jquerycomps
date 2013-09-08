@@ -29,6 +29,17 @@
                 "window.Bizs": 1
             }
         },
+        "../bizs/FormLogic/FormLogic.js": {
+            "name": "../bizs/FormLogic/FormLogic.js",
+            "modules": {},
+            "classes": {
+                "window.Bizs.FormLogic": 1
+            },
+            "fors": {},
+            "namespaces": {
+                "window.Bizs": 1
+            }
+        },
         "../bizs/KillISPCache/KillISPCache.js": {
             "name": "../bizs/KillISPCache/KillISPCache.js",
             "modules": {},
@@ -437,6 +448,25 @@
                 "\n       <div class=\"js_bizsDisableLogic\"\n           dltrigger=\"/input[type=radio]\"\n           dltarget=\"/input.js_disableItem\"\n           >\n           <label>\n               <input type=\"radio\" name=\"discount\" checked  \n               dldisable=\"true\"\n               />自本协议签订之日起10日内生效\n           </label> <br>\n           <label>\n               <input type=\"radio\" name=\"discount\" \n               dldisable=\"false\"\n               />生效时间点\n           </label>\n           <input type=\"text\" class=\"ipt js_disableItem\" datatype=\"date\" value=\"\"\n           /><input type=\"button\" class=\"UXCCalendar_btn\">\n       </div>"
             ]
         },
+        "window.Bizs.FormLogic": {
+            "name": "window.Bizs.FormLogic",
+            "shortname": "window.Bizs.FormLogic",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "namespace": "window.Bizs",
+            "file": "../bizs/FormLogic/FormLogic.js",
+            "line": 2,
+            "description": "应用场景\n<br />get 查询表单\n<br />post 提交表单\n<br />ajax 提交表单\n<br />iframe 提交表单\n<p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>\n| <a href='http://jc.openjavascript.org/docs_api/classes/window.Bizs.FormLogic.html' target='_blank'>API docs</a>\n| <a href='../../bizs/FormLogic/_demo' target='_blank'>demo link</a></p>\nrequire: <a href='../classes/window.jQuery.html'>jQuery</a>\n<br/>require: <a href='../classes/JC.Valid.html'>JC.Valid</a>\n<br/>require: <a href='../classes/JC.Form.html'>JC.Form</a>\n<p>extend: <a href='../classes/JC.BaseMVC.html'>JC.BaseMVC</a></p>\n\n<h2>页面只要引用本文件, 默认会自动初始化 from class=\"js_autoFormLogic\" 的表单</h2>\n<h2>可用的 HTML 属性</h2>\n<dl>\n     <dt></dt>\n     <dd></dd>\n</dl>",
+            "extends": "JC.BaseMVC",
+            "is_constructor": 1,
+            "author": "qiushaowei  .1  2013-09-08",
+            "example": [
+                ""
+            ]
+        },
         "window.Bizs.KillISPCache": {
             "name": "window.Bizs.KillISPCache",
             "shortname": "window.Bizs.KillISPCache",
@@ -448,7 +478,7 @@
             "namespace": "window.Bizs",
             "file": "../bizs/KillISPCache/KillISPCache.js",
             "line": 2,
-            "description": "应用场景\n<br /><b>ISP 缓存问题 引起的用户串号</b>\n<br />ajax 或者动态添加的内容, 请显式调用  JC.KillISPCache.getInstance().process( newNodeContainer )\n<br /><b>这是个单例类</b>\n    \n<p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>\n| <a href='http://jc.openjavascript.org/docs_api/classes/window.Bizs.KillISPCache.html' target='_blank'>API docs</a>\n| <a href='../../bizs/KillISPCache/_demo' target='_blank'>demo link</a></p>\n\n<h2>页面只要引用本文件, 默认会自动初始化 KillISPCache 逻辑</h2>\n<dl>\n     <dt>影响到的地方: </dt>\n     <dd>每个 a node 会添加 isp 参数</dd>\n     <dd>每个 form node 会添加 isp 参数</dd>\n     <dd>每个 ajax get 请求会添加 isp 参数</dd>\n</dl>",
+            "description": "应用场景\n<br /><b>ISP 缓存问题 引起的用户串号</b>\n<br />ajax 或者动态添加的内容, 请显式调用  JC.KillISPCache.getInstance().process( newNodeContainer )\n<br /><b>这是个单例类</b>\n    \n<p><a href='https://github.com/openjavascript/jquerycomps' target='_blank'>JC Project Site</a>\n| <a href='http://jc.openjavascript.org/docs_api/classes/window.Bizs.KillISPCache.html' target='_blank'>API docs</a>\n| <a href='../../bizs/KillISPCache/_demo' target='_blank'>demo link</a></p>\nrequire: <a href='../classes/window.jQuery.html'>jQuery</a>\n<p>extend: <a href='../classes/JC.BaseMVC.html'>JC.BaseMVC</a></p>\n\n<h2>页面只要引用本文件, 默认会自动初始化 KillISPCache 逻辑</h2>\n<dl>\n     <dt>影响到的地方: </dt>\n     <dd>每个 a node 会添加 isp 参数</dd>\n     <dd>每个 form node 会添加 isp 参数</dd>\n     <dd>每个 ajax get 请求会添加 isp 参数</dd>\n</dl>",
             "extends": "JC.BaseMVC",
             "is_constructor": 1,
             "author": "qiushaowei  .1  2013-09-07",
@@ -1674,8 +1704,29 @@
             "namespace": "window.Bizs"
         },
         {
+            "file": "../bizs/FormLogic/FormLogic.js",
+            "line": 44,
+            "description": "处理 form 或者 _selector 的所有form",
+            "itemtype": "method",
+            "name": "process",
+            "params": [
+                {
+                    "name": "_selector",
+                    "description": "",
+                    "type": "Selector"
+                }
+            ],
+            "return": {
+                "description": "Array of FormLogicInstance",
+                "type": "Array"
+            },
+            "static": 1,
+            "class": "window.Bizs.FormLogic",
+            "namespace": "window.Bizs"
+        },
+        {
             "file": "../bizs/KillISPCache/KillISPCache.js",
-            "line": 50,
+            "line": 52,
             "description": "处理 _selector 的所有 child",
             "itemtype": "method",
             "name": "process",
@@ -1700,7 +1751,7 @@
         },
         {
             "file": "../bizs/KillISPCache/KillISPCache.js",
-            "line": 69,
+            "line": 71,
             "description": "获取 KillISPCache 实例 ( 单例模式 )",
             "itemtype": "method",
             "name": "getInstance",
@@ -1721,7 +1772,7 @@
         },
         {
             "file": "../bizs/KillISPCache/KillISPCache.js",
-            "line": 81,
+            "line": 83,
             "description": "是否忽略 url 跟 文本 相同的节点",
             "itemtype": "property",
             "name": "ignoreSameLinkText",
@@ -1733,7 +1784,7 @@
         },
         {
             "file": "../bizs/KillISPCache/KillISPCache.js",
-            "line": 89,
+            "line": 91,
             "description": "自定义随机数的参数名",
             "itemtype": "property",
             "name": "randName",
@@ -2361,7 +2412,7 @@
             "static": 1,
             "return": {
                 "description": "",
-                "type": "BaseMVC instance"
+                "type": "BaseMVCInstance"
             },
             "class": "JC.BaseMVC",
             "namespace": "JC"
@@ -2411,6 +2462,11 @@
                     "name": "_outClass",
                     "description": "",
                     "type": "Class"
+                },
+                {
+                    "name": "_namespace",
+                    "description": "default='JC', 如果是业务组件, 请显式指明为 'Bizs'",
+                    "type": "String"
                 }
             ],
             "static": 1,
@@ -2419,7 +2475,7 @@
         },
         {
             "file": "../comps/BaseMVC/BaseMVC.js",
-            "line": 165,
+            "line": 184,
             "description": "为 _outClass 生成一个通用 Model 类",
             "itemtype": "method",
             "name": "buildModel",
@@ -2436,7 +2492,7 @@
         },
         {
             "file": "../comps/BaseMVC/BaseMVC.js",
-            "line": 178,
+            "line": 197,
             "description": "为 _outClass 生成一个通用 View 类",
             "itemtype": "method",
             "name": "buildView",
@@ -12477,10 +12533,29 @@
                     "type": "Selector"
                 }
             ],
-            "static": 1,
             "return": {
                 "description": "string"
             },
+            "static": 1,
+            "class": ".window"
+        },
+        {
+            "file": "../common.js",
+            "line": 573,
+            "description": "取函数名 ( 匿名函数返回空 )",
+            "itemtype": "method",
+            "name": "funcName",
+            "params": [
+                {
+                    "name": "_func",
+                    "description": "",
+                    "type": "Function"
+                }
+            ],
+            "return": {
+                "description": "string"
+            },
+            "static": 1,
             "class": ".window"
         },
         {
