@@ -1464,7 +1464,9 @@
      * @private
      */
     $(document).delegate( &#x27;input.UXCCalendar_btn&#x27;, &#x27;click&#x27;, function($evt){
-        $(this).data( Calendar.Model.INPUT ) &amp;&amp; Calendar.pickDate( $(this).data( Calendar.Model.INPUT ) );
+        $(this).data( Calendar.Model.INPUT ) 
+            &amp;&amp; !$(this).data( Calendar.Model.INPUT ).is(&#x27;[disabled]&#x27;)
+            &amp;&amp; Calendar.pickDate( $(this).data( Calendar.Model.INPUT ) );
     });
     /**
      * 日历组件点击事件, 阻止冒泡, 防止被 document click事件隐藏

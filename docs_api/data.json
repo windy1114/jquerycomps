@@ -2370,7 +2370,7 @@
             "file": "../comps/BaseMVC/BaseMVC.js",
             "line": 123,
             "description": "是否自动初始化",
-            "itemtype": "method",
+            "itemtype": "property",
             "name": "autoInit",
             "type": "bool",
             "default": "true",
@@ -3136,7 +3136,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1297,
+            "line": 1299,
             "description": "日历组件点击事件, 阻止冒泡, 防止被 document click事件隐藏",
             "itemtype": "event",
             "name": "UXCCalendar click",
@@ -3147,7 +3147,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1306,
+            "line": 1308,
             "description": "DOM 加载完毕后, 初始化日历组件相关事件",
             "itemtype": "event",
             "name": "dom ready",
@@ -3158,14 +3158,14 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1312,
+            "line": 1314,
             "description": "延迟200毫秒初始化页面的所有日历控件\n之所以要延迟是可以让用户自己设置是否需要自动初始化",
             "class": "JC.Calendar",
             "namespace": "JC"
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1320,
+            "line": 1322,
             "description": "监听窗口滚动和改变大小, 实时变更日历组件显示位置",
             "itemtype": "event",
             "name": "window scroll, window resize",
@@ -3176,7 +3176,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1329,
+            "line": 1331,
             "description": "dom 点击时, 检查事件源是否为日历组件对象, 如果不是则会隐藏日历组件",
             "itemtype": "event",
             "name": "dom click",
@@ -3187,7 +3187,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1355,
+            "line": 1357,
             "description": "日历组件文本框获得焦点",
             "itemtype": "event",
             "name": "input focus",
@@ -12911,7 +12911,7 @@
         },
         {
             "message": "Missing item type\n延迟200毫秒初始化页面的所有日历控件\n之所以要延迟是可以让用户自己设置是否需要自动初始化",
-            "line": " ../comps/Calendar/JC.Calendar.js:1312"
+            "line": " ../comps/Calendar/JC.Calendar.js:1314"
         },
         {
             "message": "Missing item type\n元旦开始的第一个星期一开始的一周为政治经济上的第一周",

@@ -31,7 +31,7 @@
      *      });
      *      </script>
      */
-    window.Bizs.KillISPCache = KillISPCache;
+    Bizs.KillISPCache = KillISPCache;
 
     function KillISPCache( _selector ){
         if( KillISPCache._instance ) return KillISPCache._instance;
@@ -160,7 +160,7 @@
 
     };
 
-    JC.BaseMVC.build( KillISPCache );
+    JC.BaseMVC.build( KillISPCache, 'Bizs' );
 
     $(document).ready( function(){
         setTimeout( function(){
