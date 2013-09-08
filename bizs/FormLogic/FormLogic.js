@@ -11,7 +11,6 @@
      * <br/>require: <a href='../classes/JC.Valid.html'>JC.Valid</a>
      * <br/>require: <a href='../classes/JC.Form.html'>JC.Form</a>
      * <br/>require: <a href='../classes/JC.Panel.html'>JC.Panel</a>
-     * <p>extend: <a href='../classes/JC.BaseMVC.html'>JC.BaseMVC</a></p>
      *
      * <h2>页面只要引用本文件, 默认会自动初始化 from class="js_autoFormLogic" 的表单</h2>
      * <h2>Form 可用的 HTML 属性</h2>
