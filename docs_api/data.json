@@ -1706,7 +1706,7 @@
         {
             "file": "../bizs/FormLogic/FormLogic.js",
             "line": 113,
-            "description": "处理 form 或者 _selector 的所有form",
+            "description": "处理 form 或者 _selector 的所有form.js_autoFormLogic",
             "itemtype": "method",
             "name": "init",
             "params": [
@@ -2320,7 +2320,7 @@
         },
         {
             "file": "../comps/BaseMVC/BaseMVC.js",
-            "line": 61,
+            "line": 60,
             "description": "初始化之前调用的方法",
             "itemtype": "method",
             "name": "_beforeInit",
@@ -2331,7 +2331,7 @@
         },
         {
             "file": "../comps/BaseMVC/BaseMVC.js",
-            "line": 69,
+            "line": 68,
             "description": "内部事件初始化方法",
             "itemtype": "method",
             "name": "_initHanlderEvent",
@@ -2342,7 +2342,7 @@
         },
         {
             "file": "../comps/BaseMVC/BaseMVC.js",
-            "line": 77,
+            "line": 76,
             "description": "内部初始化完毕时, 调用的方法",
             "itemtype": "method",
             "name": "_inited",
@@ -2353,7 +2353,7 @@
         },
         {
             "file": "../comps/BaseMVC/BaseMVC.js",
-            "line": 85,
+            "line": 84,
             "description": "获取 显示 BaseMVC 的触发源选择器, 比如 a 标签",
             "itemtype": "method",
             "name": "selector",
@@ -2365,7 +2365,7 @@
         },
         {
             "file": "../comps/BaseMVC/BaseMVC.js",
-            "line": 91,
+            "line": 90,
             "description": "使用 jquery on 绑定事件",
             "itemtype": "method",
             "name": "on",
@@ -2390,7 +2390,7 @@
         },
         {
             "file": "../comps/BaseMVC/BaseMVC.js",
-            "line": 99,
+            "line": 98,
             "description": "使用 jquery trigger 绑定事件",
             "itemtype": "method",
             "name": "trigger",
@@ -2410,7 +2410,7 @@
         },
         {
             "file": "../comps/BaseMVC/BaseMVC.js",
-            "line": 107,
+            "line": 106,
             "description": "获取或设置 BaseMVC 的实例",
             "itemtype": "method",
             "name": "getInstance",
@@ -2431,7 +2431,7 @@
         },
         {
             "file": "../comps/BaseMVC/BaseMVC.js",
-            "line": 123,
+            "line": 122,
             "description": "是否自动初始化",
             "itemtype": "property",
             "name": "autoInit",
@@ -2443,7 +2443,7 @@
         },
         {
             "file": "../comps/BaseMVC/BaseMVC.js",
-            "line": 131,
+            "line": 130,
             "description": "复制 BaseMVC 的所有方法到 _outClass",
             "itemtype": "method",
             "name": "build",
@@ -2460,7 +2460,7 @@
         },
         {
             "file": "../comps/BaseMVC/BaseMVC.js",
-            "line": 146,
+            "line": 145,
             "description": "复制 _inClass 的所有方法到 _outClass",
             "itemtype": "method",
             "name": "buildClass",
@@ -2487,7 +2487,7 @@
         },
         {
             "file": "../comps/BaseMVC/BaseMVC.js",
-            "line": 184,
+            "line": 183,
             "description": "为 _outClass 生成一个通用 Model 类",
             "itemtype": "method",
             "name": "buildModel",
@@ -2504,7 +2504,7 @@
         },
         {
             "file": "../comps/BaseMVC/BaseMVC.js",
-            "line": 197,
+            "line": 196,
             "description": "为 _outClass 生成一个通用 View 类",
             "itemtype": "method",
             "name": "buildView",
@@ -3094,7 +3094,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1188,
+            "line": 1187,
             "description": "捕获用户更改年份 \n<p>监听 年份下拉框</p>",
             "itemtype": "event",
             "name": "year change",
@@ -3105,7 +3105,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1198,
+            "line": 1197,
             "description": "捕获用户更改年份 \n<p>监听 下一年按钮</p>",
             "itemtype": "event",
             "name": "next year",
@@ -3116,7 +3116,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1208,
+            "line": 1207,
             "description": "捕获用户更改年份 \n<p>监听 上一年按钮</p>",
             "itemtype": "event",
             "name": "previous year",
@@ -3127,7 +3127,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1218,
+            "line": 1217,
             "description": "增加或者减少一年\n<p>监听 年份map</p>",
             "itemtype": "event",
             "name": "year map click",
@@ -3138,7 +3138,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1232,
+            "line": 1231,
             "description": "增加或者减少一个月\n<p>监听 月份map</p>",
             "itemtype": "event",
             "name": "month map click",
@@ -3149,7 +3149,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1246,
+            "line": 1245,
             "description": "日期点击事件",
             "itemtype": "event",
             "name": "date click",
@@ -3160,7 +3160,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1259,
+            "line": 1258,
             "description": "选择当前日期\n<p>监听确定按钮</p>",
             "itemtype": "event",
             "name": "confirm click",
@@ -3171,7 +3171,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1269,
+            "line": 1268,
             "description": "清除文本框内容\n<p>监听 清空按钮</p>",
             "itemtype": "event",
             "name": "clear click",
@@ -3182,7 +3182,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1279,
+            "line": 1278,
             "description": "取消日历组件, 相当于隐藏\n<p>监听 取消按钮</p>",
             "itemtype": "event",
             "name": "cancel click",
@@ -3193,7 +3193,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1289,
+            "line": 1288,
             "description": "日历组件按钮点击事件",
             "itemtype": "event",
             "name": "calendar button click",
@@ -3204,7 +3204,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1299,
+            "line": 1298,
             "description": "日历组件点击事件, 阻止冒泡, 防止被 document click事件隐藏",
             "itemtype": "event",
             "name": "UXCCalendar click",
@@ -3215,7 +3215,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1308,
+            "line": 1307,
             "description": "DOM 加载完毕后, 初始化日历组件相关事件",
             "itemtype": "event",
             "name": "dom ready",
@@ -3226,14 +3226,14 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1314,
+            "line": 1313,
             "description": "延迟200毫秒初始化页面的所有日历控件\n之所以要延迟是可以让用户自己设置是否需要自动初始化",
             "class": "JC.Calendar",
             "namespace": "JC"
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1322,
+            "line": 1321,
             "description": "监听窗口滚动和改变大小, 实时变更日历组件显示位置",
             "itemtype": "event",
             "name": "window scroll, window resize",
@@ -3244,7 +3244,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1331,
+            "line": 1330,
             "description": "dom 点击时, 检查事件源是否为日历组件对象, 如果不是则会隐藏日历组件",
             "itemtype": "event",
             "name": "dom click",
@@ -3255,7 +3255,7 @@
         },
         {
             "file": "../comps/Calendar/JC.Calendar.js",
-            "line": 1357,
+            "line": 1356,
             "description": "日历组件文本框获得焦点",
             "itemtype": "event",
             "name": "input focus",
@@ -12998,7 +12998,7 @@
         },
         {
             "message": "Missing item type\n延迟200毫秒初始化页面的所有日历控件\n之所以要延迟是可以让用户自己设置是否需要自动初始化",
-            "line": " ../comps/Calendar/JC.Calendar.js:1314"
+            "line": " ../comps/Calendar/JC.Calendar.js:1313"
         },
         {
             "message": "Missing item type\n元旦开始的第一个星期一开始的一周为政治经济上的第一周",
