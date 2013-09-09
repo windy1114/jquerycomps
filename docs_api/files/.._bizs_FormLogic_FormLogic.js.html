@@ -216,10 +216,17 @@
      *      &lt;dt&gt;formPopupCloseMs = int, default = 2000&lt;/dt&gt;
      *      &lt;dd&gt;msgbox 弹框的显示时间&lt;/dd&gt;
      *
+     *      &lt;dt&gt;ajaxSubmitType = string, default = plugins&lt;/dt&gt;
+     *      &lt;dd&gt;
+     *          类型: plugins, form
+     *          &lt;br/&gt;plugins 支持 AJAX 文件上传, 但是在 弹框里 捕获不到提交事件
+     *          &lt;br/&gt;form 不支持 ajax 文件上传, 但可以在 popup 里捕获到提交事件
+     *      &lt;/dd&gt;
+     *
      *      &lt;dt&gt;formAjaxMethod = string, default = get&lt;/dt&gt;
      *      &lt;dd&gt;
-     *          ajax 的提交类型, 如果没有显式声明, 将视为 form 的 method 属性
-     *          &lt;br/&gt; 类型有: get, post
+     *          类型有: get, post
+     *          &lt;br/&gt;ajax 的提交类型, 如果没有显式声明, 将视为 form 的 method 属性
      *      &lt;/dd&gt;
      *
      *      &lt;dt&gt;formAjaxAction = url&lt;/dt&gt;
@@ -260,6 +267,12 @@
      *      &lt;dt&gt;formPopupCloseMs = int, default = 2000&lt;/dt&gt;
      *      &lt;dd&gt;msgbox 弹框的显示时间&lt;/dd&gt;
      * &lt;/dl&gt;
+     *
+     * &lt;h2&gt;普通 button 可用的 html 属性&lt;/h2&gt;
+     * &lt;dl&gt;
+     *      &lt;dt&gt;buttonReturnUrl&lt;/dt&gt;
+     *      &lt;dd&gt;点击button时, 返回的URL&lt;/dd&gt;
+     * &lt;/dl&gt;
      * @namespace       window.Bizs
      * @class           FormLogic
      * @extends         JC.BaseMVC
@@ -282,6 +295,7 @@
     !JC.Valid &amp;&amp; JC.use( &#x27;Valid&#x27; );
     !JC.Form &amp;&amp; JC.use( &#x27;Form&#x27; );
     !JC.Panel &amp;&amp; JC.use( &#x27;Panel&#x27; );
+    !$(document).ajaxForm &amp;&amp; JC.use( &#x27;plugins.jquery.form&#x27; );
 
     /**
      * 处理 form 或者 _selector 的所有form.js_autoFormLogic
@@ -312,6 +326,16 @@
      * @static
      */
     FormLogic.popupCloseMs = 2000;
+    /**
+     * AJAX 表单的提交类型
+     * &lt;br /&gt;plugins, form
+     * &lt;br /&gt;plugins 可以支持文件上传
+     * @property    popupCloseMs
+     * @type        string
+     * @default     empty
+     * @static
+     */
+    FormLogic.ajaxSubmitType = &#x27;&#x27; ;
 
     FormLogic.prototype = {
         _beforeInit:
@@ -326,100 +350,6 @@
 
                 _p._view.initQueryVal();
 
-                _p.selector().on(&#x27;submit&#x27;, function( _evt ){
-                    var _sp = $(this);
-                    //_evt.preventDefault();
-
-                    if( _p._model.formBeforeProcess() ){
-                        if( _p._model.formBeforeProcess().call( _p._selector, _evt, _p ) === false ){
-                            return _p._model.prevent( _evt );
-                        }
-                    }
-
-                    if( !JC.Valid.check( _sp ) ){
-                        return _p._model.prevent( _evt );
-                    }
-
-                    if( _p._model.formAfterProcess() ){
-                        if( _p._model.formAfterProcess().call( _p._selector, _evt, _p ) === false ){
-                            return _p._model.prevent( _evt );
-                        }
-                    }
-
-                    if( _sp.data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON ) ){
-                        _p.trigger( FormLogic.Model.EVT_CONFIRM );
-                        return _p._model.prevent( _evt );
-                    }
-
-                    if( _type == FormLogic.Model.AJAX ){
-                        _p.trigger( FormLogic.Model.EVT_AJAX_SUBMIT );
-                        return _p._model.prevent( _evt );
-                    }
-                });
-
-                _p.on( FormLogic.Model.EVT_CONFIRM, function( _evt ){
-                    var _sp = _p._model.selector()
-                        , _btn = _sp.data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON )
-                        ;
-                    _btn &amp;&amp; ( _btn = $( _btn ) );
-                    if( !( _btn &amp;&amp; _btn.length ) ) return;
-
-                    var _popup;
-
-                    if( _p._model.formConfirmPopupType( _btn ) == &#x27;dialog&#x27; ){
-                        _popup = JC.Dialog.confirm( _p._model.formSubmitConfirm(), 2 );
-                    }else{
-                        _popup = JC.confirm( _p._model.formSubmitConfirm( _btn ), _btn, 2 );
-                    }
-
-                    _popup.on(&#x27;confirm&#x27;, function(){
-                        _sp.data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON, null );
-                        _sp.trigger( &#x27;submit&#x27; );
-                    });
-
-                    _popup.on(&#x27;close&#x27;, function(){
-                        _sp.data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON, null );
-                    });
-                });
-
-                _p.selector().on(&#x27;reset&#x27;, function( _evt ){
-                    var _sp = $(this)
-                        ;
-
-                    if( _sp.data( FormLogic.Model.RESET_CONFIRM_BUTTON ) ){
-                        _p.trigger( FormLogic.Model.EVT_RESET );
-                        return _p._model.prevent( _evt );
-                    }else{
-                        _p._view.reset();
-                    }
-                });
-
-                _p.on( FormLogic.Model.EVT_RESET, function( _evt ){
-                    var _sp = _p._model.selector()
-                        , _btn = _sp.data( FormLogic.Model.RESET_CONFIRM_BUTTON )
-                        ;
-                    _btn &amp;&amp; ( _btn = $( _btn ) );
-                    if( !( _btn &amp;&amp; _btn.length ) ) return;
-
-                    var _popup;
-
-                    if( _p._model.formConfirmPopupType( _btn ) == &#x27;dialog&#x27; ){
-                        _popup = JC.Dialog.confirm( _p._model.formResetConfirm(), 2 );
-                    }else{
-                        _popup = JC.confirm( _p._model.formResetConfirm( _btn ), _btn, 2 );
-                    }
-
-                    _popup.on(&#x27;confirm&#x27;, function(){
-                        _sp.data( FormLogic.Model.RESET_CONFIRM_BUTTON, null );
-                        _sp.trigger( &#x27;reset&#x27; );
-                        _p._view.reset();
-                    });
-
-                    _popup.on(&#x27;close&#x27;, function(){
-                        _sp.data( FormLogic.Model.RESET_CONFIRM_BUTTON, null );
-                    });
-                });
-                
                 _p.on( FormLogic.Model.EVT_AJAX_SUBMIT, function(){
                     var _method = _p._model.formAjaxMethod();
                     JC.log( FormLogic.Model.EVT_AJAX_SUBMIT, _method );
@@ -428,6 +358,8 @@
                     $[ _method ] &amp;&amp;
                         $[ _method ]( _p._model.formAjaxAction(), _data )
                         .done( function( _d ){
+                            JC.log( &#x27;common ajax done&#x27; );
+                            //alert( &#x27;form&#x27; );
                             var _json;
                             try{ _json = $.parseJSON( _d ); }catch(ex){}
                             _json = _json || _d || {};
@@ -441,6 +373,138 @@
                         });
                     ;
                 });
+
+                if( _p._model.formType() == &#x27;ajax&#x27; &amp;&amp; _p._model.ajaxSubmitType() == &#x27;plugins&#x27; ){
+                    _p.selector().ajaxForm({
+                        beforeSubmit:
+                            function(){
+                                if( _p._model.formBeforeProcess() ){
+                                    if( _p._model.formBeforeProcess().call( _p.selector(), null, _p ) === false ){
+                                        return _p._model.prevent();
+                                    }
+                                }
+
+                                if( !JC.Valid.check( _p.selector() ) ){
+                                    return _p._model.prevent();
+                                }
+
+                                if( _p._model.formAfterProcess() ){
+                                    if( _p._model.formAfterProcess().call( _p.selector(), null, _p ) === false ){
+                                        return _p._model.prevent();
+                                    }
+                                }
+
+                                if( _p.selector().data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON ) ){
+                                    _p.trigger( FormLogic.Model.EVT_CONFIRM );
+                                    return _p._model.prevent();
+                                }
+                            }
+                        , success:
+                            function( _d ){
+                                JC.log( &#x27;plugins ajax done&#x27; );
+                                //alert( &#x27;plugins&#x27; );
+                                try{ _json = $.parseJSON( _d ); }catch(ex){}
+                                var _json;
+                                _json = _json || _d || {};
+                                _p._model.formAjaxDone()
+                                    &amp;&amp; _p._model.formAjaxDone().call( 
+                                        _p._model.selector() 
+                                        , _json
+                                        , _p._model.selector().data( FormLogic.Model.GENERIC_SUBMIT_BUTTON )
+                                        , _p
+                                    );
+                            }
+                    });
+                }else{
+                    _p.selector().on(&#x27;submit&#x27;, function( _evt ){
+                        //_evt.preventDefault();
+
+                        if( _p._model.formBeforeProcess() ){
+                            if( _p._model.formBeforeProcess().call( _p.selector(), _evt, _p ) === false ){
+                                return _p._model.prevent( _evt );
+                            }
+                        }
+
+                        if( !JC.Valid.check( _p.selector() ) ){
+                            return _p._model.prevent( _evt );
+                        }
+
+                        if( _p._model.formAfterProcess() ){
+                            if( _p._model.formAfterProcess().call( _p.selector(), _evt, _p ) === false ){
+                                return _p._model.prevent( _evt );
+                            }
+                        }
+
+                        if( _p.selector().data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON ) ){
+                            _p.trigger( FormLogic.Model.EVT_CONFIRM );
+                            return _p._model.prevent( _evt );
+                        }
+
+                        if( _type == FormLogic.Model.AJAX ){
+                            _p.trigger( FormLogic.Model.EVT_AJAX_SUBMIT );
+                            return _p._model.prevent( _evt );
+                        }
+                    });
+                }
+
+                _p.on( FormLogic.Model.EVT_CONFIRM, function( _evt ){
+                    var _btn = _p.selector().data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON )
+                        ;
+                    _btn &amp;&amp; ( _btn = $( _btn ) );
+                    if( !( _btn &amp;&amp; _btn.length ) ) return;
+
+                    var _popup;
+
+                    if( _p._model.formConfirmPopupType( _btn ) == &#x27;dialog&#x27; ){
+                        _popup = JC.Dialog.confirm( _p._model.formSubmitConfirm(), 2 );
+                    }else{
+                        _popup = JC.confirm( _p._model.formSubmitConfirm( _btn ), _btn, 2 );
+                    }
+
+                    _popup.on(&#x27;confirm&#x27;, function(){
+                        _p.selector().data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON, null );
+                        _p.selector().trigger( &#x27;submit&#x27; );
+                    });
+
+                    _popup.on(&#x27;close&#x27;, function(){
+                        _p.selector().data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON, null );
+                    });
+                });
+
+                _p.selector().on(&#x27;reset&#x27;, function( _evt ){
+                    if( _p.selector().data( FormLogic.Model.RESET_CONFIRM_BUTTON ) ){
+                        _p.trigger( FormLogic.Model.EVT_RESET );
+                        return _p._model.prevent( _evt );
+                    }else{
+                        _p._view.reset();
+                    }
+                });
+
+                _p.on( FormLogic.Model.EVT_RESET, function( _evt ){
+                    var _btn = _p.selector().data( FormLogic.Model.RESET_CONFIRM_BUTTON )
+                        ;
+                    _btn &amp;&amp; ( _btn = $( _btn ) );
+                    if( !( _btn &amp;&amp; _btn.length ) ) return;
+
+                    var _popup;
+
+                    if( _p._model.formConfirmPopupType( _btn ) == &#x27;dialog&#x27; ){
+                        _popup = JC.Dialog.confirm( _p._model.formResetConfirm(), 2 );
+                    }else{
+                        _popup = JC.confirm( _p._model.formResetConfirm( _btn ), _btn, 2 );
+                    }
+
+                    _popup.on(&#x27;confirm&#x27;, function(){
+                        _p.selector().data( FormLogic.Model.RESET_CONFIRM_BUTTON, null );
+                        _p.selector().trigger( &#x27;reset&#x27; );
+                        _p._view.reset();
+                    });
+
+                    _popup.on(&#x27;close&#x27;, function(){
+                        _p.selector().data( FormLogic.Model.RESET_CONFIRM_BUTTON, null );
+                    });
+                });
+                
             }
     };
 
@@ -471,6 +535,11 @@
                 var _r = this.stringProp( &#x27;method&#x27; );
                 !_r &amp;&amp; ( _r = FormLogic.Model.GET );
                 _r = this.stringProp( &#x27;formType&#x27; ) || _r;
+                return _r.toLowerCase();
+           }
+        , ajaxSubmitType: 
+            function(){ 
+                var _r = this.stringProp( &#x27;ajaxSubmitType&#x27; ) || FormLogic.ajaxSubmitType || &#x27;plugins&#x27;;
                 return _r.toLowerCase();
            }
         , formAjaxMethod:
@@ -659,6 +728,11 @@
         _fm &amp;&amp; _fm.length 
             &amp;&amp; _fm.data( FormLogic.Model.GENERIC_SUBMIT_BUTTON , _p )
             ;
+    });
+
+    $(document).delegate( &#x27;input[buttonReturnUrl], button[buttonReturnUrl]&#x27;, &#x27;click&#x27;, function( _evt ){
+        var _p = $(this), _url = _p.attr(&#x27;buttonReturnUrl&#x27;).trim();
+        _url &amp;&amp; reloadPage( _url );
     });
 
     $(document).ready( function(){

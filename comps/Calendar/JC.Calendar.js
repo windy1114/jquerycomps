@@ -112,6 +112,13 @@
                     this._view = new Calendar.SeasonView( this._model );
                     break;
                 }
+            case 'multiday':
+                {   
+                   
+                    this._model = new Calendar.MultiDayModel( _selector );
+                    this._view = new Calendar.MultiDayView( this._model );
+                    break;
+                }
             default:
                 {
                     this._model = new Calendar.Model( _selector );
@@ -434,6 +441,7 @@
                 case 'week': 
                 case 'month': 
                 case 'season': 
+                case 'multiday': 
                     {
                         _r = _type;
                         break;
@@ -465,6 +473,7 @@
                                 || _selector.attr('datatype').toLowerCase()=='season' 
                                 || _selector.attr('datatype').toLowerCase()=='year' 
                                 || _selector.attr('datatype').toLowerCase()=='daterange' 
+                                || _selector.attr('datatype').toLowerCase() == 'multiday'
                             )) _r = 1;
                 if( _selector.prop('nodeName') 
                         && _selector.attr('multidate')
@@ -676,9 +685,12 @@
                     return; 
                 }
 
-                if( !($.trim( _p.attr('datatype') || '').toLowerCase() == 'date' 
+                if( !(  
+                        $.trim( _p.attr('datatype') || '').toLowerCase() == 'date' 
                         || $.trim( _p.attr('multidate') || '')
-                        || $.trim( _p.attr('datatype') || '').toLowerCase() == 'daterange') ) return;
+                        || $.trim( _p.attr('datatype') || '').toLowerCase() == 'daterange'
+                        || $.trim( _p.attr('datatype') || '').toLowerCase() == 'multiday' 
+                        ) ) return;
 
                 var _btn = _p.find( '+ input.UXCCalendar_btn' );
                 if( !_btn.length ){
@@ -1359,11 +1371,11 @@
      * @private
      */
     $(document).delegate( [ 'input[datatype=season]', 'input[datatype=month]', 'input[datatype=week]'
-            , 'input[datatype=date]', 'input[datatype=daterange]', 'input[multidate]' ].join(), 'focus' , function($evt){
+            , 'input[datatype=date]', 'input[datatype=daterange]', 'input[multidate], input[datatype=multiday]' ].join(), 'focus' , function($evt){
             Calendar.pickDate( this );
     });
     $(document).delegate( [ 'button[datatype=season]', 'button[datatype=month]', 'button[datatype=week]'
-            , 'button[datatype=date]', 'button[datatype=daterange]', 'button[multidate]' ].join(), 'click' , function($evt){
+            , 'button[datatype=date]', 'button[datatype=daterange]', 'button[multidate], button[datatype=multiday]' ].join(), 'click' , function($evt){
             Calendar.pickDate( this );
     });
 }(jQuery));

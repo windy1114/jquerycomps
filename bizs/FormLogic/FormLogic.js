@@ -42,10 +42,17 @@
      *      <dt>formPopupCloseMs = int, default = 2000</dt>
      *      <dd>msgbox 弹框的显示时间</dd>
      *
+     *      <dt>ajaxSubmitType = string, default = plugins</dt>
+     *      <dd>
+     *          类型: plugins, form
+     *          <br/>plugins 支持 AJAX 文件上传, 但是在 弹框里 捕获不到提交事件
+     *          <br/>form 不支持 ajax 文件上传, 但可以在 popup 里捕获到提交事件
+     *      </dd>
+     *
      *      <dt>formAjaxMethod = string, default = get</dt>
      *      <dd>
-     *          ajax 的提交类型, 如果没有显式声明, 将视为 form 的 method 属性
-     *          <br/> 类型有: get, post
+     *          类型有: get, post
+     *          <br/>ajax 的提交类型, 如果没有显式声明, 将视为 form 的 method 属性
      *      </dd>
      *
      *      <dt>formAjaxAction = url</dt>
@@ -86,6 +93,12 @@
      *      <dt>formPopupCloseMs = int, default = 2000</dt>
      *      <dd>msgbox 弹框的显示时间</dd>
      * </dl>
+     *
+     * <h2>普通 button 可用的 html 属性</h2>
+     * <dl>
+     *      <dt>buttonReturnUrl</dt>
+     *      <dd>点击button时, 返回的URL</dd>
+     * </dl>
      * @namespace       window.Bizs
      * @class           FormLogic
      * @extends         JC.BaseMVC
@@ -108,6 +121,7 @@
     !JC.Valid && JC.use( 'Valid' );
     !JC.Form && JC.use( 'Form' );
     !JC.Panel && JC.use( 'Panel' );
+    !$(document).ajaxForm && JC.use( 'plugins.jquery.form' );
 
     /**
      * 处理 form 或者 _selector 的所有form.js_autoFormLogic
@@ -138,6 +152,16 @@
      * @static
      */
     FormLogic.popupCloseMs = 2000;
+    /**
+     * AJAX 表单的提交类型
+     * <br />plugins, form
+     * <br />plugins 可以支持文件上传
+     * @property    popupCloseMs
+     * @type        string
+     * @default     empty
+     * @static
+     */
+    FormLogic.ajaxSubmitType = '' ;
 
     FormLogic.prototype = {
         _beforeInit:
@@ -152,100 +176,6 @@
 
                 _p._view.initQueryVal();
 
-                _p.selector().on('submit', function( _evt ){
-                    var _sp = $(this);
-                    //_evt.preventDefault();
-
-                    if( _p._model.formBeforeProcess() ){
-                        if( _p._model.formBeforeProcess().call( _p._selector, _evt, _p ) === false ){
-                            return _p._model.prevent( _evt );
-                        }
-                    }
-
-                    if( !JC.Valid.check( _sp ) ){
-                        return _p._model.prevent( _evt );
-                    }
-
-                    if( _p._model.formAfterProcess() ){
-                        if( _p._model.formAfterProcess().call( _p._selector, _evt, _p ) === false ){
-                            return _p._model.prevent( _evt );
-                        }
-                    }
-
-                    if( _sp.data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON ) ){
-                        _p.trigger( FormLogic.Model.EVT_CONFIRM );
-                        return _p._model.prevent( _evt );
-                    }
-
-                    if( _type == FormLogic.Model.AJAX ){
-                        _p.trigger( FormLogic.Model.EVT_AJAX_SUBMIT );
-                        return _p._model.prevent( _evt );
-                    }
-                });
-
-                _p.on( FormLogic.Model.EVT_CONFIRM, function( _evt ){
-                    var _sp = _p._model.selector()
-                        , _btn = _sp.data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON )
-                        ;
-                    _btn && ( _btn = $( _btn ) );
-                    if( !( _btn && _btn.length ) ) return;
-
-                    var _popup;
-
-                    if( _p._model.formConfirmPopupType( _btn ) == 'dialog' ){
-                        _popup = JC.Dialog.confirm( _p._model.formSubmitConfirm(), 2 );
-                    }else{
-                        _popup = JC.confirm( _p._model.formSubmitConfirm( _btn ), _btn, 2 );
-                    }
-
-                    _popup.on('confirm', function(){
-                        _sp.data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON, null );
-                        _sp.trigger( 'submit' );
-                    });
-
-                    _popup.on('close', function(){
-                        _sp.data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON, null );
-                    });
-                });
-
-                _p.selector().on('reset', function( _evt ){
-                    var _sp = $(this)
-                        ;
-
-                    if( _sp.data( FormLogic.Model.RESET_CONFIRM_BUTTON ) ){
-                        _p.trigger( FormLogic.Model.EVT_RESET );
-                        return _p._model.prevent( _evt );
-                    }else{
-                        _p._view.reset();
-                    }
-                });
-
-                _p.on( FormLogic.Model.EVT_RESET, function( _evt ){
-                    var _sp = _p._model.selector()
-                        , _btn = _sp.data( FormLogic.Model.RESET_CONFIRM_BUTTON )
-                        ;
-                    _btn && ( _btn = $( _btn ) );
-                    if( !( _btn && _btn.length ) ) return;
-
-                    var _popup;
-
-                    if( _p._model.formConfirmPopupType( _btn ) == 'dialog' ){
-                        _popup = JC.Dialog.confirm( _p._model.formResetConfirm(), 2 );
-                    }else{
-                        _popup = JC.confirm( _p._model.formResetConfirm( _btn ), _btn, 2 );
-                    }
-
-                    _popup.on('confirm', function(){
-                        _sp.data( FormLogic.Model.RESET_CONFIRM_BUTTON, null );
-                        _sp.trigger( 'reset' );
-                        _p._view.reset();
-                    });
-
-                    _popup.on('close', function(){
-                        _sp.data( FormLogic.Model.RESET_CONFIRM_BUTTON, null );
-                    });
-                });
-                
                 _p.on( FormLogic.Model.EVT_AJAX_SUBMIT, function(){
                     var _method = _p._model.formAjaxMethod();
                     JC.log( FormLogic.Model.EVT_AJAX_SUBMIT, _method );
@@ -254,6 +184,8 @@
                     $[ _method ] &&
                         $[ _method ]( _p._model.formAjaxAction(), _data )
                         .done( function( _d ){
+                            JC.log( 'common ajax done' );
+                            //alert( 'form' );
                             var _json;
                             try{ _json = $.parseJSON( _d ); }catch(ex){}
                             _json = _json || _d || {};
@@ -267,6 +199,138 @@
                         });
                     ;
                 });
+
+                if( _p._model.formType() == 'ajax' && _p._model.ajaxSubmitType() == 'plugins' ){
+                    _p.selector().ajaxForm({
+                        beforeSubmit:
+                            function(){
+                                if( _p._model.formBeforeProcess() ){
+                                    if( _p._model.formBeforeProcess().call( _p.selector(), null, _p ) === false ){
+                                        return _p._model.prevent();
+                                    }
+                                }
+
+                                if( !JC.Valid.check( _p.selector() ) ){
+                                    return _p._model.prevent();
+                                }
+
+                                if( _p._model.formAfterProcess() ){
+                                    if( _p._model.formAfterProcess().call( _p.selector(), null, _p ) === false ){
+                                        return _p._model.prevent();
+                                    }
+                                }
+
+                                if( _p.selector().data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON ) ){
+                                    _p.trigger( FormLogic.Model.EVT_CONFIRM );
+                                    return _p._model.prevent();
+                                }
+                            }
+                        , success:
+                            function( _d ){
+                                JC.log( 'plugins ajax done' );
+                                //alert( 'plugins' );
+                                try{ _json = $.parseJSON( _d ); }catch(ex){}
+                                var _json;
+                                _json = _json || _d || {};
+                                _p._model.formAjaxDone()
+                                    && _p._model.formAjaxDone().call( 
+                                        _p._model.selector() 
+                                        , _json
+                                        , _p._model.selector().data( FormLogic.Model.GENERIC_SUBMIT_BUTTON )
+                                        , _p
+                                    );
+                            }
+                    });
+                }else{
+                    _p.selector().on('submit', function( _evt ){
+                        //_evt.preventDefault();
+
+                        if( _p._model.formBeforeProcess() ){
+                            if( _p._model.formBeforeProcess().call( _p.selector(), _evt, _p ) === false ){
+                                return _p._model.prevent( _evt );
+                            }
+                        }
+
+                        if( !JC.Valid.check( _p.selector() ) ){
+                            return _p._model.prevent( _evt );
+                        }
+
+                        if( _p._model.formAfterProcess() ){
+                            if( _p._model.formAfterProcess().call( _p.selector(), _evt, _p ) === false ){
+                                return _p._model.prevent( _evt );
+                            }
+                        }
+
+                        if( _p.selector().data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON ) ){
+                            _p.trigger( FormLogic.Model.EVT_CONFIRM );
+                            return _p._model.prevent( _evt );
+                        }
+
+                        if( _type == FormLogic.Model.AJAX ){
+                            _p.trigger( FormLogic.Model.EVT_AJAX_SUBMIT );
+                            return _p._model.prevent( _evt );
+                        }
+                    });
+                }
+
+                _p.on( FormLogic.Model.EVT_CONFIRM, function( _evt ){
+                    var _btn = _p.selector().data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON )
+                        ;
+                    _btn && ( _btn = $( _btn ) );
+                    if( !( _btn && _btn.length ) ) return;
+
+                    var _popup;
+
+                    if( _p._model.formConfirmPopupType( _btn ) == 'dialog' ){
+                        _popup = JC.Dialog.confirm( _p._model.formSubmitConfirm(), 2 );
+                    }else{
+                        _popup = JC.confirm( _p._model.formSubmitConfirm( _btn ), _btn, 2 );
+                    }
+
+                    _popup.on('confirm', function(){
+                        _p.selector().data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON, null );
+                        _p.selector().trigger( 'submit' );
+                    });
+
+                    _popup.on('close', function(){
+                        _p.selector().data( FormLogic.Model.SUBMIT_CONFIRM_BUTTON, null );
+                    });
+                });
+
+                _p.selector().on('reset', function( _evt ){
+                    if( _p.selector().data( FormLogic.Model.RESET_CONFIRM_BUTTON ) ){
+                        _p.trigger( FormLogic.Model.EVT_RESET );
+                        return _p._model.prevent( _evt );
+                    }else{
+                        _p._view.reset();
+                    }
+                });
+
+                _p.on( FormLogic.Model.EVT_RESET, function( _evt ){
+                    var _btn = _p.selector().data( FormLogic.Model.RESET_CONFIRM_BUTTON )
+                        ;
+                    _btn && ( _btn = $( _btn ) );
+                    if( !( _btn && _btn.length ) ) return;
+
+                    var _popup;
+
+                    if( _p._model.formConfirmPopupType( _btn ) == 'dialog' ){
+                        _popup = JC.Dialog.confirm( _p._model.formResetConfirm(), 2 );
+                    }else{
+                        _popup = JC.confirm( _p._model.formResetConfirm( _btn ), _btn, 2 );
+                    }
+
+                    _popup.on('confirm', function(){
+                        _p.selector().data( FormLogic.Model.RESET_CONFIRM_BUTTON, null );
+                        _p.selector().trigger( 'reset' );
+                        _p._view.reset();
+                    });
+
+                    _popup.on('close', function(){
+                        _p.selector().data( FormLogic.Model.RESET_CONFIRM_BUTTON, null );
+                    });
+                });
+                
             }
     };
 
@@ -297,6 +361,11 @@
                 var _r = this.stringProp( 'method' );
                 !_r && ( _r = FormLogic.Model.GET );
                 _r = this.stringProp( 'formType' ) || _r;
+                return _r.toLowerCase();
+           }
+        , ajaxSubmitType: 
+            function(){ 
+                var _r = this.stringProp( 'ajaxSubmitType' ) || FormLogic.ajaxSubmitType || 'plugins';
                 return _r.toLowerCase();
            }
         , formAjaxMethod:
@@ -485,6 +554,11 @@
         _fm && _fm.length 
             && _fm.data( FormLogic.Model.GENERIC_SUBMIT_BUTTON , _p )
             ;
+    });
+
+    $(document).delegate( 'input[buttonReturnUrl], button[buttonReturnUrl]', 'click', function( _evt ){
+        var _p = $(this), _url = _p.attr('buttonReturnUrl').trim();
+        _url && reloadPage( _url );
     });
 
     $(document).ready( function(){
